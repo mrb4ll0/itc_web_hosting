@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>IT Connect Settings</title>
+    <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect" />
+    <link
+      as="style"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter:wght@400;500;700;900"
+      onload="this.rel='stylesheet'"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#607afb",
+              "background-light": "#f5f6f8",
+              "background-dark": "#0f1323",
+            },
+            fontFamily: {
+              display: ["Inter"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-200"
+  >
+    <div
+      class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden"
+    >
+      <div class="layout-container flex h-full grow flex-col">
+        <header
+          class="flex items-center justify-between whitespace-nowrap border-b border-slate-200 dark:border-slate-800 px-10 py-3"
+        >
+          <div class="flex items-center gap-4">
+             <div class="w-15 h-8 text-primary animate-bounce">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke="currentColor"
+              class="size-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+              />
+            </svg>
+          </div>
+            <h2
+              class="text-lg font-bold tracking-tight text-slate-900 dark:text-white"
+            >
+              IT Connect
+            </h2>
+          </div>
+          <div class="flex flex-1 justify-end gap-6 items-center">
+            <nav class="hidden md:flex items-center gap-6">
+              <a
+                class="text-sm font-medium hover:text-primary dark:hover:text-primary"
+                href="itc_dashboard.html"
+                >Dashboard</a
+              >
+              <a
+                class="text-sm font-medium hover:text-primary dark:hover:text-primary"
+                href="applications.html"
+                >Applications</a
+              >
+              <a
+                class="text-sm font-medium hover:text-primary dark:hover:text-primary"
+                href="opportunities.html"
+                >Opportunities</a
+              >
+            </nav>
+            <button
+              class="flex items-center justify-center rounded-full size-10 bg-background-light dark:bg-background-dark hover:bg-slate-200 dark:hover:bg-slate-800"
+            >
+              <div
+                class="text-slate-600 dark:text-slate-400"
+                data-icon="Bell"
+                data-size="20px"
+                data-weight="regular"
+              >
+                <svg
+                  fill="currentColor"
+                  height="20px"
+                  viewBox="0 0 256 256"
+                  width="20px"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"
+                  ></path>
+                </svg>
+              </div>
+            </button>
+            <div
+              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+              style="
+                background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCS63ipiDYRO6Ho6maQi4syclwc6jbPm7fJh1ebHs7b78QMbQ1OpGC8REgQOMRerrOXKjDOAkg73c3hddpVj_MtwS0B2L-_otCIIymia2z_Jh4MYJFJvJoKSRN4At0t4ZXk8MUN-cSQQAVbpBYxeAxQ_AB73-TIHImVkkyz1BYZ5sY7crpjKiOOD5wtFTzjLQCwyjI-ysJ-dttS_b9VeCcmAaw_FpSRKb88SJ4blRbPNtEa2ugiUp8zf8EWcESQSceE4oSG2cZtgg');
+              "
+            ></div>
+          </div>
+        </header>
+        <main class="flex flex-1 justify-center py-10 px-4 sm:px-6 lg:px-8">
+          <div class="w-full max-w-4xl space-y-12">
+            <div class="px-4">
+              <h1
+                class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white"
+              >
+                Settings
+              </h1>
+              <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                Manage your account and preferences.
+              </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div class="md:col-span-1">
+                <h2
+                  class="text-lg font-semibold text-slate-900 dark:text-white px-4"
+                >
+                  Account
+                </h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 px-4">
+                  Update your personal information and password.
+                </p>
+              </div>
+              <div class="md:col-span-2 space-y-4">
+                <a
+                  class="flex items-center gap-4 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200"
+                  href="#"
+                >
+                  <div
+                    class="flex items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0 size-12"
+                  >
+                    <svg
+                      fill="currentColor"
+                      height="24px"
+                      viewBox="0 0 256 256"
+                      width="24px"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium text-slate-900 dark:text-white">
+                      Personal Information
+                    </p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                      Manage your personal information
+                    </p>
+                  </div>
+                </a>
+                <a
+                  class="flex items-center gap-4 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200"
+                  href="#"
+                >
+                  <div
+                    class="flex items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0 size-12"
+                  >
+                    <svg
+                      fill="currentColor"
+                      height="24px"
+                      viewBox="0 0 256 256"
+                      width="24px"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M208,80H176V56a48,48,0,0,0-96,0V80H48A16,16,0,0,0,32,96V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V96A16,16,0,0,0,208,80ZM96,56a32,32,0,0,1,64,0V80H96ZM208,208H48V96H208V208Zm-68-56a12,12,0,1,1-12-12A12,12,0,0,1,140,152Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium text-slate-900 dark:text-white">
+                      Password
+                    </p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                      Change your password
+                    </p>
+                  </div>
+                </a>
+              </div>
+            </div>
+            <div class="border-t border-slate-200 dark:border-slate-800"></div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8">
+              <div class="md:col-span-1">
+                <h2
+                  class="text-lg font-semibold text-slate-900 dark:text-white px-4"
+                >
+                  Notifications
+                </h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 px-4">
+                  Control how you receive notifications.
+                </p>
+              </div>
+              <div class="md:col-span-2 space-y-4">
+                <a
+                  class="flex items-center gap-4 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200"
+                  href="#"
+                >
+                  <div
+                    class="flex items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0 size-12"
+                  >
+                    <svg
+                      fill="currentColor"
+                      height="24px"
+                      viewBox="0 0 256 256"
+                      width="24px"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48Zm-96,85.15L52.57,64H203.43ZM98.71,128,40,181.81V74.19Zm11.84,10.85,12,11.05a8,8,0,0,0,10.82,0l12-11.05,58,53.15H52.57ZM157.29,128,216,74.18V181.82Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium text-slate-900 dark:text-white">
+                      Email Notifications
+                    </p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                      Manage your email notification preferences
+                    </p>
+                  </div>
+                </a>
+                <a
+                  class="flex items-center gap-4 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200"
+                  href="#"
+                >
+                  <div
+                    class="flex items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0 size-12"
+                  >
+                    <svg
+                      fill="currentColor"
+                      height="24px"
+                      viewBox="0 0 256 256"
+                      width="24px"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium text-slate-900 dark:text-white">
+                      In-App Notifications
+                    </p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                      Manage your in-app notification preferences
+                    </p>
+                  </div>
+                </a>
+              </div>
+            </div>
+            <div class="border-t border-slate-200 dark:border-slate-800"></div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8">
+              <div class="md:col-span-1">
+                <h2
+                  class="text-lg font-semibold text-slate-900 dark:text-white px-4"
+                >
+                  General
+                </h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 px-4">
+                  Privacy, integrations, and other preferences.
+                </p>
+              </div>
+              <div class="md:col-span-2 space-y-4">
+                <a
+                  class="flex items-center gap-4 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200"
+                  href="#"
+                >
+                  <div
+                    class="flex items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0 size-12"
+                  >
+                    <svg
+                      fill="currentColor"
+                      height="24px"
+                      viewBox="0 0 256 256"
+                      width="24px"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M208,40H48A16,16,0,0,0,32,56v58.77c0,89.61,75.82,119.34,91,124.39a15.53,15.53,0,0,0,10,0c15.2-5.05,91-34.78,91-124.39V56A16,16,0,0,0,208,40Zm0,74.79c0,78.42-66.35,104.62-80,109.18-13.53-4.51-80-30.69-80-109.18V56l160,0Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium text-slate-900 dark:text-white">
+                      Privacy
+                    </p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                      Manage your privacy settings
+                    </p>
+                  </div>
+                </a>
+                <a
+                  class="flex items-center gap-4 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200"
+                  href="#"
+                >
+                  <div
+                    class="flex items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0 size-12"
+                  >
+                    <svg
+                      fill="currentColor"
+                      height="24px"
+                      viewBox="0 0 256 256"
+                      width="24px"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M137.54,186.36a8,8,0,0,1,0,11.31l-9.94,10A56,56,0,0,1,48.38,128.4L72.5,104.28A56,56,0,0,1,149.31,102a8,8,0,1,1-10.64,12,40,40,0,0,0-54.85,1.63L59.7,139.72a40,40,0,0,0,56.58,56.58l9.94-9.94A8,8,0,0,1,137.54,186.36Zm70.08-138a56.08,56.08,0,0,0-79.22,0l-9.94,9.95a8,8,0,0,0,11.32,11.31l9.94-9.94a40,40,0,0,1,56.58,56.58L172.18,140.4A40,40,0,0,1,117.33,142,8,8,0,1,0,106.69,154a56,56,0,0,0,76.81-2.26l24.12-24.12A56.08,56.08,0,0,0,207.62,48.38Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium text-slate-900 dark:text-white">
+                      Integrations
+                    </p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                      Connect with other services
+                    </p>
+                  </div>
+                </a>
+                <a
+                  class="flex items-center gap-4 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200"
+                  href="#"
+                >
+                  <div
+                    class="flex items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0 size-12"
+                  >
+                    <svg
+                      fill="currentColor"
+                      height="24px"
+                      viewBox="0 0 256 256"
+                      width="24px"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24ZM101.63,168h52.74C149,186.34,140,202.87,128,215.89,116,202.87,107,186.34,101.63,168ZM98,152a145.72,145.72,0,0,1,0-48h60a145.72,145.72,0,0,1,0,48ZM40,128a87.61,87.61,0,0,1,3.33-24H81.79a161.79,161.79,0,0,0,0,48H43.33A87.61,87.61,0,0,1,40,128ZM154.37,88H101.63C107,69.66,116,53.13,128,40.11,140,53.13,149,69.66,154.37,88Zm19.84,16h38.46a88.15,88.15,0,0,1,0,48H174.21a161.79,161.79,0,0,0,0-48Zm32.16-16H170.94a142.39,142.39,0,0,0-20.26-45A88.37,88.37,0,0,1,206.37,88ZM105.32,43A142.39,142.39,0,0,0,85.06,88H49.63A88.37,88.37,0,0,1,105.32,43ZM49.63,168H85.06a142.39,142.39,0,0,0,20.26,45A88.37,88.37,0,0,1,49.63,168Zm101.05,45a142.39,142.39,0,0,0,20.26-45h35.43A88.37,88.37,0,0,1,150.68,213Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium text-slate-900 dark:text-white">
+                      Language
+                    </p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                      Select your preferred language
+                    </p>
+                  </div>
+                </a>
+                <a
+                  class="flex items-center gap-4 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200"
+                  href="#"
+                >
+                  <div
+                    class="flex items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0 size-12"
+                  >
+                    <svg
+                      fill="currentColor"
+                      height="24px"
+                      viewBox="0 0 256 256"
+                      width="24px"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-medium text-slate-900 dark:text-white">
+                      Help &amp; Support
+                    </p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                      Access help resources and support
+                    </p>
+                  </div>
+                </a>
+              </div>
+            </div>
+            <div class="border-t border-slate-200 dark:border-slate-800"></div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8">
+              <div class="md:col-span-1">
+                <h2
+                  class="text-lg font-semibold text-slate-900 dark:text-white px-4"
+                >
+                  Legal
+                </h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 px-4">
+                  Review our legal documents.
+                </p>
+              </div>
+              <div class="md:col-span-2 space-y-2">
+                <a
+                  class="flex items-center gap-4 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200"
+                  href="#"
+                >
+                  <p
+                    class="font-medium text-slate-600 dark:text-slate-300 flex-1 truncate"
+                  >
+                    Terms of Service
+                  </p>
+                </a>
+                <a
+                  class="flex items-center gap-4 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200"
+                  href="#"
+                >
+                  <p
+                    class="font-medium text-slate-600 dark:text-slate-300 flex-1 truncate"
+                  >
+                    Privacy Policy
+                  </p>
+                </a>
+                <a
+                  class="flex items-center gap-4 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200"
+                  href="#"
+                >
+                  <p
+                    class="font-medium text-slate-600 dark:text-slate-300 flex-1 truncate"
+                  >
+                    Cookie Policy
+                  </p>
+                </a>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

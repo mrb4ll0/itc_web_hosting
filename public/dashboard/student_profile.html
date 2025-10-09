@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Stitch Design</title>
+    <link href="data:image/x-icon;base64," rel="icon" type="image/x-icon" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#607afb",
+              "background-light": "#f5f6f8",
+              "background-dark": "#0f1323",
+            },
+            fontFamily: {
+              display: ["Inter"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="font-display bg-background-light dark:bg-background-dark">
+    <div class="relative flex min-h-screen w-full flex-col">
+      <header
+        class="sticky top-0 z-10 flex items-center justify-between whitespace-nowrap border-b border-background-light/80 bg-background-light/80 px-10 py-3 backdrop-blur-sm dark:border-background-dark/80 dark:bg-background-dark/80"
+      >
+        <div class="flex items-center gap-4 text-slate-800 dark:text-white">
+          <div class="w-15 h-8 text-primary animate-bounce">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke="currentColor"
+              class="size-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+              />
+            </svg>
+          </div>
+          <h2
+            class="text-lg font-bold tracking-tight text-slate-900 dark:text-white"
+          >
+            IT Connect
+          </h2>
+        </div>
+        <nav class="hidden items-center gap-8 md:flex">
+          <a
+            class="text-sm font-medium text-slate-700 hover:text-primary dark:text-slate-300 dark:hover:text-primary"
+            href="#"
+            >Home</a
+          >
+          <a
+            class="text-sm font-medium text-slate-700 hover:text-primary dark:text-slate-300 dark:hover:text-primary"
+            href="#"
+            >Training Programs</a
+          >
+          <a
+            class="text-sm font-medium text-slate-700 hover:text-primary dark:text-slate-300 dark:hover:text-primary"
+            href="#"
+            >Companies</a
+          >
+          <a
+            class="text-sm font-medium text-slate-700 hover:text-primary dark:text-slate-300 dark:hover:text-primary"
+            href="#"
+            >Support</a
+          >
+        </nav>
+        <div class="flex items-center gap-4">
+          <button
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-background-light text-slate-600 hover:bg-primary/10 hover:text-primary dark:bg-background-dark dark:text-slate-400 dark:hover:bg-primary/20"
+          >
+            <svg
+              fill="currentColor"
+              height="20"
+              viewBox="0 0 256 256"
+              width="20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"
+              ></path>
+            </svg>
+          </button>
+          <div
+            class="h-10 w-10 rounded-full bg-cover bg-center"
+            style="
+              background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB951A4Pt30bTcb5zzdnqE4BaYOacu9OGWaew84BrcXd__xW5ddvl8Epv0Wra5fIYwNOMjaZ-roxLQ0r7EB0GvBLA1qO67vGHI5RVQrGb9qABBLe1ZNnh9-6eZ6V61EfTv61mgxB9bvi3jhXSIgRKTgsT6b9XPe-HRH8rqDVx6ESKyQi7UI5W5VF0DB_du9nwBRtFMU0RX4VIY_MYBTxlOoBC9e-QwUp4XZqa0OSzNFqSurzM1dP-phsacMEs3kUaPO6E5SgPQhrw');
+            "
+          ></div>
+        </div>
+      </header>
+      <main class="flex flex-1 justify-center py-10 lg:py-16">
+        <div class="w-full max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div class="mb-8">
+            <h1
+              class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl"
+            >
+              Student Profile
+            </h1>
+            <p class="mt-2 text-base text-slate-600 dark:text-slate-400">
+              Manage your profile information and documents for industrial
+              training placements.
+            </p>
+          </div>
+          <div class="space-y-12">
+            <div
+              class="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark/50"
+            >
+              <h3
+                class="text-xl font-semibold leading-tight text-slate-900 dark:text-white"
+              >
+                Personal Information
+              </h3>
+              <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
+                <div>
+                  <label
+                    class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-300"
+                    for="full-name"
+                    >Full Name</label
+                  >
+                  <div class="mt-2">
+                    <input
+                      class="form-input block w-full rounded border-slate-300 bg-white py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:border-slate-700 dark:bg-background-dark dark:text-white dark:placeholder:text-slate-500 sm:text-sm sm:leading-6"
+                      id="full-name"
+                      name="full-name"
+                      placeholder="Jane Doe"
+                      type="text"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-300"
+                    for="email"
+                    >Email</label
+                  >
+                  <div class="mt-2">
+                    <input
+                      class="form-input block w-full rounded border-slate-300 bg-white py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:border-slate-700 dark:bg-background-dark dark:text-white dark:placeholder:text-slate-500 sm:text-sm sm:leading-6"
+                      id="email"
+                      name="email"
+                      placeholder="jane.doe@example.com"
+                      type="email"
+                    />
+                  </div>
+                </div>
+                <div class="sm:col-span-2">
+                  <label
+                    class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-300"
+                    for="phone-number"
+                    >Phone Number</label
+                  >
+                  <div class="mt-2">
+                    <input
+                      class="form-input block w-full rounded border-slate-300 bg-white py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:border-slate-700 dark:bg-background-dark dark:text-white dark:placeholder:text-slate-500 sm:text-sm sm:leading-6"
+                      id="phone-number"
+                      name="phone-number"
+                      placeholder="+1 (555) 123-4567"
+                      type="tel"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark/50"
+            >
+              <h3
+                class="text-xl font-semibold leading-tight text-slate-900 dark:text-white"
+              >
+                Academic Details
+              </h3>
+              <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
+                <div>
+                  <label
+                    class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-300"
+                    for="university"
+                    >University</label
+                  >
+                  <div class="mt-2">
+                    <input
+                      class="form-input block w-full rounded border-slate-300 bg-white py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:border-slate-700 dark:bg-background-dark dark:text-white dark:placeholder:text-slate-500 sm:text-sm sm:leading-6"
+                      id="university"
+                      name="university"
+                      placeholder="State University"
+                      type="text"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-300"
+                    for="major"
+                    >Major</label
+                  >
+                  <div class="mt-2">
+                    <input
+                      class="form-input block w-full rounded border-slate-300 bg-white py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:border-slate-700 dark:bg-background-dark dark:text-white dark:placeholder:text-slate-500 sm:text-sm sm:leading-6"
+                      id="major"
+                      name="major"
+                      placeholder="Computer Science"
+                      type="text"
+                    />
+                  </div>
+                </div>
+                <div class="sm:col-span-2">
+                  <label
+                    class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-300"
+                    for="year-of-study"
+                    >Year of Study</label
+                  >
+                  <div class="mt-2">
+                    <input
+                      class="form-input block w-full rounded border-slate-300 bg-white py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-primary dark:border-slate-700 dark:bg-background-dark dark:text-white dark:placeholder:text-slate-500 sm:text-sm sm:leading-6"
+                      id="year-of-study"
+                      name="year-of-study"
+                      placeholder="Third Year"
+                      type="text"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark/50"
+            >
+              <h3
+                class="text-xl font-semibold leading-tight text-slate-900 dark:text-white"
+              >
+                Documents
+              </h3>
+              <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
+                <div class="sm:col-span-2">
+                  <label
+                    class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-300"
+                    for="resume-cv"
+                    >Resume/CV</label
+                  >
+                  <div class="relative mt-2 rounded">
+                    <input
+                      class="peer sr-only"
+                      id="resume-cv"
+                      name="resume-cv"
+                      type="file"
+                    />
+                    <label
+                      class="block w-full cursor-pointer rounded border border-dashed border-slate-300 bg-white p-4 text-center text-sm text-slate-500 hover:border-primary hover:text-primary dark:border-slate-700 dark:bg-background-dark dark:text-slate-400 dark:hover:border-primary dark:hover:text-primary"
+                      for="resume-cv"
+                    >
+                      <svg
+                        class="mx-auto h-8 w-8"
+                        fill="currentColor"
+                        height="24"
+                        viewBox="0 0 256 256"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Z"
+                        ></path>
+                      </svg>
+                      <span class="mt-2 block"
+                        >Click to upload or drag and drop</span
+                      >
+                      <span class="text-xs">PDF, DOC, DOCX (MAX. 5MB)</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="sm:col-span-2">
+                  <label
+                    class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-300"
+                    for="cover-letter"
+                    >Cover Letter (Optional)</label
+                  >
+                  <div class="relative mt-2 rounded">
+                    <input
+                      class="peer sr-only"
+                      id="cover-letter"
+                      name="cover-letter"
+                      type="file"
+                    />
+                    <label
+                      class="block w-full cursor-pointer rounded border border-dashed border-slate-300 bg-white p-4 text-center text-sm text-slate-500 hover:border-primary hover:text-primary dark:border-slate-700 dark:bg-background-dark dark:text-slate-400 dark:hover:border-primary dark:hover:text-primary"
+                      for="cover-letter"
+                    >
+                      <svg
+                        class="mx-auto h-8 w-8"
+                        fill="currentColor"
+                        height="24"
+                        viewBox="0 0 256 256"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Z"
+                        ></path>
+                      </svg>
+                      <span class="mt-2 block"
+                        >Click to upload or drag and drop</span
+                      >
+                      <span class="text-xs">PDF, DOC, DOCX (MAX. 5MB)</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="sm:col-span-2">
+                  <label
+                    class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-300"
+                    for="portfolio"
+                    >Portfolio (Optional)</label
+                  >
+                  <div class="relative mt-2 rounded">
+                    <input
+                      class="peer sr-only"
+                      id="portfolio"
+                      name="portfolio"
+                      type="file"
+                    />
+                    <label
+                      class="block w-full cursor-pointer rounded border border-dashed border-slate-300 bg-white p-4 text-center text-sm text-slate-500 hover:border-primary hover:text-primary dark:border-slate-700 dark:bg-background-dark dark:text-slate-400 dark:hover:border-primary dark:hover:text-primary"
+                      for="portfolio"
+                    >
+                      <svg
+                        class="mx-auto h-8 w-8"
+                        fill="currentColor"
+                        height="24"
+                        viewBox="0 0 256 256"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Z"
+                        ></path>
+                      </svg>
+                      <span class="mt-2 block"
+                        >Click to upload or drag and drop</span
+                      >
+                      <span class="text-xs">URL or PDF file</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="flex justify-end gap-3">
+              <button
+                class="rounded-lg bg-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+              >
+                Cancel
+              </button>
+              <button
+                class="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary/90"
+              >
+                Update Profile
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

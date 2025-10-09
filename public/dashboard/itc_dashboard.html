@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>IT Connect Student Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#607afb",
+              "background-light": "#f5f6f8",
+              "background-dark": "#0f1323",
+              "foreground-light": "#111827",
+              "foreground-dark": "#e5e7eb",
+              "subtle-light": "#6b7280",
+              "subtle-dark": "#9ca3af",
+              "border-light": "#e5e7eb",
+              "border-dark": "#374151",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "0.75rem",
+              xl: "1rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-foreground-light dark:text-foreground-dark"
+  >
+    <div class="flex h-screen">
+      <aside
+        class="w-64 flex-shrink-0 bg-white dark:bg-background-dark border-r border-border-light dark:border-border-dark flex flex-col p-6"
+      >
+        <div class="flex items-center gap-3 mb-10">
+          <div
+            class="w-10 h-10 rounded-full bg-cover bg-center"
+            style="
+              background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAN_f5tQZurJarimNLP_QScyTYOLNXrKb_kjti0pEHyMTWxFKGnxfKeU1Ihyro8XsqN9zb5CsmLf5zkiYj7sHakfwekGx3OErcdKWI-SPeqB6cgS5IGGdzk_ul7T854HGvXER7zEyq-r6qF3b6LFYjeMRh4Zxr5RESxd2_PA0QPD78R0iLd9-U1ST68J704FFY3oBQwhup7I8H2eNvoOMYKqSlUdKac022H4CTYv898gxsbVOUBb2pYLb5dUyOARxZ9mW1oHBtL6A');
+            "
+          ></div>
+          <span class="font-bold text-lg">Sophia Clark</span>
+        </div>
+        <nav class="flex flex-col gap-2">
+          <a
+            class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary dark:bg-primary/20"
+            href="itc_dashboard.html"
+          >
+            <!-- Dashboard SVG and text -->
+            <svg class="w-6 h-6" fill="currentColor" height="24" viewBox="0 0 24 24" width="24">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3L2 12h3v8h5z"></path>
+            </svg>
+            <span class="font-semibold">Dashboard</span>
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-subtle-light dark:text-subtle-dark hover:text-primary dark:hover:text-primary"
+            href="applications.html"
+          >
+            <svg class="w-6 h-6" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24">
+              <path d="M20 12V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v5"></path>
+              <path d="M22 13a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7"></path>
+              <path d="M12 12h.01"></path>
+            </svg>
+            <span class="font-semibold">Applications</span>
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-subtle-light dark:text-subtle-dark hover:text-primary dark:hover:text-primary"
+            href="opportunities.html"
+          >
+            <svg class="w-6 h-6" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+            </svg>
+            <span class="font-semibold">Opportunities</span>
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-subtle-light dark:text-subtle-dark hover:text-primary dark:hover:text-primary"
+            href="student_profile.html"
+          >
+            <svg class="w-6 h-6" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span class="font-semibold">Profile</span>
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-subtle-light dark:text-subtle-dark hover:text-primary dark:hover:text-primary"
+            href="notifications.html"
+          >
+            <svg class="w-6 h-6" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24">
+              <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="font-semibold">Notifications</span>
+          </a>
+        </nav>
+        <div class="mt-auto">
+          <a
+            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-subtle-light dark:text-subtle-dark hover:text-primary dark:hover:text-primary"
+            href="settings.html"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+              ></path>
+            </svg>
+            <span class="font-semibold">Settings</span>
+          </a>
+        </div>
+      </aside>
+      <main class="flex-1 overflow-y-auto p-8 lg:p-12">
+        <div class="max-w-7xl mx-auto">
+          <header class="mb-12">
+            <h1 class="text-4xl font-bold tracking-tight">Dashboard</h1>
+            <p class="mt-2 text-lg text-subtle-light dark:text-subtle-dark">
+              Welcome back, Sophia! Here's a summary of your industrial training
+              journey.
+            </p>
+          </header>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 space-y-8">
+              <section
+                class="bg-white dark:bg-background-dark p-6 rounded-lg border border-border-light dark:border-border-dark"
+              >
+                <h2 class="text-xl font-bold mb-4">Application Status</h2>
+                <div class="space-y-3">
+                  <div
+                    class="flex justify-between items-center text-sm font-medium"
+                  >
+                    <p>Application Progress</p>
+                    <p class="text-subtle-light dark:text-subtle-dark">
+                      3 out of 4 steps completed
+                    </p>
+                  </div>
+                  <div
+                    class="w-full bg-background-light dark:bg-border-dark rounded-full h-2.5"
+                  >
+                    <div
+                      class="bg-primary h-2.5 rounded-full"
+                      style="width: 75%"
+                    ></div>
+                  </div>
+                </div>
+              </section>
+              <section>
+                <h2 class="text-xl font-bold mb-4">Applied Companies</h2>
+                <div
+                  class="bg-white dark:bg-background-dark rounded-lg border border-border-light dark:border-border-dark overflow-hidden"
+                >
+                  <table class="w-full">
+                    <thead class="bg-background-light dark:bg-border-dark/20">
+                      <tr>
+                        <th
+                          class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider"
+                          scope="col"
+                        >
+                          Company
+                        </th>
+                        <th
+                          class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider"
+                          scope="col"
+                        >
+                          Role
+                        </th>
+                        <th
+                          class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider"
+                          scope="col"
+                        >
+                          Status
+                        </th>
+                        <th
+                          class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider"
+                          scope="col"
+                        >
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody
+                      class="divide-y divide-border-light dark:divide-border-dark"
+                    >
+                      <tr>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">
+                          Tech Innovators Inc.
+                        </td>
+                        <td
+                          class="px-6 py-4 whitespace-nowrap text-subtle-light dark:text-subtle-dark"
+                        >
+                          Software Engineering Intern
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <span
+                            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary dark:bg-primary/20"
+                            >Applied</span
+                          >
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <a
+                            class="font-medium text-primary hover:underline"
+                            href="#"
+                            >View</a
+                          >
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">
+                          Global Finance Solutions
+                        </td>
+                        <td
+                          class="px-6 py-4 whitespace-nowrap text-subtle-light dark:text-subtle-dark"
+                        >
+                          Financial Analyst Intern
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <span
+                            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300"
+                            >Interview Scheduled</span
+                          >
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <a
+                            class="font-medium text-primary hover:underline"
+                            href="#"
+                            >View</a
+                          >
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">
+                          Strategic Consulting Group
+                        </td>
+                        <td
+                          class="px-6 py-4 whitespace-nowrap text-subtle-light dark:text-subtle-dark"
+                        >
+                          Management Consulting Intern
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <span
+                            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300"
+                            >Rejected</span
+                          >
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                          <a
+                            class="font-medium text-primary hover:underline"
+                            href="#"
+                            >View</a
+                          >
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+            <div class="space-y-8">
+              <section>
+                <h2 class="text-xl font-bold mb-4">Quick Actions</h2>
+                <div class="space-y-3">
+                  <button
+                    class="w-full flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary hover:opacity-90"
+                  >
+                    Browse Opportunities
+                  </button>
+                  <button
+                    class="w-full flex items-center justify-center px-4 py-3 border border-border-light dark:border-border-dark text-base font-medium rounded-lg bg-background-light dark:bg-border-dark/30 hover:bg-border-light dark:hover:bg-border-dark/50"
+                  >
+                    Update Profile
+                  </button>
+                </div>
+              </section>
+              <section>
+                <h2 class="text-xl font-bold mb-4">Recommended Companies</h2>
+                <div class="space-y-4">
+                  <div
+                    class="flex items-center gap-4 p-4 rounded-lg bg-white dark:bg-background-dark border border-border-light dark:border-border-dark"
+                  >
+                    <div
+                      class="w-16 h-16 rounded-lg bg-cover bg-center flex-shrink-0"
+                      style="
+                        background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBL9SoVQ55kOlgVeV-mH6oiob9p5OPueFY5SQVGjTDCkzoVmPaDEwIexZkjSvFDUIhskt14bRMS3Yb_Kkq-rz65lua10kUsVrD8-NJa6nfnzIX6Oa1YUOOjslSb-MasSF-t0ym9sRZfuIHDBIAuXAM7RQeN5dFL2GFXLrznszioVHNSrX91f5YLs8pGyDiqBZ550WBE9XVeCITXlGCZb-si_4FM6JnsrEeR5sxkPc8z75AX2hGX21bza6uIaeDn3t5SQQg2NRC3KQ');
+                      "
+                    ></div>
+                    <div>
+                      <p class="font-semibold">Tech Innovators Inc.</p>
+                      <p
+                        class="text-sm text-subtle-light dark:text-subtle-dark"
+                      >
+                        Software Engineering
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center gap-4 p-4 rounded-lg bg-white dark:bg-background-dark border border-border-light dark:border-border-dark"
+                  >
+                    <div
+                      class="w-16 h-16 rounded-lg bg-cover bg-center flex-shrink-0"
+                      style="
+                        background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB_eiyhuwaov9LeVoIOINN_xq2upc4afMliW_WVeRAMQLzQhwDhJpZQh6O-V0bi3GVd2uv1F2S5pSGtyz5ZydIw1E1yDDflI9OZB6-6-Q2aQpMojlIcQn0fspAZa7uTdM7W_jYTYeXgLYEixOOyMsEMy3WzQDwAh3EzZ9bOUN9J4dWpjvh0lXxkGajsqXC4QAOTeAyJ8kG-KxzhROChqpJp2OGsuVTMttK1R92K-QZbuKo6cbeLsjrtC4EawVLTONKfl44DpxwlDg');
+                      "
+                    ></div>
+                    <div>
+                      <p class="font-semibold">Global Finance Solutions</p>
+                      <p
+                        class="text-sm text-subtle-light dark:text-subtle-dark"
+                      >
+                        Financial Analyst
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center gap-4 p-4 rounded-lg bg-white dark:bg-background-dark border border-border-light dark:border-border-dark"
+                  >
+                    <div
+                      class="w-16 h-16 rounded-lg bg-cover bg-center flex-shrink-0"
+                      style="
+                        background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAEwaqiFCbs3vbuw8sdwp4FTHfvMhmOmX294rK5a3AVpJR0RhXgH0aDAd22bwKhVYWCBVmU0rtjxzyZrQrIHiKb7TUBYTrkNNEG_x7iDVNtTwFnfF9nPE3gSvAlE1hDeEYNswT-QNjcJsA0q2qee09roOsIGDI3XoSMkUAzBm2heP8r7Qnodb732kZOlQ75U-XDYVbduepjDAyIX46R6lnaF4Rod7arKTBsxEpw88muGGsyi6yXmbCSpeB0zckBE4MoY7zrUlMJAw');
+                      "
+                    ></div>
+                    <div>
+                      <p class="font-semibold">Strategic Consulting Group</p>
+                      <p
+                        class="text-sm text-subtle-light dark:text-subtle-dark"
+                      >
+                        Management Consulting
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
