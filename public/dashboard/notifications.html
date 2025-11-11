@@ -42,6 +42,95 @@
       .material-symbols-outlined {
         font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
       }
+
+      /* Loading animation */
+      .loading-dots {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+      }
+      .loading-dots div {
+        position: absolute;
+        top: 33px;
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        background: #607afb;
+        animation-timing-function: cubic-bezier(0, 1, 1, 0);
+      }
+      .loading-dots div:nth-child(1) {
+        left: 8px;
+        animation: loading-dots1 0.6s infinite;
+      }
+      .loading-dots div:nth-child(2) {
+        left: 8px;
+        animation: loading-dots2 0.6s infinite;
+      }
+      .loading-dots div:nth-child(3) {
+        left: 32px;
+        animation: loading-dots2 0.6s infinite;
+      }
+      .loading-dots div:nth-child(4) {
+        left: 56px;
+        animation: loading-dots3 0.6s infinite;
+      }
+      @keyframes loading-dots1 {
+        0% {
+          transform: scale(0);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      @keyframes loading-dots3 {
+        0% {
+          transform: scale(1);
+        }
+        100% {
+          transform: scale(0);
+        }
+      }
+      @keyframes loading-dots2 {
+        0% {
+          transform: translate(0, 0);
+        }
+        100% {
+          transform: translate(24px, 0);
+        }
+      }
+
+      /* Loading skeleton for profile image */
+      .loading-skeleton {
+        background: linear-gradient(
+          90deg,
+          #f0f0f0 25%,
+          #e0e0e0 50%,
+          #f0f0f0 75%
+        );
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+      }
+
+      @keyframes loading {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+
+      /* Dark mode loading skeleton */
+      .dark .loading-skeleton {
+        background: linear-gradient(
+          90deg,
+          #374151 25%,
+          #4b5563 50%,
+          #374151 75%
+        );
+        background-size: 200% 100%;
+      }
     </style>
   </head>
   <body
@@ -72,10 +161,8 @@
         </div>
         <div class="flex-grow"></div>
         <div
-          class="h-10 w-10 rounded-full bg-cover bg-center"
-          style="
-            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBXVvOaBZYEExCLVdkN_O9h1fkNg4PZzeesV9tbmDemaiBVjis7Qj5-fH8jym8a8xcYOw4GFj_NyuHn-krJEMGapld-sKcMio2acC2PZ-26K1g7TRogZygtvpoXmjqBwvfeAuEUX4ke7rYdxfo6bVt8mHuFNzbbmL0TFf-ephGI1AssICuLmXlqSsPbV9n5GqsIwLE_2U-lpTz-Jz9VGAfMnCkglfGfZrUvetiizqvkuD4cpke_pH06XRb27U14LzVIfwJEAnT69A');
-          "
+          id="header-profile"
+          class="h-10 w-10 rounded-full bg-cover bg-center loading-skeleton"
         ></div>
       </header>
       <main class="flex-1 px-4 py-8 sm:px-6 lg:px-8">
@@ -94,150 +181,136 @@
               <a
                 class="border-primary text-primary whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm"
                 href="#"
+                data-tab="all"
               >
                 All
               </a>
               <a
                 class="border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm"
                 href="#"
+                data-tab="unread"
               >
                 Unread
               </a>
               <a
                 class="border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm"
                 href="#"
+                data-tab="archived"
               >
                 Archived
               </a>
             </nav>
           </div>
-          <div class="space-y-4">
-            <div
-              class="relative flex cursor-pointer items-start gap-4 rounded-lg bg-white p-4 shadow-sm transition-all hover:shadow-md dark:bg-background-dark/50 dark:hover:bg-background-dark"
-            >
-              <div
-                class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
-              >
-                <span class="material-symbols-outlined">description</span>
-              </div>
-              <div class="flex-1">
-                <p class="font-medium text-gray-900 dark:text-white">
-                  Application Update
-                </p>
-                <p class="text-sm text-gray-600 dark:text-gray-300">
-                  Your application for the Software Engineering Internship at
-                  Tech Innovators Inc. has been reviewed and is now in the
-                  interview stage.
-                </p>
-              </div>
-              <div class="text-xs text-gray-400 dark:text-gray-500">2d ago</div>
-              <div
-                class="absolute top-3 right-3 h-2 w-2 rounded-full bg-primary"
-              ></div>
+
+          <!-- Loading State -->
+          <div id="loading-state" class="text-center py-12">
+            <div class="loading-dots mx-auto mb-4">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
             </div>
-            <div
-              class="relative flex cursor-pointer items-start gap-4 rounded-lg bg-white p-4 shadow-sm transition-all hover:shadow-md dark:bg-background-dark/50 dark:hover:bg-background-dark"
-            >
-              <div
-                class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
+            <p class="text-gray-500 dark:text-gray-400">
+              Loading notifications...
+            </p>
+          </div>
+
+          <!-- Empty State -->
+          <div id="empty-state" class="hidden text-center py-12">
+            <div class="max-w-md mx-auto">
+              <span
+                class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4"
               >
-                <span class="material-symbols-outlined">work</span>
-              </div>
-              <div class="flex-1">
-                <p class="font-medium text-gray-900 dark:text-white">
-                  New Opportunity
-                </p>
-                <p class="text-sm text-gray-600 dark:text-gray-300">
-                  A new internship opportunity at Data Solutions Co. is
-                  available. Apply now to work on cutting-edge data analysis
-                  projects.
-                </p>
-              </div>
-              <div class="text-xs text-gray-400 dark:text-gray-500">3d ago</div>
-              <div
-                class="absolute top-3 right-3 h-2 w-2 rounded-full bg-primary"
-              ></div>
-            </div>
-            <div
-              class="flex cursor-pointer items-start gap-4 rounded-lg bg-white/50 p-4 transition-all hover:bg-white dark:bg-background-dark/20 dark:hover:bg-background-dark/50"
-            >
-              <div
-                class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
+                notifications_off
+              </span>
+              <h3
+                class="text-lg font-medium text-gray-900 dark:text-white mb-2"
               >
-                <span class="material-symbols-outlined">mail</span>
-              </div>
-              <div class="flex-1">
-                <p class="font-medium text-gray-800 dark:text-gray-200">
-                  Message from Company
-                </p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">
-                  Tech Innovators Inc. has sent you a message regarding your
-                  interview schedule. Please check your messages for details.
-                </p>
-              </div>
-              <div class="text-xs text-gray-400 dark:text-gray-500">4d ago</div>
+                No notifications
+              </h3>
+              <p class="text-gray-500 dark:text-gray-400">
+                You're all caught up! Check back later for new updates.
+              </p>
             </div>
-            <div
-              class="flex cursor-pointer items-start gap-4 rounded-lg bg-white/50 p-4 transition-all hover:bg-white dark:bg-background-dark/20 dark:hover:bg-background-dark/50"
-            >
-              <div
-                class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
-              >
-                <span class="material-symbols-outlined">campaign</span>
-              </div>
-              <div class="flex-1">
-                <p class="font-medium text-gray-800 dark:text-gray-200">
-                  System Announcement
-                </p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">
-                  The IT Connect platform will be undergoing maintenance on July
-                  15th from 10 PM to 2 AM. Services may be temporarily
-                  unavailable.
-                </p>
-              </div>
-              <div class="text-xs text-gray-400 dark:text-gray-500">5d ago</div>
-            </div>
-            <div
-              class="flex cursor-pointer items-start gap-4 rounded-lg bg-white/50 p-4 transition-all hover:bg-white dark:bg-background-dark/20 dark:hover:bg-background-dark/50"
-            >
-              <div
-                class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
-              >
-                <span class="material-symbols-outlined">description</span>
-              </div>
-              <div class="flex-1">
-                <p class="font-medium text-gray-800 dark:text-gray-200">
-                  Application Update
-                </p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">
-                  Your application for the Web Developer position at Creative
-                  Minds has been archived.
-                </p>
-              </div>
-              <div class="text-xs text-gray-400 dark:text-gray-500">1w ago</div>
-            </div>
-            <div
-              class="flex cursor-pointer items-start gap-4 rounded-lg bg-white/50 p-4 transition-all hover:bg-white dark:bg-background-dark/20 dark:hover:bg-background-dark/50"
-            >
-              <div
-                class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
-              >
-                <span class="material-symbols-outlined">work</span>
-              </div>
-              <div class="flex-1">
-                <p class="font-medium text-gray-800 dark:text-gray-200">
-                  New Opportunity
-                </p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">
-                  A new internship opportunity at Innovatech is available. Apply
-                  now to work on exciting new projects.
-                </p>
-              </div>
-              <div class="text-xs text-gray-400 dark:text-gray-500">2w ago</div>
-            </div>
+          </div>
+
+          <!-- Notifications Container -->
+          <div id="notifications-container" class="space-y-4 hidden">
+            <!-- Notifications will be dynamically inserted here -->
           </div>
         </div>
       </main>
     </div>
+
+    <!-- Notification Detail Dialog -->
+    <div
+      id="notification-dialog"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden"
+    >
+      <div
+        class="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full max-h-[90vh] overflow-hidden"
+      >
+        <div
+          class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700"
+        >
+          <h3
+            id="dialog-title"
+            class="text-lg font-semibold text-gray-900 dark:text-white"
+          >
+            Notification Details
+          </h3>
+          <button
+            id="close-dialog"
+            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div class="p-6 overflow-y-auto">
+          <div class="flex items-center gap-3 mb-4">
+            <div
+              id="dialog-icon"
+              class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
+            >
+              <span class="material-symbols-outlined text-lg"
+                >notifications</span
+              >
+            </div>
+            <div>
+              <h4
+                id="dialog-notification-title"
+                class="font-medium text-gray-900 dark:text-white"
+              ></h4>
+              <p
+                id="dialog-timestamp"
+                class="text-sm text-gray-500 dark:text-gray-400"
+              ></p>
+            </div>
+          </div>
+          <div
+            id="dialog-body"
+            class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap"
+          ></div>
+        </div>
+        <div
+          class="flex justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700"
+        >
+          <button
+            id="mark-read-btn"
+            class="px-4 py-2 text-sm font-medium text-primary hover:text-primary/80"
+          >
+            Mark as Read
+          </button>
+          <button
+            id="close-dialog-btn"
+            class="px-4 py-2 text-sm font-medium bg-primary text-white rounded hover:bg-primary/90"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Firebase and Notification Script -->
+    <script type="module" src="../js/notifications.js"></script>
   </body>
 </html>

@@ -46,6 +46,7 @@
         },
       };
     </script>
+    <script type="module" src="../js/general/opportunities.js"></script>
     <style>
       .material-symbols-outlined {
         font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
@@ -80,33 +81,15 @@
               </div>
               <h1 class="text-xl font-bold">IT Connect</h1>
             </div>
-            <nav class="hidden md:flex items-center gap-8">
-              <a
-                class="text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary dark:hover:text-primary transition-colors"
-                href="#"
-                >Home</a
-              >
-              <a class="text-sm font-bold text-primary" href="#"
-                >Opportunities</a
-              >
-              <a
-                class="text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary dark:hover:text-primary transition-colors"
-                href="#"
-                >My Applications</a
-              >
-              <a
-                class="text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:text-primary dark:hover:text-primary transition-colors"
-                href="#"
-                >Profile</a
-              >
-            </nav>
             <div class="flex items-center gap-4">
               <button
                 class="p-2 rounded-full hover:bg-primary/10 dark:hover:bg-primary/20 text-text-secondary-light dark:text-text-secondary-dark hover:text-primary dark:hover:text-primary transition-colors"
+                onclick="window.location.href='notifications.html'"
               >
                 <span class="material-symbols-outlined">notifications</span>
               </button>
               <div
+                id="top-right-image"
                 class="w-10 h-10 rounded-full bg-cover bg-center"
                 style="
                   background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDzZWMykXguiRoDOf0HPD95bsOEquIzdL8gBUrH3HfcvqA5PnnhD4M4dkBtyHH_GPHlsY8ZOnI20iWzjYpdanFrn31faUMXUxgk4d0FsKsoKh4wFFB-0Dz6p3D-Kfhom8HWwob5xBNS_ygsj5JZkpwKx2Wb1ZKbCuMABBSn-PzblkKVbehWscAVhtQmVAgWe9Dn5MDRMxRIB3xPId-o1bmkNZLxcJLRK07ApNgjOCPPf8IvbSwd8GXgZ2X2u0utDUG0PjOsxdnd_Q');
@@ -130,253 +113,86 @@
             </p>
           </div>
           <div
+            id="search-opportunities"
             class="bg-content-light dark:bg-content-dark p-6 rounded-lg shadow-sm mb-8"
           >
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div class="relative md:col-span-2">
+              <div class="relative md:col-span-1">
+                <!-- Search takes 2/3 -->
                 <span
                   class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary-light dark:text-text-secondary-dark"
                   >search</span
                 >
                 <input
                   class="w-full pl-12 pr-4 py-3 bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-md focus:ring-primary focus:border-primary transition"
-                  placeholder="Search by role, company, or keyword"
+                  placeholder="Search by company, IT opportunities"
+                  id="search-input"
                   type="text"
                 />
               </div>
-              <div
-                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3 gap-4 md:col-span-1"
-              >
+              <div class="grid grid-cols-3 md:grid-cols-4 gap-4 md:col-span-2">
                 <select
+                  id="industry-filter"
                   class="w-full py-3 px-4 bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-md focus:ring-primary focus:border-primary transition"
                 >
-                  <option>Industry</option>
+                  <option value="">All Industries</option>
+                  <option value="Technology">Technology</option>
+                  <option value="Finance">Finance</option>
+                  <option value="Healthcare">Healthcare</option>
+                  <option value="Education">Education</option>
+                  <option value="Manufacturing">Manufacturing</option>
+                  <option value="Retail">Retail</option>
+                  <option value="Other">Other</option>
                 </select>
                 <select
+                  id="location-filter"
                   class="w-full py-3 px-4 bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-md focus:ring-primary focus:border-primary transition"
                 >
-                  <option>Location</option>
+                  <option value="">All Locations</option>
+                  <option value="Lagos">Lagos</option>
+                  <option value="Abuja">Abuja</option>
+                  <option value="Port Harcourt">Port Harcourt</option>
+                  <option value="Kano">Kano</option>
+                  <option value="Ibadan">Ibadan</option>
                 </select>
                 <select
+                  id="duration-filter"
                   class="w-full py-3 px-4 bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-md focus:ring-primary focus:border-primary transition"
                 >
-                  <option>Duration</option>
+                  <option value="">All Durations</option>
+                  <option value="3 months">3 months</option>
+                  <option value="4 months">4 months</option>
+                  <option value="5 months">5 months</option>
+                  <option value="6 months">6 months</option>
+                  <option value="7 months">7 months</option>
+                  <option value="8 months">8 months</option>
+                  <option value="9 months">9 months</option>
+                  <option value="10 months">10 months</option>
+                  <option value="11 months">11 months</option>
+                  <option value="1 year">1 year</option>
                 </select>
               </div>
             </div>
           </div>
           <div class="space-y-6">
-            <h3 class="text-2xl font-bold">Available Opportunities (2,345)</h3>
+            <h3 id="it-count" class="text-2xl font-bold">
+              Available Opportunities (0)
+            </h3>
             <a
               class="block bg-content-light dark:bg-content-dark p-6 rounded-lg shadow-sm hover:shadow-lg hover:border-primary/50 border border-transparent dark:border-transparent dark:hover:border-primary/50 transition-all duration-300 group"
               href="#"
             >
-              <div class="flex flex-col sm:flex-row items-start gap-6">
-                <div
-                  class="w-full sm:w-1/3 h-48 sm:h-auto sm:aspect-square rounded-lg bg-cover bg-center flex-shrink-0"
-                  style="
-                    background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCu5aAGYiwroCjBva0o5zNzEzILCSg4PksM1mveLg4fxa5ou0ytdNiFNW9bk1TMoYqb-x-mbZDA7k1ZjS82lFgxkOc3VKZbd61MIud2fKoW7lssOvFDYMlHtjsZJIUfxNwiw4KXFIyz2Md6Qr5LO-UDbfnF6Cm7jBUZArPq6lOKFoSQuV6x_WIDOYrtvesBG6IM_EgeyF0-QmfCiPMIlZUtsXP7FrWC5Prf3IPbRssZx2z44ST60eGG9oo9w86KKc_t7cgk1vq1Gg');
-                  "
-                ></div>
-                <div class="flex-grow">
-                  <div class="flex items-center justify-between">
-                    <p class="text-sm font-medium text-primary">
-                      InnoTech Solutions
-                    </p>
-                    <div
-                      class="flex items-center gap-1 text-sm text-text-secondary-light dark:text-text-secondary-dark"
-                    >
-                      <span class="material-symbols-outlined text-base"
-                        >location_on</span
-                      >
-                      <span>Remote</span>
-                    </div>
-                  </div>
-                  <h4
-                    class="text-xl font-bold mt-1 group-hover:text-primary transition-colors"
-                  >
-                    Software Engineering Intern
-                  </h4>
-                  <p
-                    class="mt-2 text-text-secondary-light dark:text-text-secondary-dark text-sm leading-relaxed"
-                  >
-                    Develop and maintain cutting-edge software applications.
-                    Work with a dynamic team of engineers on various high-impact
-                    projects.
-                  </p>
-                  <div class="mt-4 flex flex-wrap gap-2">
-                    <span
-                      class="px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary"
-                      >Full-time</span
-                    >
-                    <span
-                      class="px-3 py-1 text-xs font-medium rounded-full bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark"
-                      >React</span
-                    >
-                    <span
-                      class="px-3 py-1 text-xs font-medium rounded-full bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark"
-                      >Node.js</span
-                    >
-                    <span
-                      class="px-3 py-1 text-xs font-medium rounded-full bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark"
-                      >Cloud</span
-                    >
-                  </div>
+              <div id="opportunities-container">
+                <div class="flex justify-center items-center space-x-3">
+                  <div
+                    class="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500 border-solid"
+                  ></div>
+                  <span class="text-gray-500 dark:text-gray-300 text-sm">
+                    Loading Industrial Training Opportunities...
+                  </span>
                 </div>
               </div>
             </a>
-            <a
-              class="block bg-content-light dark:bg-content-dark p-6 rounded-lg shadow-sm hover:shadow-lg hover:border-primary/50 border border-transparent dark:border-transparent dark:hover:border-primary/50 transition-all duration-300 group"
-              href="#"
-            >
-              <div class="flex flex-col sm:flex-row items-start gap-6">
-                <div
-                  class="w-full sm:w-1/3 h-48 sm:h-auto sm:aspect-square rounded-lg bg-cover bg-center flex-shrink-0"
-                  style="
-                    background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB-vp_0-CKO_Rz2vjfzYyUIDCWYAtDz_Hon2BEo-vtVd3MvVkFrs1lqG88Qvt7RpZzoUmk3g_PpVzubLeyVdz8cR_HN7Rm2XEcXlFrmIDJkJNgVDkJEfT6g5qQ5UFx_wpY4HfwbIIFGcjSSAf57evjtzV0fkl9sFAUlQQfyPDlaADchEOtO7LlVX0WvLJyrw0V20AuS4gcdK-8BomYdk5y_FSdtO8t8KUL1hAKms0wrw7jKEbH95BkBbFmA8LY4QsjA8F8i-04qNw');
-                  "
-                ></div>
-                <div class="flex-grow">
-                  <div class="flex items-center justify-between">
-                    <p class="text-sm font-medium text-primary">
-                      QuantumCapital
-                    </p>
-                    <div
-                      class="flex items-center gap-1 text-sm text-text-secondary-light dark:text-text-secondary-dark"
-                    >
-                      <span class="material-symbols-outlined text-base"
-                        >location_on</span
-                      >
-                      <span>New York, NY</span>
-                    </div>
-                  </div>
-                  <h4
-                    class="text-xl font-bold mt-1 group-hover:text-primary transition-colors"
-                  >
-                    Financial Analyst Intern
-                  </h4>
-                  <p
-                    class="mt-2 text-text-secondary-light dark:text-text-secondary-dark text-sm leading-relaxed"
-                  >
-                    Analyze financial data, create insightful reports, and
-                    support critical financial planning activities in a
-                    fast-paced environment.
-                  </p>
-                  <div class="mt-4 flex flex-wrap gap-2">
-                    <span
-                      class="px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary"
-                      >6 Months</span
-                    >
-                    <span
-                      class="px-3 py-1 text-xs font-medium rounded-full bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark"
-                      >Excel</span
-                    >
-                    <span
-                      class="px-3 py-1 text-xs font-medium rounded-full bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark"
-                      >Valuation</span
-                    >
-                    <span
-                      class="px-3 py-1 text-xs font-medium rounded-full bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark"
-                      >Bloomberg</span
-                    >
-                  </div>
-                </div>
-              </div>
-            </a>
-            <a
-              class="block bg-content-light dark:bg-content-dark p-6 rounded-lg shadow-sm hover:shadow-lg hover:border-primary/50 border border-transparent dark:border-transparent dark:hover:border-primary/50 transition-all duration-300 group"
-              href="#"
-            >
-              <div class="flex flex-col sm:flex-row items-start gap-6">
-                <div
-                  class="w-full sm:w-1/3 h-48 sm:h-auto sm:aspect-square rounded-lg bg-cover bg-center flex-shrink-0"
-                  style="
-                    background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAkZ3Pyyc8DjzGu5Pd_UNjGj-zWcNzsSp2TEdWOpDVKETlHrS95s2QD5UYMGqBc8oBSzzmwz7DKGdUwViAcgUth4BRNR_vY1R-uM2E9HtgAPPmEB8ZHc69UsqJ0Rx6vyNpLzc_MqSkNyzioEIdE1gJasFrYvCwZg3U0fOFzTeYgIC91Fp1jLd9qXRNg5YMk-4bro-TSa48yvw0iaTwJ3nFofCKgypGlI-HUao_yNQGEYHqjOzLUI0EdMHd5bG1utBUMDRGxrHK1sA');
-                  "
-                ></div>
-                <div class="flex-grow">
-                  <div class="flex items-center justify-between">
-                    <p class="text-sm font-medium text-primary">
-                      Vibrant Media
-                    </p>
-                    <div
-                      class="flex items-center gap-1 text-sm text-text-secondary-light dark:text-text-secondary-dark"
-                    >
-                      <span class="material-symbols-outlined text-base"
-                        >location_on</span
-                      >
-                      <span>London, UK</span>
-                    </div>
-                  </div>
-                  <h4
-                    class="text-xl font-bold mt-1 group-hover:text-primary transition-colors"
-                  >
-                    Marketing Intern
-                  </h4>
-                  <p
-                    class="mt-2 text-text-secondary-light dark:text-text-secondary-dark text-sm leading-relaxed"
-                  >
-                    Assist in exciting marketing campaigns, conduct market
-                    research, and help manage our growing social media presence.
-                  </p>
-                  <div class="mt-4 flex flex-wrap gap-2">
-                    <span
-                      class="px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary"
-                      >Part-time</span
-                    >
-                    <span
-                      class="px-3 py-1 text-xs font-medium rounded-full bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark"
-                      >SEO</span
-                    >
-                    <span
-                      class="px-3 py-1 text-xs font-medium rounded-full bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark"
-                      >Social Media</span
-                    >
-                    <span
-                      class="px-3 py-1 text-xs font-medium rounded-full bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark"
-                      >Analytics</span
-                    >
-                  </div>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="mt-10 flex justify-center items-center gap-2">
-            <button
-              class="p-2 rounded-full hover:bg-primary/10 dark:hover:bg-primary/20 text-text-secondary-light dark:text-text-secondary-dark disabled:opacity-50"
-              disabled=""
-            >
-              <span class="material-symbols-outlined">chevron_left</span>
-            </button>
-            <button
-              class="w-10 h-10 rounded-full bg-primary text-white font-bold text-sm"
-            >
-              1
-            </button>
-            <button
-              class="w-10 h-10 rounded-full hover:bg-primary/10 dark:hover:bg-primary/20 font-medium text-sm text-text-secondary-light dark:text-text-secondary-dark"
-            >
-              2
-            </button>
-            <button
-              class="w-10 h-10 rounded-full hover:bg-primary/10 dark:hover:bg-primary/20 font-medium text-sm text-text-secondary-light dark:text-text-secondary-dark"
-            >
-              3
-            </button>
-            <span
-              class="text-text-secondary-light dark:text-text-secondary-dark"
-              >...</span
-            >
-            <button
-              class="w-10 h-10 rounded-full hover:bg-primary/10 dark:hover:bg-primary/20 font-medium text-sm text-text-secondary-light dark:text-text-secondary-dark"
-            >
-              12
-            </button>
-            <button
-              class="p-2 rounded-full hover:bg-primary/10 dark:hover:bg-primary/20 text-text-secondary-light dark:text-text-secondary-dark"
-            >
-              <span class="material-symbols-outlined">chevron_right</span>
-            </button>
           </div>
         </div>
       </main>

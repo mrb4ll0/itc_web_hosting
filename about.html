@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About - IT Connect</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#062ff9",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      /* Center content for large screens */
+      @media (min-width: 1024px) {
+        .center-content {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+        }
+        .content-wrapper {
+          max-width: 600px;
+          text-align: center;
+        }
+      }
+      
+      /* Scrollable for small screens */
+      @media (max-width: 1023px) {
+        .content-wrapper {
+          padding: 2rem 1rem;
+        }
+      }
+      
+      /* Back button styling */
+      .back-btn {
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 50;
+      }
+    </style>
+  </head>
+
+  <body class="font-display bg-gray-50 text-gray-900">
+    <!-- Back Button -->
+    <button onclick="history.back()" class="back-btn bg-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+    </button>
+
+    <div class="center-content">
+      <div class="content-wrapper p-8">
+        <h1 class="text-4xl font-black text-primary mb-8">About IT Connect</h1>
+        
+        <div class="space-y-6 text-lg leading-relaxed">
+          <p>
+            IT Connect was born from a simple observation: talented students were struggling to find quality industrial training placements, while companies were having difficulty discovering promising young talent.
+          </p>
+          
+          <p>
+            Founded in 2024, our platform has grown to become Nigeria's leading industrial training connection service, serving thousands of students and hundreds of companies across various industries.
+          </p>
+          
+          <p>
+            We believe that practical experience is essential for shaping the next generation of professionals, and we're committed to making that experience accessible to all.
+          </p>
+          
+          <h2 class="text-2xl font-bold text-primary mt-8 mb-4">Our Mission</h2>
+          <p>
+            To bridge the gap between academia and industry by providing a dynamic platform where ambitious learners gain practical experience and companies discover emerging talent, fostering the next generation of Nigerian professionals.
+          </p>
+          
+          <h2 class="text-2xl font-bold text-primary mt-8 mb-4">Our Vision</h2>
+          <p>
+            To become Nigeria's most trusted industrial training platform, recognized for transforming how students transition from academic learning to professional careers and how companies identify and nurture future talent.
+          </p>
+          
+          <h2 class="text-2xl font-bold text-primary mt-8 mb-4">Our Values</h2>
+          
+          <p><strong>Accessibility:</strong> We believe every student deserves access to quality industrial training opportunities, regardless of background or connections.</p>
+          
+          <p><strong>Quality:</strong> We maintain high standards by verifying companies and opportunities to ensure valuable experiences for students.</p>
+          
+          <p><strong>Partnership:</strong> We foster collaborative relationships between students, companies, and educational institutions for mutual benefit.</p>
+          
+          <p><strong>Growth:</strong> We're committed to the continuous improvement of our platform and the professional growth of our users.</p>
+          
+          <p><strong>Innovation:</strong> We continuously evolve our platform to meet the changing needs of students and companies in the digital age.</p>
+          
+          <p><strong>Community:</strong> We build supportive networks where students and professionals can connect, share experiences, and learn from each other.</p>
+          
+          <h2 class="text-2xl font-bold text-primary mt-8 mb-4">Our Impact</h2>
+          <p>
+            Since our launch, IT Connect has connected over 5,000 students with industrial training opportunities, partnered with 250+ companies across various industries, and facilitated 1,200+ successful placements across 15 states in Nigeria.
+          </p>
+          
+          <p class="text-gray-600 mt-12">
+            Thank you for being part of our journey to transform industrial training in Nigeria.
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

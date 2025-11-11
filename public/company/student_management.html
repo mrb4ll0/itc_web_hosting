@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Student Management Dashboard</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#062ff9",
+              "background-light": "#f5f6f8",
+              "background-dark": "#0f1323",
+            },
+            fontFamily: { display: ["Inter", "sans-serif"] },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+      .tab-active {
+        background: linear-gradient(135deg, #062ff9 0%, #3b82f6 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(6, 47, 249, 0.3);
+      }
+      /* Drag and Drop Styles */
+      .draggable-section {
+        cursor: grab;
+        transition: all 0.2s ease-in-out;
+      }
+
+      .draggable-section:active {
+        cursor: grabbing;
+      }
+
+      .draggable-section.dragging {
+        opacity: 0.5;
+        transform: scale(0.98);
+      }
+
+      .draggable-section.drag-over {
+        border: 2px dashed #3b82f6;
+        background-color: rgba(59, 130, 246, 0.05);
+      }
+
+      .reorder-handle {
+        cursor: grab;
+        opacity: 0.6;
+        transition: opacity 0.2s ease;
+      }
+
+      .reorder-handle:hover {
+        opacity: 1;
+      }
+
+      .reorder-handle:active {
+        cursor: grabbing;
+      }
+
+      .section-controls {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        display: flex;
+        gap: 0.5rem;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+
+      .draggable-section:hover .section-controls {
+        opacity: 1;
+      }
+    </style>
+  </head>
+
+  <body
+    id="dashboard-body"
+    class="font-display bg-background-light dark:bg-background-dark text-[#333333] dark:text-gray-200"
+  >
+    <div id="mainContainer" class="min-h-screen">
+      <!-- Header -->
+      <header
+        id="dashboard-header"
+        class="bg-white dark:bg-background-dark border-b border-gray-200 dark:border-gray-800"
+      >
+        <div
+          id="header-container"
+          class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+        >
+          <div
+            id="header-content"
+            class="flex justify-between items-center py-4"
+          >
+            <div id="header-left" class="flex items-center gap-4">
+              <div
+                id="company-logo"
+                class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
+                style="
+                  background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDijuGRsTnZ269l6uGWLgjGb6ah0cqlkii1VLUk2S8D8C8mBIObJaXK3ZEU7HuWOTnHadQLOLgfT5tTQVksa0O3d7b2R4X2LpqQ91t_tD83J9MdIAPTKaQwZAh1a-7eU2jhF1GghisDvScSnA-M9EDGVQ5tTtPcmC48tfvbjshTudgZCV6Vf0YPiIht3IQCwLj6PPEGQplmknWFoFRYQBqsHuTIG_XysTT3K-h3Mvxzvy_mxDy12A5wauyvaxvfLwugDJxN4Yt36w');
+                "
+              ></div>
+              <div id="company-info">
+                <h1
+                  id="dashboard-title"
+                  class="text-2xl font-bold text-gray-900 dark:text-white"
+                >
+                  Student Management
+                </h1>
+                <p
+                  id="company-subtitle"
+                  class="text-gray-500 dark:text-gray-400 text-sm"
+                >
+                  Loading...
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main
+        id="dashboard-main"
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      >
+        <!-- Quick Stats -->
+        <div
+          id="stats-container"
+          class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"
+        >
+          <!-- Total Applicants Card -->
+          <div
+            id="total-applicants-card"
+            class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
+          >
+            <div id="total-applicants-content" class="flex items-center gap-4">
+              <div
+                id="total-applicants-icon-container"
+                class="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg"
+              >
+                <span
+                  id="total-applicants-icon"
+                  class="material-symbols-outlined text-blue-600 dark:text-blue-400"
+                  >groups</span
+                >
+              </div>
+              <div id="total-applicants-text">
+                <p
+                  id="total-applicants-label"
+                  class="text-gray-500 dark:text-gray-400 text-sm"
+                >
+                  Total Applicants
+                </p>
+                <div
+                  id="total-applicants-value"
+                  class="text-2xl font-bold text-gray-900 dark:text-white"
+                >
+                  <div class="loading-animation">
+                    <svg width="80" height="40" viewBox="0 0 100 40">
+                      <circle cx="20" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0s"
+                        />
+                      </circle>
+                      <circle cx="50" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0.2s"
+                        />
+                      </circle>
+                      <circle cx="80" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0.4s"
+                        />
+                      </circle>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pending Review Card -->
+          <div
+            id="pending-review-card"
+            class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
+          >
+            <div id="pending-review-content" class="flex items-center gap-4">
+              <div
+                id="pending-review-icon-container"
+                class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg"
+              >
+                <span
+                  id="pending-review-icon"
+                  class="material-symbols-outlined text-yellow-600 dark:text-yellow-400"
+                  >schedule</span
+                >
+              </div>
+              <div id="pending-review-text">
+                <p
+                  id="pending-review-label"
+                  class="text-gray-500 dark:text-gray-400 text-sm"
+                >
+                  Pending Review
+                </p>
+                <div
+                  id="pending-review-value"
+                  class="text-2xl font-bold text-gray-900 dark:text-white"
+                >
+                  <div class="loading-animation">
+                    <svg width="80" height="40" viewBox="0 0 100 40">
+                      <circle cx="20" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0s"
+                        />
+                      </circle>
+                      <circle cx="50" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0.2s"
+                        />
+                      </circle>
+                      <circle cx="80" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0.4s"
+                        />
+                      </circle>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Accepted Card -->
+          <div
+            id="accepted-card"
+            class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
+          >
+            <div id="accepted-content" class="flex items-center gap-4">
+              <div
+                id="accepted-icon-container"
+                class="p-3 bg-green-100 dark:bg-green-900 rounded-lg"
+              >
+                <span
+                  id="accepted-icon"
+                  class="material-symbols-outlined text-green-600 dark:text-green-400"
+                  >check_circle</span
+                >
+              </div>
+              <div id="accepted-text">
+                <p
+                  id="accepted-label"
+                  class="text-gray-500 dark:text-gray-400 text-sm"
+                >
+                  Accepted
+                </p>
+                <div
+                  id="accepted-value"
+                  class="text-2xl font-bold text-gray-900 dark:text-white"
+                >
+                  <div class="loading-animation">
+                    <svg width="80" height="40" viewBox="0 0 100 40">
+                      <circle cx="20" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0s"
+                        />
+                      </circle>
+                      <circle cx="50" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0.2s"
+                        />
+                      </circle>
+                      <circle cx="80" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0.4s"
+                        />
+                      </circle>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rejected Card -->
+          <div
+            id="rejected-card"
+            class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
+          >
+            <div id="rejected-content" class="flex items-center gap-4">
+              <div
+                id="rejected-icon-container"
+                class="p-3 bg-red-100 dark:bg-red-900 rounded-lg"
+              >
+                <span
+                  id="rejected-icon"
+                  class="material-symbols-outlined text-red-600 dark:text-red-400"
+                  >cancel</span
+                >
+              </div>
+              <div id="rejected-text">
+                <p
+                  id="rejected-label"
+                  class="text-gray-500 dark:text-gray-400 text-sm"
+                >
+                  Rejected
+                </p>
+                <div
+                  id="rejected-value"
+                  class="text-2xl font-bold text-gray-900 dark:text-white"
+                >
+                  <div class="loading-animation">
+                    <svg width="80" height="40" viewBox="0 0 100 40">
+                      <circle cx="20" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0s"
+                        />
+                      </circle>
+                      <circle cx="50" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0.2s"
+                        />
+                      </circle>
+                      <circle cx="80" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0.4s"
+                        />
+                      </circle>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div id="tabs-container" class="mb-8">
+          <div
+            id="tabs-wrapper"
+            class="flex flex-wrap gap-2 bg-white dark:bg-gray-800 rounded-xl p-2 shadow-sm"
+          >
+            <button
+              id="overview-tab"
+              class="tab-active flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all"
+            >
+              <span
+                id="overview-tab-icon"
+                class="material-symbols-outlined text-base"
+                >dashboard</span
+              >
+              <span id="overview-tab-text">Overview</span>
+            </button>
+            <button
+              id="applications-tab"
+              class="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+            >
+              <span
+                id="applications-tab-icon"
+                class="material-symbols-outlined text-base"
+                >assignment</span
+              >
+              <span id="applications-tab-text">Applications</span>
+            </button>
+            <button
+              id="current-trainees-tab"
+              class="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+            >
+              <span
+                id="current-trainees-tab-icon"
+                class="material-symbols-outlined text-base"
+                >school</span
+              >
+              <span id="current-trainees-tab-text">Current Trainees</span>
+            </button>
+            <button
+              id="upcoming-tab"
+              class="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+            >
+              <span
+                id="upcoming-tab-icon"
+                class="material-symbols-outlined text-base"
+                >schedule</span
+              >
+              <span id="upcoming-tab-text">Upcoming</span>
+            </button>
+            <button
+              id="analytics-tab"
+              class="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+            >
+              <span
+                id="analytics-tab-icon"
+                class="material-symbols-outlined text-base"
+                >analytics</span
+              >
+              <span id="analytics-tab-text">Analytics</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div
+          id="search-filters-container"
+          class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm mb-8"
+        >
+          <div
+            id="search-filters-content"
+            class="flex flex-col lg:flex-row gap-4 items-end"
+          >
+            <!-- Search Section with Mode Dropdown -->
+            <div id="search-container" class="flex-1">
+              <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                <!-- Search Mode Dropdown -->
+                <div id="search-mode-container">
+                  <label
+                    id="search-mode-label"
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                    >Search Mode</label
+                  >
+                  <select
+                    id="search-mode"
+                    class="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/50"
+                  >
+                    <option value="all" selected>All Fields</option>
+                    <option value="accepted">Accepted</option>
+                    <option value="pending">Pending</option>
+                    <option value="rejected">Rejected</option>
+                    <option value="current">Current Trainee</option>
+                  </select>
+                </div>
+
+                <!-- Search Input -->
+                <div id="search-input-container" class="lg:col-span-3">
+                  <label
+                    id="search-label"
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                    >Search Students</label
+                  >
+                  <div id="search-input-wrapper" class="relative">
+                    <span
+                      id="search-icon"
+                      class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    >
+                      <span class="material-symbols-outlined">search</span>
+                    </span>
+                    <input
+                      id="search-students-input"
+                      type="text"
+                      placeholder="Search across all fields..."
+                      class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-primary/50 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              id="filters-grid"
+              class="grid grid-cols-2 lg:grid-cols-4 gap-4 flex-1"
+            >
+              <div id="institution-filter-container">
+                <label
+                  id="institution-filter-label"
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  >Institution</label
+                >
+                <select
+                  id="institution-filter"
+                  class="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/50"
+                >
+                  <option value="all">All Institutions</option>
+                </select>
+              </div>
+
+              <div id="course-filter-container">
+                <label
+                  id="course-filter-label"
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  >Course</label
+                >
+                <select
+                  id="course-filter"
+                  class="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/50"
+                >
+                  <option value="all">All Courses</option>
+                </select>
+              </div>
+
+              <div id="status-filter-container">
+                <label
+                  id="status-filter-label"
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  >Status</label
+                >
+                <select
+                  id="status-filter"
+                  class="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/50"
+                >
+                  <option value="all">All Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="accepted">Accepted</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="shortlisted">Shortlisted</option>
+                </select>
+              </div>
+
+              <div id="skills-filter-container">
+                <label
+                  id="skills-filter-label"
+                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  >Skills</label
+                >
+                <input
+                  id="skills-filter-input"
+                  type="text"
+                  placeholder="Filter by skills..."
+                  class="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Filters Display -->
+          <div id="active-filters" class="mt-4 flex flex-wrap gap-2 hidden">
+            <!-- Active filters will be displayed here -->
+          </div>
+        </div>
+        <!-- Application Pipeline -->
+        <div id="sections-container">
+          <div
+            id="pipeline-container"
+            class="mb-8 draggable-section relative bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
+            data-section="pipeline"
+          >
+            <div class="section-controls">
+              <button
+                class="reorder-handle text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <span class="material-symbols-outlined">drag_handle</span>
+              </button>
+              <button
+                class="move-up-btn text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <span class="material-symbols-outlined">arrow_upward</span>
+              </button>
+              <button
+                class="move-down-btn text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <span class="material-symbols-outlined">arrow_downward</span>
+              </button>
+            </div>
+
+            <h2
+              id="pipeline-title"
+              class="text-xl font-bold text-gray-900 dark:text-white mb-4"
+            >
+              Application Pipeline
+            </h2>
+            <div
+              id="pipeline-grid"
+              class="grid grid-cols-1 lg:grid-cols-3 gap-4"
+            >
+              <!-- Pending Applications Column -->
+              <div
+                id="pending-applications-column"
+                class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm"
+              >
+                <div
+                  id="pending-applications-header"
+                  class="flex items-center gap-2 mb-4"
+                >
+                  <div
+                    id="pending-applications-indicator"
+                    class="w-3 h-3 bg-yellow-400 rounded-full"
+                  ></div>
+                  <h3
+                    id="pending-applications-title"
+                    class="font-semibold text-gray-900 dark:text-white"
+                  >
+                    Pending Review
+                  </h3>
+                  <span
+                    id="pending-applications-count"
+                    class="ml-auto bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-sm px-2 py-1 rounded-full"
+                  ></span>
+                </div>
+                <div
+                  id="pending-applications-list"
+                  class="space-y-3 max-h-96 overflow-y-auto"
+                >
+                  <!-- Application Card -->
+                  <div class="loading-animation">
+                    <svg width="80" height="40" viewBox="0 0 100 40">
+                      <circle cx="20" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0s"
+                        />
+                      </circle>
+                      <circle cx="50" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0.2s"
+                        />
+                      </circle>
+                      <circle cx="80" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0.4s"
+                        />
+                      </circle>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Accepted Column -->
+              <div
+                id="accepted-column"
+                class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm"
+              >
+                <div id="accepted-header" class="flex items-center gap-2 mb-4">
+                  <div
+                    id="accepted-indicator"
+                    class="w-3 h-3 bg-green-400 rounded-full"
+                  ></div>
+                  <h3
+                    id="accepted-title"
+                    class="font-semibold text-gray-900 dark:text-white"
+                  >
+                    Accepted
+                  </h3>
+                  <span
+                    id="accepted-count"
+                    class="ml-auto bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-sm px-2 py-1 rounded-full"
+                    >8</span
+                  >
+                </div>
+                <div
+                  id="accepted-list"
+                  class="space-y-3 max-h-96 overflow-y-auto"
+                >
+                  <!-- Accepted cards will appear here -->
+                  <div class="loading-animation">
+                    <svg width="80" height="40" viewBox="0 0 100 40">
+                      <circle cx="20" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0s"
+                        />
+                      </circle>
+                      <circle cx="50" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0.2s"
+                        />
+                      </circle>
+                      <circle cx="80" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0.4s"
+                        />
+                      </circle>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Rejected Column -->
+              <div
+                id="rejected-column"
+                class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm"
+              >
+                <div id="rejected-header" class="flex items-center gap-2 mb-4">
+                  <div
+                    id="rejected-indicator"
+                    class="w-3 h-3 bg-red-400 rounded-full"
+                  ></div>
+                  <h3
+                    id="rejected-title"
+                    class="font-semibold text-gray-900 dark:text-white"
+                  >
+                    Rejected
+                  </h3>
+                  <span
+                    id="rejected-count"
+                    class="ml-auto bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-sm px-2 py-1 rounded-full"
+                  ></span>
+                </div>
+                <div
+                  id="rejected-list"
+                  class="space-y-3 max-h-96 overflow-y-auto"
+                >
+                  <!-- Rejected cards will appear here -->
+                  <div class="loading-animation">
+                    <svg width="80" height="40" viewBox="0 0 100 40">
+                      <circle cx="20" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0s"
+                        />
+                      </circle>
+                      <circle cx="50" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0.2s"
+                        />
+                      </circle>
+                      <circle cx="80" cy="20" r="8" fill="#3b82f6">
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;1;0.3"
+                          dur="1.5s"
+                          repeatCount="indefinite"
+                          begin="0.4s"
+                        />
+                      </circle>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Current Trainees -->
+          <div
+            id="current-trainees-section"
+            class="mb-8 draggable-section relative bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm"
+            data-section="trainees"
+          >
+            <div class="section-controls">
+              <button
+                class="reorder-handle text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <span class="material-symbols-outlined">drag_handle</span>
+              </button>
+              <button
+                class="move-up-btn text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <span class="material-symbols-outlined">arrow_upward</span>
+              </button>
+              <button
+                class="move-down-btn text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <span class="material-symbols-outlined">arrow_downward</span>
+              </button>
+            </div>
+
+            <h2
+              id="current-trainees-title"
+              class="text-xl font-bold text-gray-900 dark:text-white mb-4"
+            >
+              Current Trainees
+            </h2>
+            <div
+              id="trainees-grid"
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              <!-- Trainee Card -->
+              <div class="loading-animation">
+                <svg width="80" height="40" viewBox="0 0 100 40">
+                  <circle cx="20" cy="20" r="8" fill="#3b82f6">
+                    <animate
+                      attributeName="opacity"
+                      values="0.3;1;0.3"
+                      dur="1.5s"
+                      repeatCount="indefinite"
+                      begin="0s"
+                    />
+                  </circle>
+                  <circle cx="50" cy="20" r="8" fill="#3b82f6">
+                    <animate
+                      attributeName="opacity"
+                      values="0.3;1;0.3"
+                      dur="1.5s"
+                      repeatCount="indefinite"
+                      begin="0.2s"
+                    />
+                  </circle>
+                  <circle cx="80" cy="20" r="8" fill="#3b82f6">
+                    <animate
+                      attributeName="opacity"
+                      values="0.3;1;0.3"
+                      dur="1.5s"
+                      repeatCount="indefinite"
+                      begin="0.4s"
+                    />
+                  </circle>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Draggable sections will be reordered here -->
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // Tab switching functionality
+      document
+        .querySelectorAll('button[class*="px-6 py-3 rounded-lg"]')
+        .forEach((button) => {
+          button.addEventListener("click", function () {
+            // Remove active class from all tabs
+            document
+              .querySelectorAll('button[class*="px-6 py-3 rounded-lg"]')
+              .forEach((btn) => {
+                btn.classList.remove("tab-active");
+                btn.classList.add(
+                  "text-gray-600",
+                  "dark:text-gray-400",
+                  "hover:bg-gray-100",
+                  "dark:hover:bg-gray-700"
+                );
+              });
+
+            // Add active class to clicked tab
+            this.classList.add("tab-active");
+            this.classList.remove(
+              "text-gray-600",
+              "dark:text-gray-400",
+              "hover:bg-gray-100",
+              "dark:hover:bg-gray-700"
+            );
+          });
+        });
+    </script>
+    <script
+      type="module"
+      src="../company/js/studentManagement/StudentManagementDashboard.js"
+    ></script>
+  </body>
+</html>

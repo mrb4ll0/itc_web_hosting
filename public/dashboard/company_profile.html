@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/png" href="images/myicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IT Connect - Company Profile</title>
+    <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#607afb",
+              "background-light": "#f5f6f8",
+              "background-dark": "#0f1323",
+            },
+            fontFamily: {
+              display: ["Inter"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      #loading-overlay {
+        transition: opacity 0.3s ease-in-out;
+      }
+
+      #loading-overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* Custom responsive styles */
+      .responsive-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .responsive-tabs button {
+        flex: 1;
+        min-width: 120px;
+      }
+
+      .responsive-image-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      @media (min-width: 640px) {
+        .responsive-image-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (min-width: 768px) {
+        .responsive-image-grid {
+          grid-template-columns: repeat(2, 1fr);
+          grid-template-rows: repeat(2, 1fr);
+        }
+
+        .responsive-image-grid .main-image {
+          grid-column: span 2;
+        }
+      }
+    </style>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <script
+      src="../js/general/details/company_profile.js"
+      type="module"
+    ></script>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-200"
+  >
+    <div class="flex min-h-screen w-full flex-col">
+      <header
+        class="sticky top-0 z-10 border-b border-slate-200/80 bg-background-light/80 backdrop-blur-sm dark:border-slate-800/80 dark:bg-background-dark/80"
+      >
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex h-16 items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div
+                id="company-logo"
+                class="w-15 h-8 text-primary animate-bounce"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  class="size-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+                  />
+                </svg>
+              </div>
+              <h1
+                id="header-name"
+                class="text-lg font-bold text-slate-900 dark:text-white"
+              >
+                IT Connect
+              </h1>
+            </div>
+            <div class="flex items-center gap-4">
+              <button
+                class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200/50 text-slate-600 hover:bg-slate-200 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:bg-slate-800"
+                onclick="window.location.href='notifications.html'"
+              >
+                <span class="material-symbols-outlined"> notifications </span>
+              </button>
+              <div
+                id="company-image"
+                class="h-10 w-10 rounded-full bg-cover bg-center"
+                style="
+                  background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAR99O475jJfWAuSpjuvWPiectnsuD8o8cxE537aolcAJ0YFk_XiGduh4P2p5gzeHvCbJd4LwQ_WSf-eDnNoISm7MpTXoOut4-fdpc4Xm9RpdDsNfkZ_uBsrmhM4j4jY0TNZoGPnFaBEJrTqfDhd-aP75-E9uuSMclcuhfoLrzYDV1m5TYIsoAn8oey6FqO8qwu7WWEOEsC8BLjWPPMiPF3obN-1TCSESFo705d1Bm2FKol1OSNI-TKKhmPgcOurZqxKW08KFx_Uw');
+                "
+              ></div>
+            </div>
+          </div>
+        </div>
+      </header>
+      <main class="flex-grow">
+        <div class="mx-auto max-w-5xl px-4 py-6 sm:py-12 sm:px-6 lg:px-8">
+          <div class="flex flex-col gap-8 sm:gap-12">
+            <div>
+              <h2
+                id="company-name"
+                class="text-2xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white"
+              ></h2>
+              <div class="mt-4 border-b border-slate-200 dark:border-slate-800">
+                <nav
+                  aria-label="Tabs"
+                  class="-mb-px responsive-tabs"
+                  id="company-tabs"
+                >
+                  <button
+                    class="border-primary text-primary whitespace-nowrap border-b-2 px-1 py-3 sm:py-4 text-sm font-medium focus:outline-none"
+                    data-tab="overview"
+                    type="button"
+                  >
+                    Overview
+                  </button>
+                  <button
+                    class="border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-400 dark:hover:border-slate-700 dark:hover:text-slate-300 whitespace-nowrap border-b-2 px-1 py-3 sm:py-4 text-sm font-medium focus:outline-none"
+                    data-tab="opportunities"
+                    type="button"
+                  >
+                    Opportunities
+                  </button>
+                  <button
+                    class="border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-400 dark:hover:border-slate-700 dark:hover:text-slate-300 whitespace-nowrap border-b-2 px-1 py-3 sm:py-4 text-sm font-medium focus:outline-none"
+                    data-tab="reviews"
+                    type="button"
+                  >
+                    Reviews
+                  </button>
+                </nav>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+              <div class="space-y-8 lg:col-span-2">
+                <div id="tab-views" class="mt-6 sm:mt-8">
+                  <!-- Overview Tab -->
+                  <div id="view-overview">
+                    <section>
+                      <h3
+                        id="about-header"
+                        class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white"
+                      ></h3>
+                      <p
+                        id="about"
+                        class="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-400"
+                      ></p>
+                    </section>
+                    <section class="mt-8">
+                      <h3
+                        class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white"
+                      >
+                        Photos &amp; Videos
+                      </h3>
+                      <div class="mt-4 responsive-image-grid">
+                        <div
+                          id="main-image"
+                          class="main-image h-64 sm:h-96 rounded-lg bg-cover bg-center"
+                          style="
+                            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBJawAzS8kkHqj_JsWnjTRPzEVcmmkegp61lxYY6qFagg6kWC6rSEEG3GiZUsKaw0dHT0A1IR85_ogtTjI7z2es4jt-tJwWrupw2kRIBVV480HKFdrIT7h0DCEYu0H2wpak4FT1gIazDrAFZ6rLWRPOxGmUI8Gj5LqVlW0VPlD2aiRPXIjv-0j-Lrou89qj778BFt5R7w1UaA7ETCTzbWGu6IjsPzUuT5dDW-jim7CFj01TZTmVOWy0apRpQXR8_vTzl8SgOnBWBg');
+                          "
+                        ></div>
+                        <div
+                          id="image-1"
+                          class="h-48 sm:h-full w-full rounded-lg bg-cover bg-center"
+                          style="
+                            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCricPWXgg5TeKTHMryS_TISPUtWJUIRGQBktLHeB3RQ--YCJkzNST5XFWyHE1X9FxelkSaiSvSVKncJsnAuQnXcz6G5iKqocMIDPJ48p-boKYSYFmq0wOCi-OFLeYc5C4p81EUTFdhcv9n7oDsE8Oc0CEsz50HZo4-gGoGDmIwzGdQYtSYTOoi9ulOLHpLqVIkjzvhm70sGA4kfX6TBQo28C03aGoXII-dw6yjXCmeU_CAKROffVLleApEywoAy1Oja9mJW3czdw');
+                          "
+                        ></div>
+                        <div
+                          id="image-2"
+                          class="h-48 sm:h-full w-full rounded-lg bg-cover bg-center"
+                          style="
+                            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAowzPo1wvhh83-aFJiMQjok8sssFYu4INbX7UoS9uOznxvJexC4YLqoc5XBfsJVEjPMK1bhFdaMZYSVg970xB__pbt0ogY7nPIskaSIU7MKiA7Dn4CNiKqEvtDxDQcqL_9PyELdWC7kZsIDOnGoXcPQvcepNoaR-jIb6JW7v7d3LEt5KhW_ViW9rvWhUVUzeT15LqUDMuBZg3sJq2T37-0NGz230vZNAv_fDYuukojhPq1hOcs-GuxQ-kz8qT40k20oQNTcQGQAA');
+                          "
+                        ></div>
+                      </div>
+                    </section>
+                  </div>
+                  <!-- Opportunities Tab -->
+                  <div id="view-opportunities" class="hidden">
+                    <section>
+                      <h3
+                        class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white"
+                      >
+                        Opportunities
+                      </h3>
+                      <ul id="opportunitieslist" class="mt-4 space-y-4">
+                        <li
+                          class="p-4 rounded-lg bg-slate-100 dark:bg-slate-800"
+                        >
+                          <span class="font-semibold text-primary"
+                            >Software Engineering Internship</span
+                          >
+                          <p
+                            class="text-sm text-slate-600 dark:text-slate-400"
+                          ></p>
+                        </li>
+                        <li
+                          class="p-4 rounded-lg bg-slate-100 dark:bg-slate-800"
+                        >
+                          <span class="font-semibold text-primary"
+                            >Cybersecurity Analyst</span
+                          >
+                          <p class="text-sm text-slate-600 dark:text-slate-400">
+                            Help secure our infrastructure and data.
+                          </p>
+                        </li>
+                        <!-- Add more opportunities as needed -->
+                      </ul>
+                    </section>
+                  </div>
+                  <!-- Reviews Tab -->
+                  <div id="view-reviews" class="hidden">
+                    <section>
+                      <h3
+                        class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white"
+                        style="margin-bottom: 10px"
+                      >
+                        Reviews
+                      </h3>
+
+                      <form id="review-form" class="space-y-4">
+                        <div>
+                          <div
+                            class="flex items-center gap-1"
+                            id="rating-stars"
+                          >
+                            <button
+                              type="button"
+                              class="rating-star text-2xl transition-colors"
+                              data-rating="1"
+                            >
+                              <span
+                                class="material-symbols-outlined text-slate-300 hover:text-yellow-400"
+                                >star</span
+                              >
+                            </button>
+                            <button
+                              type="button"
+                              class="rating-star text-2xl transition-colors"
+                              data-rating="2"
+                            >
+                              <span
+                                class="material-symbols-outlined text-slate-300 hover:text-yellow-400"
+                                >star</span
+                              >
+                            </button>
+                            <button
+                              type="button"
+                              class="rating-star text-2xl transition-colors"
+                              data-rating="3"
+                            >
+                              <span
+                                class="material-symbols-outlined text-slate-300 hover:text-yellow-400"
+                                >star</span
+                              >
+                            </button>
+                            <button
+                              type="button"
+                              class="rating-star text-2xl transition-colors"
+                              data-rating="4"
+                            >
+                              <span
+                                class="material-symbols-outlined text-slate-300 hover:text-yellow-400"
+                                >star</span
+                              >
+                            </button>
+                            <button
+                              type="button"
+                              class="rating-star text-2xl transition-colors"
+                              data-rating="5"
+                            >
+                              <span
+                                class="material-symbols-outlined text-slate-300 hover:text-yellow-400"
+                                >star</span
+                              >
+                            </button>
+                          </div>
+                          <div class="flex items-center gap-2 mt-2">
+                            <span
+                              id="rating-text"
+                              class="text-sm text-slate-500"
+                              >Select a rating</span
+                            >
+                            <span
+                              id="selected-rating"
+                              class="text-sm font-medium text-yellow-600 hidden"
+                            ></span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label
+                            for="review-comment"
+                            class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+                          >
+                            Your Review
+                          </label>
+                          <textarea
+                            id="review-comment"
+                            name="comment"
+                            rows="4"
+                            class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white resize-none"
+                            placeholder="Share your experience with this company..."
+                            maxlength="500"
+                          ></textarea>
+                          <div class="flex justify-between items-center mt-1">
+                            <span class="text-xs text-slate-500"
+                              >Minimum 10 characters</span
+                            >
+                            <span class="text-xs text-slate-500">
+                              <span id="char-count">0</span>/500
+                            </span>
+                          </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                          <button
+                            type="submit"
+                            id="submit-review"
+                            class="flex-1 bg-primary text-white py-2 px-4 rounded-lg font-medium hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            disabled
+                          >
+                            Submit Review
+                          </button>
+                          <button
+                            type="button"
+                            id="cancel-review"
+                            class="flex-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 py-2 px-4 rounded-lg font-medium hover:bg-slate-300 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+
+                        <div
+                          id="form-error"
+                          class="hidden p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg"
+                        >
+                          <p
+                            class="text-red-600 dark:text-red-400 text-sm"
+                            id="error-message"
+                          ></p>
+                        </div>
+                      </form>
+
+                      <ul id="review-list" class="mt-4 space-y-4">
+                        <li
+                          class="p-4 rounded-lg bg-slate-100 dark:bg-slate-800"
+                        >
+                          <span class="font-semibold text-primary"
+                            >Jane Doe</span
+                          >
+                          <p class="text-sm text-slate-600 dark:text-slate-400">
+                            Great company culture and learning environment!
+                          </p>
+                        </li>
+                        <li
+                          class="p-4 rounded-lg bg-slate-100 dark:bg-slate-800"
+                        >
+                          <span class="font-semibold text-primary"
+                            >John Smith</span
+                          >
+                          <p class="text-sm text-slate-600 dark:text-slate-400">
+                            Supportive mentors and exciting projects.
+                          </p>
+                        </li>
+                      </ul>
+                    </section>
+                  </div>
+                </div>
+              </div>
+              <aside class="space-y-8">
+                <div
+                  class="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark"
+                >
+                  <dl class="space-y-4">
+                    <div>
+                      <dt
+                        class="text-sm font-medium text-slate-500 dark:text-slate-400"
+                      >
+                        Industry
+                      </dt>
+                      <dd
+                        id="industry"
+                        class="mt-1 text-sm font-semibold text-slate-900 dark:text-white"
+                      >
+                        Technology
+                      </dd>
+                    </div>
+                    <div>
+                      <dt
+                        class="text-sm font-medium text-slate-500 dark:text-slate-400"
+                      >
+                        Locations
+                      </dt>
+                      <dd
+                        id="locations"
+                        class="mt-1 text-sm font-semibold text-slate-900 dark:text-white"
+                      ></dd>
+                    </div>
+                    <div>
+                      <dt
+                        class="text-sm font-medium text-slate-500 dark:text-slate-400"
+                      >
+                        Company Size
+                      </dt>
+                      <dd
+                        id="size"
+                        class="mt-1 text-sm font-semibold text-slate-900 dark:text-white"
+                      >
+                        1000+ employees
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+                <div
+                  class="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark"
+                >
+                  <h3 class="text-lg font-bold text-slate-900 dark:text-white">
+                    Contact Information
+                  </h3>
+                  <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                    For more information about Tech Innovators Inc., please
+                    visit our website or contact us directly.
+                  </p>
+                  <div class="mt-4 flex flex-col gap-2">
+                    <button
+                      id="website-button"
+                      class="flex h-10 items-center justify-center rounded-lg bg-primary px-4 text-sm font-bold text-white transition-colors hover:bg-primary/90"
+                    >
+                      Visit Website
+                    </button>
+                    <button
+                      id="contact-button"
+                      class="flex h-10 items-center justify-center rounded-lg bg-slate-100 px-4 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                    >
+                      Contact Us
+                    </button>
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script>
+      // Tab switching logic
+      const tabs = document.querySelectorAll("#company-tabs button");
+      const views = {
+        overview: document.getElementById("view-overview"),
+        opportunities: document.getElementById("view-opportunities"),
+        reviews: document.getElementById("view-reviews"),
+      };
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          // Remove active styles from all tabs
+          tabs.forEach((t) =>
+            t.classList.remove("border-primary", "text-primary")
+          );
+          tabs.forEach((t) =>
+            t.classList.add("border-transparent", "text-slate-500")
+          );
+          // Add active style to clicked tab
+          tab.classList.add("border-primary", "text-primary");
+          tab.classList.remove("border-transparent", "text-slate-500");
+          // Hide all views
+          Object.values(views).forEach((view) => view.classList.add("hidden"));
+          // Show selected view
+          views[tab.dataset.tab].classList.remove("hidden");
+        });
+      });
+    </script>
+
+    <div
+      id="loading-overlay"
+      class="fixed inset-0 bg-white/80 dark:bg-black/70 flex flex-col items-center justify-center z-50 hidden"
+    >
+      <div
+        class="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mb-3"
+      ></div>
+      <p class="text-slate-700 dark:text-slate-200 text-sm font-medium">
+        Loading company profile...
+      </p>
+    </div>
+  </body>
+</html>

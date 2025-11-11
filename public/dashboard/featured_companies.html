@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>IT Connect</title>
+    <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect" />
+    <link
+      as="style"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter%3Awght%40400%3B500%3B700%3B900"
+      onload="this.rel='stylesheet'"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script type="module" src="../js/dashboard/featured_company.js"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#607afb",
+              "background-light": "#f5f6f8",
+              "background-dark": "#0f1323",
+            },
+            fontFamily: {
+              display: ["Inter"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200"
+  >
+    <div
+      class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden"
+    >
+      <div class="flex h-full grow flex-col">
+        <header
+          class="flex items-center justify-between whitespace-nowrap border-b border-gray-200 dark:border-gray-800 px-10 py-4"
+        >
+          <div class="flex items-center gap-8">
+            <div class="flex items-center gap-3 text-gray-900 dark:text-white">
+              <div class="w-15 h-8 text-primary animate-bounce">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  class="size-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+                  />
+                </svg>
+              </div>
+              <h2 class="text-xl font-bold">IT Connect</h2>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="relative hidden md:block">
+              <span
+                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
+                >search</span
+              >
+              <input
+                class="form-input w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 focus:outline-0 focus:ring-2 focus:ring-primary border-transparent h-10 placeholder:text-gray-400 dark:placeholder:text-gray-500 pl-10 pr-4 text-sm font-normal"
+                placeholder="Search"
+                value=""
+              />
+            </div>
+            <button
+              class="flex items-center justify-center rounded-full size-10 bg-gray-100 dark:bg-gray-800/50 hover:bg-gray-200 dark:hover:bg-gray-700/50 text-gray-600 dark:text-gray-300"
+              onclick="window.location.href='notifications.html'"
+            >
+              <span class="material-symbols-outlined text-xl">
+                notifications
+              </span>
+            </button>
+            <div id="left-image"
+              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+              style="
+                background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlAsSntpByKRO5hE2GsASnXCY1gEjI25BA12kLYBMpW1SULlJa5C-KEuXUWY9BVdoo7Q_B9x0BebG4PTVGE73ZAfKFGgydAyRiBWgCSOuH6bGLQyGoQ-YTDmvo2a8yx-GETovK8Ss32qRr11UMqCIUe6NUzX399xnaVGBfiOHOQ-n4Kghof7EnGENjToKFaf6ZcICmXsTkOi-dWOFk5qVxD4pu13ODbCN6SbqMSjgw-cX8EGphzjc9OluA4ybmP3eDRsg2yme0yw');
+              "
+            ></div>
+          </div>
+        </header>
+        <main
+          class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"
+        >
+          <div class="text-center mb-12">
+            <h1
+              class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl"
+            >
+              Featured Companies
+            </h1>
+            <p class="mt-4 text-lg text-gray-600 dark:text-gray-400">
+              Explore our partner companies offering industrial training
+              opportunities.
+            </p>
+          </div>
+          <div id="featured_company"
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
+          >
+            
+            
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

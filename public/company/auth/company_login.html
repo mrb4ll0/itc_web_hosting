@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Company Login - IT Connect</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#005A9C",
+              secondary: "#6C757D",
+              "background-light": "#F8F9FA",
+              "background-dark": "#0f1323",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-[#111218] dark:text-white"
+  >
+    <div
+      class="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden"
+    >
+      <div class="layout-container flex h-full grow flex-col">
+        <header class="px-6 py-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-15 h-8 text-primary animate-bounce">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  class="size-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+                  />
+                </svg>
+              </div>
+              <h1 class="text-xl font-bold text-primary">IT Connect</h1>
+            </div>
+
+            <div
+              class="flex items-center gap-3 bg-gray-50 dark:bg-gray-800/50 p-1 rounded-lg"
+            >
+              <a
+                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-all duration-200"
+                href="../../auth/login.html"
+              >
+                Student Login
+              </a>
+
+              <a
+                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-all duration-200"
+                href="../../index.html"
+              >
+                Home
+              </a>
+            </div>
+          </div>
+        </header>
+        <div class="flex flex-1 items-center justify-center p-4">
+          <div
+            class="flex w-full max-w-4xl rounded-xl shadow-lg overflow-hidden bg-white dark:bg-background-dark/50"
+          >
+            <div class="w-full md:w-1/2 p-8 sm:p-12">
+              <div class="flex flex-col gap-6">
+                <div class="flex flex-col gap-2">
+                  <p
+                    class="text-3xl font-black tracking-tighter text-[#111218] dark:text-white"
+                  >
+                    Company Login
+                  </p>
+                  <p class="text-base font-normal text-secondary">
+                    Welcome to IT Connect
+                  </p>
+                </div>
+                <div class="flex flex-col gap-4">
+                  <label class="flex flex-col gap-2">
+                    <p
+                      class="text-base font-medium text-[#111218] dark:text-white"
+                    >
+                      Company Email
+                    </p>
+                    <input
+                      class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111218] focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#dbdde6] dark:border-gray-700 bg-white dark:bg-gray-800 h-12 placeholder:text-secondary px-4 text-base font-normal"
+                      placeholder="Enter your company email"
+                      type="email"
+                      id="company-email"
+                    />
+                  </label>
+                  <label class="flex flex-col gap-2">
+                    <p
+                      class="text-base font-medium text-[#111218] dark:text-white"
+                    >
+                      Password
+                    </p>
+                    <div class="flex w-full items-stretch rounded-lg">
+                      <input
+                        id="company-password"
+                        class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-l-lg text-[#111218] focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-r-0 border-[#dbdde6] dark:border-gray-700 bg-white dark:bg-gray-800 h-12 placeholder:text-secondary px-4 text-base font-normal"
+                        placeholder="Enter your password"
+                        type="password"
+                      />
+                      <div
+                        class="text-secondary flex border border-l-0 border-[#dbdde6] dark:border-gray-700 bg-white dark:bg-gray-800 items-center justify-center pr-4 rounded-r-lg"
+                      >
+                        <span class="material-symbols-outlined cursor-pointer"
+                          >visibility</span
+                        >
+                      </div>
+                    </div>
+                  </label>
+                  <a
+                    class="text-sm font-normal text-secondary underline self-start hover:text-primary"
+                    href="#"
+                    >Forgot Password?</a
+                  >
+                </div>
+                <div class="flex flex-col gap-4">
+                  <button
+                    id="company-login-button"
+                    class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-primary text-white text-base font-bold leading-normal tracking-wide hover:bg-primary/90"
+                  >
+                    <span class="truncate">Login</span>
+                  </button>
+                  
+                  
+                  <p class="text-center text-sm text-secondary">
+                    Don't have an account?
+                    <a class="font-medium text-primary hover:underline" href="../auth/companyRegistration.html"
+                      >Register Here</a
+                    >
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div
+              class="hidden md:block w-1/2 relative bg-cover bg-center"
+              style="
+                background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBluFRSQyhTc3wiiFe8zzl4cwpb861upXBGzgLIqR5T5Wi7NwMSWeFA-lNwlPTNlRcjZyAgXkwfd-3CyrzGmrVCdATRdLpkfkAvQ5Za9nAuvgmd2rn84tScJLM4xqztT5jtrtohQUwdEDQ4BN0Ifo7S-FMPTjPKYOhsWjF4tgmH7UUT9loXjVI1VLReuPD-p66antalFJ_h5CuHu9LPgyeboZQY5MxwTO-J8Gr2u_BRSEJq6P1SUSrbQyzFyXOOyhQU5TFWJaWOyQ');
+              "
+            >
+              <div
+                class="absolute inset-0 bg-primary/30 flex flex-col items-center justify-center p-8 text-white text-center"
+              >
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-15 h-8 text-primary animate-bounce">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                      class="size-6"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+                      />
+                    </svg>
+                  </div>
+                  <h2 class="text-3xl font-bold">IT Connect</h2>
+                </div>
+                <p class="text-lg">Connect with tomorrow's talent.</p>
+                <p class="mt-2 text-base font-light"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="../js/auth/companyLogin.js"></script>
+  </body>
+</html>

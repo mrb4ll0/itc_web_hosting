@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Learn More - IT Connect</title>
+
+    <!-- ✅ SEO Meta Tags -->
+    <meta
+      name="description"
+      content="IT Connect bridges ambitious students and innovative companies for industrial training opportunities across Nigeria."
+    />
+    <meta
+      name="keywords"
+      content="IT Connect, Industrial Training, Internship, Students, Companies, Nigeria, Placement, University of Ilorin"
+    />
+    <meta name="author" content="IT Connect" />
+    <meta name="theme-color" content="#062ff9" />
+
+    <!-- Tailwind & Fonts -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome for social icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#062ff9",
+              "background-light": "#f5f6f8",
+              "background-dark": "#0f1323",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wGRAD" 0, "opsz" 24;
+      }
+      /* Simple fade-in animations */
+      .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s ease;
+      }
+      .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Ensure proper image rendering */
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* Smooth scrolling */
+      html {
+        scroll-behavior: smooth;
+      }
+    </style>
+  </head>
+
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-white"
+  >
+    <div
+      class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden"
+    >
+      <!-- Header -->
+      <header
+        class="sticky top-0 z-50 flex items-center justify-between border-b border-gray-200 dark:border-gray-700 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm px-4 sm:px-6 lg:px-8 py-4"
+      >
+        <div class="flex items-center gap-3">
+          <!-- Fallback logo if /assets/logo.png doesn't exist -->
+          <div
+            class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center"
+          >
+            <span class="material-symbols-outlined text-white text-sm"
+              >work</span
+            >
+          </div>
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white">
+            IT Connect
+          </h2>
+        </div>
+        <nav class="hidden md:flex items-center gap-8">
+          <a
+            href="index.html"
+            class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary transition-colors"
+            >Home</a
+          >
+          <a
+            href="/about.html"
+            class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary transition-colors"
+            >About</a
+          >
+          <a
+            href="index.html#contact"
+            class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary transition-colors"
+            >Contact</a
+          >
+        </nav>
+        <div class="flex gap-3">
+          <a
+            href="./auth/signup.html"
+            class="rounded-lg px-4 py-2 bg-primary text-white text-sm font-bold flex items-center justify-center hover:bg-primary/90 transition-colors"
+            >Register</a
+          >
+          <a
+            href="./auth/login.html"
+            class="rounded-lg px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white text-sm font-bold flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            >Login</a
+          >
+        </div>
+      </header>
+
+      <main class="flex-1">
+        <!-- Hero -->
+        <section class="w-full">
+          <div
+            class="flex min-h-[500px] flex-col gap-6 bg-cover bg-center items-center justify-center px-4 py-16 text-center"
+            style="
+              background-image: linear-gradient(
+                  rgba(0, 0, 0, 0.5),
+                  rgba(0, 0, 0, 0.6)
+                ),
+                url('https://lh3.googleusercontent.com/aida-public/AB6AXuBDln0sQhavZEj8ObOTG21YcSHKaOsgEiIO2FUe2F7Iw5rco42iTC6dZk6fa9X9vzuwxRz_U9UvxBBUbPWUEbh4keWczNeELEQJ7Hct0ZXk0BUP_2pQwHXWhBaKZ0kmAIYpIGD5oNziR2b1t494OvQ7QH4DzlJqxqPSMDjBXtLpe6dY6VaOq1FNTc8lHyOf1W9c8A5tJs9BxIREqqf9quZI5ZTuv_luGITsdPsF-yZG5buzFICcKX0Ddd9903jcdRDuuGvJSjaKwg');
+            "
+          >
+            <h1
+              class="text-white text-4xl sm:text-5xl lg:text-6xl font-black leading-tight max-w-4xl"
+            >
+              Connecting Ambition with Opportunity
+            </h1>
+            <h2 class="text-white/90 text-xl max-w-3xl mx-auto leading-relaxed">
+              Bridging the gap between talented students and leading companies
+              for industrial training.
+            </h2>
+          </div>
+        </section>
+
+        <!-- Mission -->
+        <section class="px-4 sm:px-6 lg:px-8 py-16 fade-in">
+          <div class="max-w-4xl mx-auto text-center">
+            <h2
+              class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white"
+            >
+              Our Mission
+            </h2>
+            <p
+              class="text-gray-600 dark:text-gray-300 mt-6 text-lg leading-relaxed"
+            >
+              At IT Connect, our mission is to bridge academia and industry by
+              providing a dynamic platform where ambitious learners gain
+              practical experience and companies discover emerging talent.
+            </p>
+          </div>
+        </section>
+
+        <!-- Why Choose -->
+        <section
+          class="bg-white dark:bg-gray-800 px-4 sm:px-6 lg:px-8 py-16 fade-in"
+        >
+          <div class="max-w-6xl mx-auto text-center">
+            <h2
+              class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white"
+            >
+              Why Choose IT Connect?
+            </h2>
+            <p
+              class="text-gray-600 dark:text-gray-300 mt-4 max-w-2xl mx-auto text-lg"
+            >
+              Whether you're a student seeking training or a company recruiting
+              fresh minds, IT Connect simplifies the process.
+            </p>
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div
+                class="p-8 rounded-xl border border-gray-200 dark:border-gray-700 bg-background-light dark:bg-gray-900 hover:shadow-lg transition-shadow"
+              >
+                <span
+                  class="material-symbols-outlined text-primary text-4xl mb-4"
+                  >school</span
+                >
+                <h3
+                  class="font-bold text-xl mb-4 text-gray-900 dark:text-white"
+                >
+                  For Students
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+                  Access verified opportunities, build your career profile, and
+                  gain real-world experience with top companies across Nigeria.
+                </p>
+              </div>
+              <div
+                class="p-8 rounded-xl border border-gray-200 dark:border-gray-700 bg-background-light dark:bg-gray-900 hover:shadow-lg transition-shadow"
+              >
+                <span
+                  class="material-symbols-outlined text-primary text-4xl mb-4"
+                  >business_center</span
+                >
+                <h3
+                  class="font-bold text-xl mb-4 text-gray-900 dark:text-white"
+                >
+                  For Companies
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+                  Connect with ambitious students, discover talent early, and
+                  contribute to workforce development while building your talent
+                  pipeline.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Features -->
+        <section class="px-4 sm:px-6 lg:px-8 py-16 fade-in">
+          <div class="max-w-6xl mx-auto">
+            <h2
+              class="text-3xl sm:text-4xl font-bold text-center text-gray-900 dark:text-white mb-12"
+            >
+              How It Works
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div class="text-center p-6">
+                <div
+                  class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4"
+                >
+                  <span class="material-symbols-outlined text-white text-2xl"
+                    >person_add</span
+                  >
+                </div>
+                <h3
+                  class="font-bold text-xl mb-3 text-gray-900 dark:text-white"
+                >
+                  1. Create Profile
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300">
+                  Students and companies create detailed profiles showcasing
+                  their skills and opportunities.
+                </p>
+              </div>
+              <div class="text-center p-6">
+                <div
+                  class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4"
+                >
+                  <span class="material-symbols-outlined text-white text-2xl"
+                    >search</span
+                  >
+                </div>
+                <h3
+                  class="font-bold text-xl mb-3 text-gray-900 dark:text-white"
+                >
+                  2. Find Matches
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300">
+                  Our platform connects students with relevant training
+                  opportunities and companies with qualified candidates.
+                </p>
+              </div>
+              <div class="text-center p-6">
+                <div
+                  class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4"
+                >
+                  <span class="material-symbols-outlined text-white text-2xl"
+                    >handshake</span
+                  >
+                </div>
+                <h3
+                  class="font-bold text-xl mb-3 text-gray-900 dark:text-white"
+                >
+                  3. Connect & Grow
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300">
+                  Start your industrial training journey and build valuable
+                  professional relationships.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CTA -->
+        <section
+          class="bg-primary text-white text-center px-4 sm:px-6 lg:px-8 py-16 fade-in"
+        >
+          <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl sm:text-4xl font-bold">
+              Ready to Start Your Journey?
+            </h2>
+            <p class="mt-4 text-white/90 text-lg max-w-2xl mx-auto">
+              Join IT Connect today and take the next step in your career or
+              discover your next great intern.
+            </p>
+            <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+              <a
+                href="./auth/signup.html"
+                class="bg-white text-primary h-12 px-8 rounded-lg font-bold flex items-center justify-center hover:bg-gray-100 transition-colors"
+                >Register as a Student</a
+              >
+              <a
+                href="./company/auth/companyRegistration.html"
+                class="border-2 border-white text-white h-12 px-8 rounded-lg font-bold flex items-center justify-center hover:bg-white hover:text-primary transition-colors"
+                >Partner With Us</a
+              >
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Footer -->
+      <footer
+        class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700"
+      >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="md:col-span-1">
+              <div class="flex items-center gap-3 mb-4">
+                <div
+                  class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center"
+                >
+                  <span class="material-symbols-outlined text-white text-sm"
+                    >work</span
+                  >
+                </div>
+                <h2 class="font-bold text-lg text-gray-900 dark:text-white">
+                  IT Connect
+                </h2>
+              </div>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                Connecting Ambition with Opportunity.
+              </p>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-4">
+                Explore
+              </h3>
+              <ul class="space-y-3 text-sm">
+                <li>
+                  <a
+                    href="./auth/login.html"
+                    class="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors"
+                    >For Students</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="./company//auth/company_login.html"
+                    class="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors"
+                    >For Companies</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="./auth/login.html"
+                    class="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors"
+                    >Login</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-4">
+                Company
+              </h3>
+              <ul class="space-y-3 text-sm">
+                <li>
+                  <a
+                    href="/about.html"
+                    class="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors"
+                    >About Us</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="index.html#contact"
+                    class="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors"
+                    >Contact</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="/privacy.html"
+                    class="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors"
+                    >Privacy Policy</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-4">
+                Connect
+              </h3>
+              <div class="flex space-x-4">
+                <a
+                  href="#"
+                  class="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors text-xl"
+                >
+                  <i class="fab fa-linkedin"></i>
+                </a>
+                <a
+                  href="#"
+                  class="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors text-xl"
+                >
+                  <i class="fab fa-twitter"></i>
+                </a>
+                <a
+                  href="#"
+                  class="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors text-xl"
+                >
+                  <i class="fab fa-instagram"></i>
+                </a>
+                <a
+                  href="https://web.facebook.com/itconnect.496553"
+                  class="text-gray-600 dark:text-gray-400 hover:text-primary transition-colors text-xl"
+                >
+                  <i class="fab fa-facebook"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div
+            class="text-center text-sm text-gray-600 dark:text-gray-400 mt-12 pt-8 border-t border-gray-200 dark:border-gray-700"
+          >
+            © 2025 IT Connect. All Rights Reserved.
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Animation Script -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const fadeEls = document.querySelectorAll(".fade-in");
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+              }
+            });
+          },
+          {
+            threshold: 0.1,
+          }
+        );
+
+        fadeEls.forEach((el) => observer.observe(el));
+      });
+    </script>
+  </body>
+</html>

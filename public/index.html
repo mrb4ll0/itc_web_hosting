@@ -34,10 +34,9 @@
         },
       };
     </script>
+    <script type="module" src="js/index.js"></script>
   </head>
-  <body
-    class="font-display text-gray-800 dark:text-gray-200 relative"
-  >
+  <body class="font-display text-gray-800 dark:text-gray-200 relative">
     <div class="flex flex-col min-h-screen">
       <header
         class="bg-background-light dark:bg-background-dark/80 border-b border-gray-200 dark:border-gray-700/50 backdrop-blur-sm sticky top-0 z-20"
@@ -84,11 +83,14 @@
             </nav>
             <div class="flex items-center gap-4">
               <a
+                id="login"
+                href="#"
                 class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
-                href="auth/login.html"
                 >Login</a
               >
+
               <a
+                id="signup"
                 class="bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors"
                 href="auth/signup.html"
                 >Sign Up</a
@@ -98,9 +100,7 @@
         </div>
       </header>
       <main class="flex-grow">
-        <section
-          class="py-20 sm:py-24 lg:py-32 relative overflow-hidden"
-        >
+        <section class="py-20 sm:py-24 lg:py-32 relative overflow-hidden">
           <!-- Background image only for this section -->
           <div
             class="absolute inset-0 -z-10"
@@ -113,13 +113,18 @@
             "
           ></div>
           <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
+            <h1
+              class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight"
+            >
               Find Your Perfect Industrial Training Placement
             </h1>
             <p class="mt-4 max-w-2xl mx-auto text-lg sm:text-xl text-white">
-              Connect with top companies for your industrial training. Your journey to a successful career starts here.
+              Connect with top companies for your industrial training. Your
+              journey to a successful career starts here.
             </p>
-            <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div
+              class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4"
+            >
               <a
                 class="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-xl text-lg transition-transform transform hover:scale-105"
                 href="#"
@@ -140,19 +145,15 @@
                 </svg>
                 <span>Download Application</span>
               </a>
-              <a
+              <a id="company-loginbtn"
                 class="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-xl text-lg transition-colors"
-                href="#"
               >
-                <span>Register as a Partner Company</span>
+                <span>Register/Login (Company)</span>
               </a>
             </div>
           </div>
         </section>
-        <section
-          class="py-16 sm:py-20"
-          id="webapp"
-        >
+        <section class="py-16 sm:py-20" id="webapp">
           <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col lg:flex-row items-center gap-12">
               <div class="lg:w-1/2">
@@ -172,7 +173,7 @@
                   >
                   <a
                     class="bg-transparent border border-primary text-primary hover:bg-primary hover:text-white font-bold py-3 px-6 rounded-lg transition-colors"
-                    href="#"
+                    href="learnmore.html"
                     >Learn More</a
                   >
                 </div>
@@ -225,10 +226,7 @@
             </div>
           </div>
         </section>
-        <section
-          class="py-16 sm:py-20"
-          id="about"
-        >
+        <section class="py-16 sm:py-20" id="about">
           <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center">
               <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
@@ -245,10 +243,7 @@
             </div>
           </div>
         </section>
-        <section
-          class="py-16 sm:py-20"
-          id="partners"
-        >
+        <section class="py-16 sm:py-20" id="partners">
           <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
               <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
@@ -298,10 +293,7 @@
             </div>
           </div>
         </section>
-        <section
-          class="py-16 sm:py-20"
-          id="contact"
-        >
+        <section class="py-16 sm:py-20" id="contact">
           <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
               <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
@@ -410,7 +402,7 @@
               ></a>
               <a
                 class="text-gray-600 dark:text-gray-400 hover:text-primary"
-                href="#"
+                href="https://web.facebook.com/itconnect.496553"
                 ><svg
                   class="feather feather-facebook"
                   fill="none"

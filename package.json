@@ -1,0 +1,28 @@
+{
+  "name": "itc_web_hosting",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrb4ll0/itc_web_hosting.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mrb4ll0/itc_web_hosting/issues"
+  },
+  "homepage": "https://github.com/mrb4ll0/itc_web_hosting#readme",
+  "devDependencies": {
+    "tailwindcss": "^4.1.14"
+  },
+  "dependencies": {
+    "emailjs-com": "^3.2.0",
+    "firebase": "^12.4.0"
+  }
+}
