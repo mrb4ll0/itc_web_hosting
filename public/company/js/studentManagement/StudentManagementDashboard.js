@@ -17,6 +17,7 @@ export class CompanyDashboardManager {
   async init() {
     this.initializeElements();
     this.initializeEventListeners();
+    this.setupFilteringLogic();
     await this.loadInitialData();
   }
 
@@ -724,6 +725,817 @@ export class CompanyDashboardManager {
     }
   }
 
+  //********** Build applications card ***********/
+
+  buildApplicationCards(container, applications, status) {
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    if (applications.length === 0) {
+      const emptyMessages = {
+        pending: "No pending applications match your filters",
+        accepted: "No accepted applications match your filters",
+        rejected: "No rejected applications match your filters",
+      };
+
+      container.innerHTML = `
+        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-center">
+          <span class="material-symbols-outlined text-gray-400 text-4xl mb-2">
+            ${
+              status === "pending"
+                ? "inbox"
+                : status === "accepted"
+                ? "check_circle"
+                : "cancel"
+            }
+          </span>
+          <p class="text-gray-500 dark:text-gray-400">${
+            emptyMessages[status]
+          }</p>
+        </div>
+      `;
+      return;
+    }
+
+    applications.forEach((applicationData, index) => {
+      const application = applicationData.application;
+      const student = application.student || {};
+      const applicationId = application.id || `app-${index}`;
+
+      const applicationCard = this.createApplicationCard(
+        applicationId,
+        student,
+        application,
+        applicationData.opportunity,
+        status
+      );
+
+      container.appendChild(applicationCard);
+    });
+
+    this.attachApplicationEventListeners(applications, status);
+  }
+
+  createApplicationCard(
+    applicationId,
+    student,
+    application,
+    opportunity,
+    status
+  ) {
+    const card = document.createElement("div");
+    card.className = `bg-white dark:bg-gray-800 rounded-lg p-4 border ${
+      status === "accepted"
+        ? "border-green-200 dark:border-green-800"
+        : status === "rejected"
+        ? "border-red-200 dark:border-red-800"
+        : "border-yellow-200 dark:border-yellow-800"
+    }`;
+    card.id = `${status}-card-${applicationId}`;
+
+    // Format application date
+    const applicationDate = application.applicationDate
+      ? new Date(application.applicationDate)
+      : new Date();
+    const timeAgo = this.getTimeAgo(applicationDate);
+
+    // Get student information with fallbacks
+    const studentName = student.name || student.fullName || "Unknown Student";
+    const studentCourse =
+      student.courseOfStudy || student.program || "Not specified";
+    const studentEmail = student.email || "No email";
+    let avatarUrl = student.imageUrl || "";
+
+    if (
+      avatarUrl &&
+      (avatarUrl.includes("undefined") ||
+        avatarUrl.includes("null") ||
+        avatarUrl.trim() === "")
+    ) {
+      avatarUrl = null;
+    }
+
+    const avatarHtml = createAvatarElement(studentName, avatarUrl, 40);
+
+    // Status-specific content
+    const statusIcons = {
+      pending: { icon: "schedule", color: "text-yellow-500", label: "Pending" },
+      accepted: {
+        icon: "check_circle",
+        color: "text-green-500",
+        label: "Accepted",
+      },
+      rejected: { icon: "cancel", color: "text-red-500", label: "Rejected" },
+    };
+
+    const statusConfig = statusIcons[status] || statusIcons.pending;
+
+    card.innerHTML = `
+      <div class="flex items-start gap-3">
+        ${avatarHtml}
+        <div class="flex-1 min-w-0">
+          <h4 class="font-medium text-gray-900 dark:text-white truncate">${this.escapeHtml(
+            studentName
+          )}</h4>
+          <p class="text-sm text-gray-600 dark:text-gray-400 truncate">
+            ${this.escapeHtml(studentCourse)} - ${this.escapeHtml(
+      opportunity || "Internship"
+    )}
+          </p>
+          <p class="text-xs text-gray-500 truncate" title="${this.escapeHtml(
+            studentEmail
+          )}">
+            ${this.escapeHtml(studentEmail)}
+          </p>
+          <div class="flex items-center gap-1 mt-1">
+            <span class="material-symbols-outlined ${
+              statusConfig.color
+            } text-sm">${statusConfig.icon}</span>
+            <span class="text-xs ${statusConfig.color
+              .replace("text-", "text-")
+              .replace("500", "600")} font-medium">${statusConfig.label}</span>
+            <span class="text-xs text-gray-500 ml-1">${timeAgo}</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-2 mt-3">
+        <button 
+          id="view-${status}-btn-${applicationId}" 
+          class="flex-1 bg-primary text-white text-sm py-2 rounded-lg hover:bg-primary/90 transition-colors"
+        >
+          View
+        </button>
+        ${this.getActionButtons(status, applicationId)}
+      </div>
+    `;
+
+    return card;
+  }
+
+  getActionButtons(status, applicationId) {
+    switch (status) {
+      case "pending":
+        return `
+          <button id="accept-pending-btn-${applicationId}" class="flex-1 bg-green-600 text-white text-sm py-2 rounded-lg hover:bg-green-700 transition-colors">
+            Accept
+          </button>
+          <button id="reject-pending-btn-${applicationId}" class="flex-1 bg-red-600 text-white text-sm py-2 rounded-lg hover:bg-red-700 transition-colors">
+            Reject
+          </button>
+        `;
+
+      case "accepted":
+        return `
+          <button id="message-accepted-btn-${applicationId}" class="flex-1 bg-blue-600 text-white text-sm py-2 rounded-lg hover:bg-blue-700 transition-colors">
+            Contact
+          </button>
+        `;
+
+      case "rejected":
+        return `
+          <button id="undo-reject-btn-${applicationId}" class="flex-1 bg-gray-600 text-white text-sm py-2 rounded-lg hover:bg-gray-700 transition-colors">
+            Undo
+          </button>
+        `;
+
+      default:
+        return "";
+    }
+  }
+
+  //*********************************************** Filtering logic *****************************/
+
+  setupFilteringLogic() {
+    console.log("Setting up filtering logic");
+
+    // Initialize filter states
+    this.currentFilters = {
+      searchMode: "all",
+      searchTerm: "",
+      institution: "all",
+      course: "all",
+      status: "all",
+    };
+
+    // Add event listeners for all filters
+    this.addFilterEventListeners();
+  }
+
+  addFilterEventListeners() {
+    const searchModeSelect = document.getElementById("search-mode");
+    if (searchModeSelect) {
+      searchModeSelect.addEventListener("change", (e) => {
+        this.handleSearchModeChange(e.target.value);
+      });
+    }
+
+    // Search input
+    const searchInput = document.getElementById("search-students-input");
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        this.handleSearchInput(e.target.value);
+      });
+    }
+
+    // Filter changes
+    const institutionFilter = document.getElementById("institution-filter");
+    const courseFilter = document.getElementById("course-filter");
+    const statusFilter = document.getElementById("status-filter");
+
+    if (institutionFilter) {
+      institutionFilter.addEventListener("change", (e) => {
+        this.handleFilterChange("institution", e.target.value);
+      });
+    }
+
+    if (courseFilter) {
+      courseFilter.addEventListener("change", (e) => {
+        this.handleFilterChange("course", e.target.value);
+      });
+    }
+
+    if (statusFilter) {
+      statusFilter.addEventListener("change", (e) => {
+        this.handleFilterChange("status", e.target.value);
+      });
+    }
+  }
+
+  handleSearchInput(searchTerm) {
+    this.currentFilters.searchTerm = searchTerm.trim();
+    this.performFiltering();
+  }
+  handleSearchModeChange(mode) {
+    this.currentFilters.searchMode = mode;
+
+    // Update search placeholder based on mode
+    const searchInput = document.getElementById("search-students-input");
+    const placeholders = {
+      all: "Search across all fields...",
+      accepted: "Search accepted students...",
+      pending: "Search pending applications...",
+      rejected: "Search rejected applications...",
+      current: "Search current trainees...",
+    };
+
+    if (searchInput) {
+      searchInput.placeholder = placeholders[mode] || placeholders.all;
+    }
+
+    // Auto-set status filter based on mode
+    const statusFilter = document.getElementById("status-filter");
+    if (statusFilter) {
+      if (["accepted", "pending", "rejected"].includes(mode)) {
+        statusFilter.value = mode;
+        this.currentFilters.status = mode;
+      } else if (mode === "current") {
+        statusFilter.value = "accepted"; // Current trainees are typically accepted
+        this.currentFilters.status = "accepted";
+      } else {
+        statusFilter.value = "all";
+        this.currentFilters.status = "all";
+      }
+    }
+
+    this.performFiltering();
+  }
+
+  handleFilterChange(filterType, value) {
+    this.currentFilters[filterType] = value;
+    this.performFiltering();
+  }
+
+  // updateUI(filteredData) {
+  //   this.updateApplicationSections(filteredData.applicationsByStatus);
+  //   this.updateTrainingSections(filteredData.trainingStudentsByDate);
+  //   this.updateStats(filteredData);
+  // }
+
+  performFiltering() {
+    if (!this.applications) return;
+    console.log(
+      "Performing filtering with current filters:",
+      this.currentFilters
+    );
+    const filteredData = this.filterApplications();
+    this.updateSearchUI(filteredData);
+    this.updateActiveFiltersDisplay();
+  }
+
+  filterApplications() {
+    const { applicationsByStatus, trainingStudentsByDate } = this;
+    const { searchMode, searchTerm, institution, course, status } =
+      this.currentFilters;
+
+    let filteredData = {
+      applicationsByStatus: {
+        pending: [],
+        shortlisted: [],
+        accepted: [],
+        rejected: [],
+      },
+      trainingStudentsByDate: {
+        current: [],
+        upcoming: [],
+        completed: [],
+        notStarted: [],
+      },
+    };
+
+    // Focus filtering based on search mode
+    switch (searchMode) {
+      case "accepted":
+        filteredData.applicationsByStatus.accepted = this.filterSection(
+          applicationsByStatus.accepted,
+          searchTerm,
+          institution,
+          course,
+          status
+        );
+        break;
+
+      case "pending":
+        filteredData.applicationsByStatus.pending = this.filterSection(
+          applicationsByStatus.pending,
+          searchTerm,
+          institution,
+          course,
+          status
+        );
+        break;
+
+      case "rejected":
+        filteredData.applicationsByStatus.rejected = this.filterSection(
+          applicationsByStatus.rejected,
+          searchTerm,
+          institution,
+          course,
+          status
+        );
+        break;
+
+      case "current":
+        filteredData.trainingStudentsByDate.current = this.filterSection(
+          trainingStudentsByDate.current,
+          searchTerm,
+          institution,
+          course,
+          status
+        );
+        break;
+
+      default: // 'all' - filter all sections
+        Object.keys(applicationsByStatus).forEach((statusKey) => {
+          filteredData.applicationsByStatus[statusKey] = this.filterSection(
+            applicationsByStatus[statusKey],
+            searchTerm,
+            institution,
+            course,
+            status
+          );
+        });
+
+        Object.keys(trainingStudentsByDate).forEach((dateKey) => {
+          filteredData.trainingStudentsByDate[dateKey] = this.filterSection(
+            trainingStudentsByDate[dateKey],
+            searchTerm,
+            institution,
+            course,
+            status
+          );
+        });
+        break;
+    }
+
+    return filteredData;
+  }
+
+  filterSection(sectionData, searchTerm, institution, course, status) {
+    return sectionData.filter((applicationData) => {
+      const application = applicationData.application;
+      const student = application.student || {};
+
+      // Search term filtering
+      if (searchTerm) {
+        const searchLower = searchTerm.toLowerCase();
+        const matchesSearch =
+          this.searchInField(student.name, searchLower) ||
+          this.searchInField(student.fullName, searchLower) ||
+          this.searchInField(student.university, searchLower) ||
+          this.searchInField(student.institution, searchLower) ||
+          this.searchInField(student.courseOfStudy, searchLower) ||
+          this.searchInField(student.program, searchLower) ||
+          this.searchInField(student.email, searchLower) ||
+          this.searchInField(applicationData.opportunity, searchLower);
+
+        if (!matchesSearch) return false;
+      }
+
+      // Institution filter
+      if (institution !== "all") {
+        const studentInstitution =
+          student.university || student.institution || "";
+        if (studentInstitution.toLowerCase() !== institution.toLowerCase()) {
+          return false;
+        }
+      }
+
+      // Course filter
+      if (course !== "all") {
+        const studentCourse = student.courseOfStudy || student.program || "";
+        if (studentCourse.toLowerCase() !== course.toLowerCase()) {
+          return false;
+        }
+      }
+
+      // Status filter (only for applications, not for training students)
+      if (status !== "all" && application.status) {
+        if (application.status !== status) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }
+
+  searchInField(fieldValue, searchTerm) {
+    if (!fieldValue) return false;
+    return fieldValue.toLowerCase().includes(searchTerm);
+  }
+
+  updateSearchUI(filteredData) {
+    console.log("filteredData is ",filteredData);
+    switch (this.currentFilters.searchMode) {
+      case "accepted":
+      case "pending":
+      case "rejected":
+        this.updateApplicationSectionsBySearchMode(filteredData.applicationsByStatus);
+        break;
+      case "current":
+        this.updateTrainingSections(filteredData.trainingStudentsByDate);
+        break;
+    }
+   this.updateModeStats(filteredData);
+  }
+  updateUI(filteredData) {
+    console.log("Updating UI with filtered data");
+    this.updateApplicationSections(filteredData.applicationsByStatus);
+    this.updateTrainingSections(filteredData.trainingStudentsByDate);
+    this.updateStats(filteredData);
+  }
+
+  updateApplicationSectionsBySearchMode(filteredApplications) {
+  switch (this.currentFilters.searchMode) {
+    case "pending":
+      this.buildApplicationCards(
+        document.getElementById("pending-applications-list"),
+        filteredApplications.pending,
+        "pending"
+      );
+      document.getElementById("pending-applications-count").textContent =
+        filteredApplications.pending.length;
+      break;
+
+    case "accepted":
+      this.buildApplicationCards(
+        document.getElementById("accepted-list"),
+        filteredApplications.accepted,
+        "accepted"
+      );
+      document.getElementById("accepted-count").textContent =
+        filteredApplications.accepted.length;
+      break;
+
+    case "rejected":
+      this.buildApplicationCards(
+        document.getElementById("rejected-list"),
+        filteredApplications.rejected,
+        "rejected"
+      );
+      document.getElementById("rejected-count").textContent =
+        filteredApplications.rejected.length;
+      break;
+  }
+}
+
+
+  updateApplicationSections(filteredApplications) {
+    // Update pending applications
+    const pendingList = document.getElementById("pending-applications-list");
+    if (pendingList) {
+      this.buildApplicationCards(
+        pendingList,
+        filteredApplications.pending,
+        "pending"
+      );
+    }
+
+    // Update accepted applications
+    const acceptedList = document.getElementById("accepted-list");
+    if (acceptedList) {
+      this.buildApplicationCards(
+        acceptedList,
+        filteredApplications.accepted,
+        "accepted"
+      );
+    }
+
+    // Update rejected applications
+    const rejectedList = document.getElementById("rejected-list");
+    if (rejectedList) {
+      this.buildApplicationCards(
+        rejectedList,
+        filteredApplications.rejected,
+        "rejected"
+      );
+    }
+
+    // Update counts
+    this.updateApplicationCounts(filteredApplications);
+  }
+
+  updateTrainingSections(filteredTraining) {
+    // Update current trainees
+    const traineesGrid = document.getElementById("trainees-grid");
+    if (traineesGrid && this.buildCurrentTraineesSection) {
+      // Store filtered data temporarily
+      const originalTrainingData = this.trainingStudentsByDate;
+      this.trainingStudentsByDate = filteredTraining;
+
+      this.buildCurrentTraineesSection();
+
+      // Restore original data
+      this.trainingStudentsByDate = originalTrainingData;
+    }
+
+    // Update training counts if needed
+    const currentTraineesTitle = document.getElementById(
+      "current-trainees-title"
+    );
+    if (currentTraineesTitle) {
+      const count = filteredTraining.current.length;
+      currentTraineesTitle.textContent = `Current Trainees ${
+        count > 0 ? `(${count})` : ""
+      }`;
+    }
+  }
+
+  updateApplicationCounts(filteredApplications) {
+    // Update pending count
+    const pendingCount = document.getElementById("pending-applications-count");
+    if (pendingCount) {
+      pendingCount.textContent = filteredApplications.pending.length;
+    }
+
+    // Update accepted count
+    const acceptedCount = document.getElementById("accepted-count");
+    if (acceptedCount) {
+      acceptedCount.textContent = filteredApplications.accepted.length;
+    }
+
+    // Update rejected count
+    const rejectedCount = document.getElementById("rejected-count");
+    if (rejectedCount) {
+      rejectedCount.textContent = filteredApplications.rejected.length;
+    }
+  }
+
+  updateStats(filteredData) {
+    // Update quick stats based on filtered data
+    console.log("Updating stats with filtered data");
+    const totalApplicants = Object.values(
+      filteredData.applicationsByStatus
+    ).reduce((sum, applications) => sum + applications.length, 0);
+
+    const totalApplicantsValue = document.getElementById(
+      "total-applicants-value"
+    );
+    if (totalApplicantsValue) {
+      totalApplicantsValue.textContent = totalApplicants;
+    }
+
+    const pendingReviewValue = document.getElementById("pending-review-value");
+    if (pendingReviewValue) {
+      pendingReviewValue.textContent =
+        filteredData.applicationsByStatus.pending.length;
+    }
+
+    const acceptedValue = document.getElementById("accepted-value");
+    if (acceptedValue) {
+      acceptedValue.textContent =
+        filteredData.applicationsByStatus.accepted.length;
+    }
+
+    const rejectedValue = document.getElementById("rejected-value");
+    if (rejectedValue) {
+      rejectedValue.textContent =
+        filteredData.applicationsByStatus.rejected.length;
+    }
+  }
+
+
+  updateModeStats(filteredData) {
+    // Update quick stats based on filtered data
+    switch (this.currentFilters.searchMode) {
+      case "pending":
+   
+    const pendingReviewValue = document.getElementById("pending-review-value");
+    if (pendingReviewValue) {
+      pendingReviewValue.textContent =
+        filteredData.applicationsByStatus.pending.length;
+    }
+    break;
+
+    case "accepted":
+      const acceptedValue = document.getElementById("accepted-value");
+      if (acceptedValue) {
+        acceptedValue.textContent =
+          filteredData.applicationsByStatus.accepted.length;
+      }
+      break;
+
+    case "rejected":
+      const rejectedValue = document.getElementById("rejected-value");
+      if (rejectedValue) {
+        rejectedValue.textContent =
+          filteredData.applicationsByStatus.rejected.length;
+      }
+      break;
+    }
+  }
+
+  
+
+
+updateActiveFiltersDisplay() {
+  const activeFiltersContainer = document.getElementById("active-filters");
+  if (!activeFiltersContainer) return;
+
+  console.log("Current filters:", this.currentFilters);
+
+  const activeFilters = Object.entries(this.currentFilters).filter(
+    ([key, value]) => {
+      if (key === "searchTerm") return value !== "";
+      return value !== "all";
+    }
+  );
+
+    console.log("Active filters after filtering:", activeFilters);
+
+  if (activeFilters.length === 0) {
+    activeFiltersContainer.classList.add("hidden");
+    return;
+  }
+
+  activeFiltersContainer.classList.remove("hidden");
+
+  const filterLabels = {
+    searchMode: "Mode",
+    searchTerm: "Search",
+    institution: "Institution",
+    course: "Course",
+    status: "Status",
+  };
+
+  const modeLabels = {
+    all: "All Fields",
+    accepted: "Accepted",
+    pending: "Pending",
+    rejected: "Rejected",
+    current: "Current Trainees",
+  };
+
+  activeFiltersContainer.innerHTML = activeFilters
+    .map(([key, value]) => {
+      let displayValue = value;
+      if (key === "searchMode") {
+        displayValue = modeLabels[value] || value;
+      }
+
+      return `
+      <div class="active-filter-item bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm flex items-center gap-2" data-filter-type="${key}">
+        <span>${filterLabels[key]}: ${displayValue}</span>
+        <button class="clear-filter-btn text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100">
+          <span class="material-symbols-outlined text-sm">close</span>
+        </button>
+      </div>
+    `;
+    })
+    .join("");
+
+  // Add event listeners to the clear buttons
+  this.attachClearFilterListeners();
+}
+
+attachClearFilterListeners() {
+  const clearButtons = document.querySelectorAll('.clear-filter-btn');
+  clearButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const filterItem = button.closest('.active-filter-item');
+      const filterType = filterItem?.dataset.filterType;
+      if (filterType) {
+        this.clearFilter(filterType);
+      }
+    });
+  });
+}
+  clearFilter(filterType) {
+    if (filterType === "searchTerm") {
+      document.getElementById("search-students-input").value = "";
+      this.currentFilters.searchTerm = "";
+    } else if (filterType === "searchMode") {
+      document.getElementById("search-mode").value = "all";
+      this.currentFilters.searchMode = "all";
+    } else {
+      this.currentFilters[filterType] = "all";
+      const element = document.getElementById(`${filterType}-filter`);
+      if (element) element.value = "all";
+    }
+
+    this.performFiltering();
+  }
+
+  clearAllFilters() {
+    document.getElementById("search-students-input").value = "";
+    this.currentFilters.searchTerm = "";
+    document.getElementById("search-mode").value = "all";
+    this.currentFilters.searchMode = "all";
+    document.getElementById("institution-filter").value = "all";
+    this.currentFilters.institution = "all";
+    document.getElementById("course-filter").value = "all";
+    this.currentFilters.course = "all";
+    document.getElementById("status-filter").value = "all";
+    this.currentFilters.status = "all"; 
+    this.performFiltering();
+  }
+
+  // Method to populate filter options
+  populateFilterOptions(applications) {
+    this.populateInstitutionOptions(applications);
+    this.populateCourseOptions(applications);
+  }
+
+  populateInstitutionOptions(applications) {
+    const institutionFilter = document.getElementById("institution-filter");
+    if (!institutionFilter) return;
+
+    // Clear existing options (keep "All Institutions")
+    while (institutionFilter.children.length > 1) {
+      institutionFilter.removeChild(institutionFilter.lastChild);
+    }
+
+    const institutions = [
+      ...new Set(
+        applications
+          .map(
+            (app) =>
+              app.application.student?.university ||
+              app.application.student?.institution
+          )
+          .filter(Boolean)
+      ),
+    ];
+
+    institutions.forEach((institution) => {
+      const option = document.createElement("option");
+      option.value = institution;
+      option.textContent = institution;
+      institutionFilter.appendChild(option);
+    });
+  }
+
+  populateCourseOptions(applications) {
+    const courseFilter = document.getElementById("course-filter");
+    if (!courseFilter) return;
+
+    // Clear existing options (keep "All Courses")
+    while (courseFilter.children.length > 1) {
+      courseFilter.removeChild(courseFilter.lastChild);
+    }
+
+    const courses = [
+      ...new Set(
+        applications
+          .map(
+            (app) =>
+              app.application.student?.courseOfStudy ||
+              app.application.student?.program
+          )
+          .filter(Boolean)
+      ),
+    ];
+
+    courses.forEach((course) => {
+      const option = document.createElement("option");
+      option.value = course;
+      option.textContent = course;
+      courseFilter.appendChild(option);
+    });
+  }
+
   //***************************** Course Setup helper method *****************************//
 
   async lazyLoadCourses() {
@@ -905,6 +1717,12 @@ export class CompanyDashboardManager {
     sections.forEach((section) => {
       if (section) section.style.display = "none";
     });
+    //sections-container
+
+      const applicationsContainer = document.getElementById('sections-container');
+    if (applicationsContainer) {
+        applicationsContainer.style.display = "none";
+    }
 
     // Show relevant content based on tab
     switch (tabId) {
@@ -912,19 +1730,23 @@ export class CompanyDashboardManager {
         if (this.pipelineContainer)
           this.pipelineContainer.style.display = "block";
         if (this.rejectedSection) this.rejectedSection.style.display = "block";
+        this.clearAllFilters();
         break;
-      case "applications-tab":
-        if (this.pipelineContainer)
-          this.pipelineContainer.style.display = "block";
+      case "applications-tab":  
+             this.showApplicationsTab();
+             this.clearAllFilters();
         break;
       case "current-trainees-tab":
         if (this.rejectedSection) this.rejectedSection.style.display = "block";
+        this.clearAllFilters();
         break;
       case "upcoming-tab":
         // Show upcoming content
+        this.clearAllFilters();
         break;
       case "analytics-tab":
         // Show analytics content
+        this.clearAllFilters();
         break;
     }
   }
@@ -1154,9 +1976,9 @@ export class CompanyDashboardManager {
       ? new Date(application.applicationDate)
       : new Date();
     const timeAgo = this.getTimeAgo(applicationDate);
-    console.log("Formatted time ago:", timeAgo);
-    console.log("Application date:", application.applicationDate);
-    console.log("application object:" + JSON.stringify(application));
+    //console.log("Formatted time ago:", timeAgo);
+    //console.log("Application date:", application.applicationDate);
+    //console.log("application object:" + JSON.stringify(application));
 
     // Get student information with fallbacks
     const studentName = student.name || student.fullName || "Unknown Student";
@@ -1300,7 +2122,7 @@ export class CompanyDashboardManager {
 
         // Update UI
         this.buildPendingApplicationsSection();
-        this.buildAcceptedApplicationsSection(); // You'll need to create this method
+        this.buildAcceptedApplicationsSection();
 
         // Show success feedback
         this.showNotification("Application accepted successfully", "success");
@@ -2496,14 +3318,574 @@ export class CompanyDashboardManager {
       }
     });
   }
+
+  
+//*********************************************************** Applications Tab Switching *************************************** //  
+
+showApplicationsTab() {
+    const sectionsContainer = document.getElementById('sections-container');
+    const searchFiltersContainer = document.getElementById('search-filters-container');
+
+    // Hide main sections
+    if (sectionsContainer) sectionsContainer.style.display = 'none';
+    
+    // Create or show applications container
+    let applicationsContainer = document.getElementById('applications-container');
+    if (!applicationsContainer) {
+        applicationsContainer = document.createElement('div');
+        applicationsContainer.id = 'applications-container';
+        applicationsContainer.innerHTML = this.getApplicationsContent();
+        searchFiltersContainer.parentNode.insertBefore(applicationsContainer, searchFiltersContainer.nextSibling);
+    } else {
+        applicationsContainer.style.display = 'block';
+    }
+
+    // Load applications data
+    this.loadApplicationsData();
+}
+
+
+getApplicationsContent() {
+    return `
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm mb-8">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 lg:mb-0">
+                    All Applications
+                </h2>
+                <div class="flex gap-3">
+                    <button id="export-applications-btn" class="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <span class="material-symbols-outlined text-base">download</span>
+                        Export
+                    </button>
+                    <button id="bulk-actions-btn" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        <span class="material-symbols-outlined text-base">playlist_add_check</span>
+                        Bulk Actions
+                    </button>
+                </div>
+            </div>
+
+            <!-- Applications Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-700">
+                        <tr>
+                            <!-- ADD CHECKBOX COLUMN -->
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                <input type="checkbox" id="select-all-applications" class="rounded border-gray-300 text-primary focus:ring-primary">
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Student
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Course
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Institution
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Applied Date
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="applications-table-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        <!-- Applications will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ADD PAGINATION SECTION -->
+            <div class="flex flex-col lg:flex-row items-center justify-between mt-6 px-4 py-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 rounded-b-lg">
+                <div class="text-sm text-gray-700 dark:text-gray-300 mb-4 lg:mb-0">
+                    Showing <span id="pagination-start">1</span> to <span id="pagination-end">10</span> of <span id="pagination-total">0</span> results
+                </div>
+                <div class="flex gap-2">
+                    <button id="prev-page" class="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        Previous
+                    </button>
+                    <div class="flex gap-1" id="pagination-numbers">
+                        <button class="px-3 py-1 rounded bg-primary text-white">1</button>
+                    </div>
+                    <button id="next-page" class="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+
+async loadApplicationsData() {
+  console.log("loadApplicationsData called");
+    const tableBody = document.getElementById('applications-table-body');
+    if (!tableBody) return;
+    this.updatePaginationInfo();
+    // Calculate pagination
+    const startIndex = (this.currentApplicationsPage - 1) * this.applicationsPerPage;
+    const endIndex = startIndex + this.applicationsPerPage;
+    console.log("Filtered applications size is " + this.applications.length);
+    console.log("Start index: " + startIndex + ", End index: " + endIndex);
+    const tableApplications = await it_base_companycloud.getAllCompanyApplications(this.companyId);
+    const paginatedApplications = tableApplications.slice(startIndex, endIndex);
+    console.log("Paginated applications size is " + paginatedApplications.length);
+
+    // Show loading or empty state
+    if (paginatedApplications.length === 0) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                    <div class="flex flex-col items-center">
+                        <span class="material-symbols-outlined text-4xl mb-2">search_off</span>
+                        <p class="text-lg font-medium mb-2">No applications found</p>
+                        <p class="text-sm">Try adjusting your search or filter criteria</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+        this.updatePaginationInfo();
+        return;
+    }
+
+    // Generate table rows - HANDLE DIFFERENT DATA STRUCTURES
+    tableBody.innerHTML = paginatedApplications.map(application => {
+        // Extract data based on your actual data structure
+        // Try multiple possible data structures
+        const studentName = application.student?.name;
+        
+        const studentEmail = application.student?.email;
+        
+        const course = application.internship?.title ;
+        
+        const institution = application.student?.institution;
+        
+        const appliedDate = application.appliedDate ? 
+                           new Date(application.appliedDate).toLocaleDateString() : 
+                           'Unknown Date';
+        
+        const status = application.applicationStatus || 'error';
+        
+        // Get initials for avatar
+        const initials = studentName.split(' ').map(n => n[0]).join('').toUpperCase();
+        console.log("initials is "+initials);
+
+        return `
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap">
+                <input type="checkbox" class="application-checkbox rounded border-gray-300 text-primary focus:ring-primary" data-id="${application.id || application._id || ''}">
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                        ${initials}
+                    </div>
+                    <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                            ${studentName}
+                        </div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">
+                            ${studentEmail}
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                ${course}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                ${institution}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                ${appliedDate}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${this.statusStyles[status]}">
+                    ${status.charAt(0).toUpperCase() + status.slice(1)}
+                </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <div class="flex gap-2">
+                    <button class="view-application text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300" data-id="${application.id || application._id || ''}">
+                        View
+                    </button>
+                    <button class="edit-application text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300" data-id="${application.id || application._id || ''}">
+                        Edit
+                    </button>
+                    <button class="delete-application text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300" data-id="${application.id || application._id || ''}">
+                        Delete
+                    </button>
+                </div>
+            </td>
+        </tr>
+        `;
+    }).join('');
+
+    // Update pagination and set up event listeners
+    this.updatePaginationInfo();
+    this.setupApplicationsEventListeners();
+}
+
+
+updatePaginationInfo() {
+    const start = ((this.currentApplicationsPage - 1) * this.applicationsPerPage) + 1;
+    const end = Math.min(this.currentApplicationsPage * this.applicationsPerPage, this.applications.length);
+    const total = this.applications.length;
+
+    // Update pagination text
+    const startElement = document.getElementById('pagination-start');
+    const endElement = document.getElementById('pagination-end');
+    const totalElement = document.getElementById('pagination-total');
+    
+    if (startElement) startElement.textContent = start;
+    if (endElement) endElement.textContent = end;
+    if (totalElement) totalElement.textContent = total;
+
+    // Update pagination buttons
+    const prevButton = document.getElementById('prev-page');
+    const nextButton = document.getElementById('next-page');
+    
+    if (prevButton) {
+        prevButton.disabled = this.currentApplicationsPage === 1;
+    }
+    if (nextButton) {
+        nextButton.disabled = this.currentApplicationsPage * this.applicationsPerPage >= this.applications.length;
+    }
+
+    // Update pagination numbers
+    this.updatePaginationNumbers();
+}
+
+updatePaginationNumbers() {
+    const paginationContainer = document.getElementById('pagination-numbers');
+    if (!paginationContainer) return;
+
+    const totalPages = Math.ceil(this.applications.length / this.applicationsPerPage);
+    paginationContainer.innerHTML = '';
+
+    for (let i = 1; i <= totalPages; i++) {
+        const button = document.createElement('button');
+        button.className = `px-3 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 ${
+            i === this.currentApplicationsPage ? 'bg-primary text-white border-primary' : ''
+        }`;
+        button.textContent = i;
+        button.addEventListener('click', () => {
+            this.currentApplicationsPage = i;
+            this.loadApplicationsData();
+        });
+        paginationContainer.appendChild(button);
+    }
+}
+
+debugApplicationsData() {
+    if (this.applications.length > 0) {
+        console.log("First application object:", this.applications[0]);
+        console.log("All application keys:", Object.keys(this.applications[0]));
+    } else {
+        console.log("No applications data found");
+    }
+}
+
+
+setupApplicationsEventListeners() {
+    // View application
+    document.querySelectorAll('.view-application').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const applicationId = e.target.getAttribute('data-id');
+            this.viewApplication(parseInt(applicationId));
+        });
+    });
+
+    // Edit application
+    document.querySelectorAll('.edit-application').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const applicationId = e.target.getAttribute('data-id');
+            this.editApplication(parseInt(applicationId));
+        });
+    });
+
+    // Delete application
+    document.querySelectorAll('.delete-application').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const applicationId = e.target.getAttribute('data-id');
+            this.deleteApplication(parseInt(applicationId));
+        });
+    });
+
+    // Select all checkbox
+    const selectAllCheckbox = document.getElementById('select-all-applications');
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', (e) => {
+            const checkboxes = document.querySelectorAll('.application-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = e.target.checked;
+            });
+        });
+    }
+
+    // Individual checkbox - update select all
+    document.querySelectorAll('.application-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            this.updateSelectAllCheckbox();
+        });
+    });
+
+    // Export applications
+    const exportBtn = document.getElementById('export-applications-btn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+            this.exportApplications();
+        });
+    }
+
+    // Bulk actions
+    const bulkActionsBtn = document.getElementById('bulk-actions-btn');
+    if (bulkActionsBtn) {
+        bulkActionsBtn.addEventListener('click', () => {
+            this.showBulkActions();
+        });
+    }
+
+    // Pagination buttons
+    const prevButton = document.getElementById('prev-page');
+    const nextButton = document.getElementById('next-page');
+    
+    if (prevButton) {
+        prevButton.addEventListener('click', () => {
+            if (this.currentApplicationsPage > 1) {
+                this.currentApplicationsPage--;
+                this.loadApplicationsData();
+            }
+        });
+    }
+    
+    if (nextButton) {
+        nextButton.addEventListener('click', () => {
+            if (this.currentApplicationsPage * this.applicationsPerPage < this.filteredApplications.length) {
+                this.currentApplicationsPage++;
+                this.loadApplicationsData();
+            }
+        });
+    }
+
+    // Search and filter events
+    this.setupSearchAndFilterEvents();
+}
+
+setupSearchAndFilterEvents() {
+    const searchInput = document.getElementById('search-students-input');
+    const statusFilter = document.getElementById('status-filter');
+    const courseFilter = document.getElementById('course-filter');
+    const institutionFilter = document.getElementById('institution-filter');
+
+    // Debounce search to avoid too many requests
+    let searchTimeout;
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                this.filterApplications();
+            }, 300);
+        });
+    }
+
+    if (statusFilter) {
+        statusFilter.addEventListener('change', () => {
+            this.filterApplications();
+        });
+    }
+
+    if (courseFilter) {
+        courseFilter.addEventListener('change', () => {
+            this.filterApplications();
+        });
+    }
+
+    if (institutionFilter) {
+        institutionFilter.addEventListener('change', () => {
+            this.filterApplications();
+        });
+    }
+}
+
+filterApplications() {
+    const searchInput = document.getElementById('search-students-input');
+    const statusFilter = document.getElementById('status-filter');
+    const courseFilter = document.getElementById('course-filter');
+    const institutionFilter = document.getElementById('institution-filter');
+
+    const searchTerm = searchInput?.value.toLowerCase() || '';
+    const statusValue = statusFilter?.value || 'all';
+    const courseValue = courseFilter?.value || 'all';
+    const institutionValue = institutionFilter?.value || 'all';
+
+    this.filteredApplications = this.applications.filter(application => {
+        const matchesSearch = !searchTerm || 
+            application.studentName.toLowerCase().includes(searchTerm) ||
+            application.email.toLowerCase().includes(searchTerm) ||
+            application.course.toLowerCase().includes(searchTerm) ||
+            application.institution.toLowerCase().includes(searchTerm);
+        
+        const matchesStatus = statusValue === 'all' || application.status === statusValue;
+        const matchesCourse = courseValue === 'all' || application.course === courseValue;
+        const matchesInstitution = institutionValue === 'all' || application.institution === institutionValue;
+
+        return matchesSearch && matchesStatus && matchesCourse && matchesInstitution;
+    });
+
+    // Reset to first page when filtering
+    this.currentApplicationsPage = 1;
+    this.loadApplicationsData();
+}
+
+// Application Action Methods
+viewApplication(applicationId) {
+    const application = this.applicationsData.find(app => app.id === applicationId);
+    if (application) {
+        // In a real app, you'd show a modal or navigate to a detail page
+        console.log('Viewing application:', application);
+        alert(`Viewing application for: ${application.studentName}\nEmail: ${application.email}\nCourse: ${application.course}\nStatus: ${application.status}\nPhone: ${application.phone}\nApplied: ${new Date(application.appliedDate).toLocaleDateString()}`);
+    }
+}
+
+editApplication(applicationId) {
+    const application = this.applicationsData.find(app => app.id === applicationId);
+    if (application) {
+        // In a real app, you'd show an edit form/modal
+        console.log('Editing application:', application);
+        alert(`Editing application for: ${application.studentName}\nThis would open an edit form.`);
+    }
+}
+
+deleteApplication(applicationId) {
+    if (confirm('Are you sure you want to delete this application? This action cannot be undone.')) {
+        const index = this.applicationsData.findIndex(app => app.id === applicationId);
+        if (index !== -1) {
+            this.applicationsData.splice(index, 1);
+            this.filteredApplications = [...this.applicationsData];
+            this.loadApplicationsData();
+            
+            // Show success message
+            this.showNotification('Application deleted successfully', 'success');
+        }
+    }
+}
+
+updateSelectAllCheckbox() {
+    const selectAllCheckbox = document.getElementById('select-all-applications');
+    const checkboxes = document.querySelectorAll('.application-checkbox');
+    
+    if (selectAllCheckbox && checkboxes.length > 0) {
+        const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+        const someChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+        
+        selectAllCheckbox.checked = allChecked;
+        selectAllCheckbox.indeterminate = someChecked && !allChecked;
+    }
+}
+
+exportApplications() {
+    // Get selected applications or all filtered applications
+    const selectedCheckboxes = document.querySelectorAll('.application-checkbox:checked');
+    let applicationsToExport;
+    
+    if (selectedCheckboxes.length > 0) {
+        const selectedIds = Array.from(selectedCheckboxes).map(cb => parseInt(cb.getAttribute('data-id')));
+        applicationsToExport = this.applicationsData.filter(app => selectedIds.includes(app.id));
+    } else {
+        applicationsToExport = this.filteredApplications;
+    }
+    
+    // In a real app, you'd make an API call to export the data
+    console.log('Exporting applications:', applicationsToExport);
+    this.showNotification(`Exported ${applicationsToExport.length} applications`, 'success');
+    
+    // For demo purposes, we'll create a downloadable CSV
+    this.downloadAsCSV(applicationsToExport);
+}
+
+downloadAsCSV(applications) {
+    const headers = ['Name', 'Email', 'Course', 'Institution', 'Applied Date', 'Status', 'Phone'];
+    const csvData = applications.map(app => [
+        app.studentName,
+        app.email,
+        app.course,
+        app.institution,
+        new Date(app.appliedDate).toLocaleDateString(),
+        app.status,
+        app.phone
+    ]);
+    
+    const csvContent = [
+        headers.join(','),
+        ...csvData.map(row => row.map(field => `"${field}"`).join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `applications-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
+
+showBulkActions() {
+    const selectedCheckboxes = document.querySelectorAll('.application-checkbox:checked');
+    
+    if (selectedCheckboxes.length === 0) {
+        this.showNotification('Please select at least one application', 'warning');
+        return;
+    }
+    
+    // In a real app, you'd show a dropdown menu with bulk actions
+    const selectedIds = Array.from(selectedCheckboxes).map(cb => parseInt(cb.getAttribute('data-id')));
+    console.log('Bulk actions for applications:', selectedIds);
+    
+    // Simple confirmation for demo
+    if (confirm(`Perform bulk actions on ${selectedIds.length} selected applications?`)) {
+        this.showNotification(`Bulk action completed for ${selectedIds.length} applications`, 'success');
+    }
+}
+
+showNotification(message, type = 'info') {
+    // Simple notification - in a real app, use a proper notification system
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white ${
+        type === 'success' ? 'bg-green-500' : 
+        type === 'warning' ? 'bg-yellow-500' : 
+        type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+    } z-50`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 3000);
+}
+
+
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
   new CompanyDashboardManager();
-   setTimeout(() => {
+  setTimeout(() => {
     new SectionReorderManager();
   }, 500);
 });
+
+    
+
 
 //****************************************** Drag and Drop Functionality ********************* */
 
@@ -2511,7 +3893,7 @@ class SectionReorderManager {
   constructor() {
     this.draggedSection = null;
     this.sectionOrder = this.getSavedSectionOrder() || ["pipeline", "trainees"];
-    
+
     // Initialize after a small delay to ensure DOM is ready
     setTimeout(() => {
       this.initialize();
@@ -2537,7 +3919,7 @@ class SectionReorderManager {
 
     // Button controls
     document.addEventListener("click", this.handleButtonClick.bind(this));
-    
+
     // Add reset button
     this.addResetButton();
   }
@@ -2552,7 +3934,8 @@ class SectionReorderManager {
     const resetButton = document.createElement("button");
     resetButton.id = "reset-layout-btn";
     resetButton.textContent = "Reset Layout";
-    resetButton.className = "bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors ml-4";
+    resetButton.className =
+      "bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors ml-4";
     resetButton.addEventListener("click", () => {
       this.resetToDefaultOrder();
     });
@@ -2603,7 +3986,7 @@ class SectionReorderManager {
   startDrag(section, startY) {
     this.draggedSection = section;
     this.dragStartY = startY;
-    
+
     section.classList.add("dragging");
     document.body.style.userSelect = "none";
     document.body.style.cursor = "grabbing";
@@ -2619,7 +4002,7 @@ class SectionReorderManager {
     this.ghostElement.style.top = `${section.getBoundingClientRect().top}px`;
     this.ghostElement.style.margin = "0";
     this.ghostElement.style.boxShadow = "0 10px 25px rgba(0,0,0,0.2)";
-    
+
     document.body.appendChild(this.ghostElement);
   }
 
@@ -2633,7 +4016,7 @@ class SectionReorderManager {
     const sections = Array.from(
       document.querySelectorAll(".draggable-section:not(.dragging)")
     );
-    
+
     let targetSection = null;
     for (const section of sections) {
       const rect = section.getBoundingClientRect();
@@ -2746,7 +4129,9 @@ class SectionReorderManager {
     }
 
     // Get all draggable sections
-    const sections = Array.from(document.querySelectorAll(".draggable-section"));
+    const sections = Array.from(
+      document.querySelectorAll(".draggable-section")
+    );
     if (sections.length === 0) {
       console.warn("No draggable sections found!");
       return;
@@ -2754,7 +4139,7 @@ class SectionReorderManager {
 
     // Create a map of sections by their data-section attribute
     const sectionsMap = {};
-    sections.forEach(section => {
+    sections.forEach((section) => {
       const sectionId = section.dataset.section;
       if (sectionId) {
         sectionsMap[sectionId] = section;
@@ -2801,7 +4186,7 @@ class SectionReorderManager {
     this.sectionOrder = ["pipeline", "trainees"];
     this.renderSectionsInOrder();
     this.saveSectionOrder();
-    
+
     // Show confirmation
     this.showNotification("Layout reset to default order", "success");
   }
@@ -2809,6 +4194,5 @@ class SectionReorderManager {
   showNotification(message, type = "info") {
     // Simple notification implementation
     console.log(`${type}: ${message}`);
-    
   }
 }

@@ -1,0 +1,69 @@
+<div id="applications-tab-content">
+  <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm mb-8">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6">
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 lg:mb-0">
+        All Applications
+      </h2>
+      <div class="flex gap-3">
+        <button id="export-applications-btn" class="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <span class="material-symbols-outlined text-base">download</span>
+          Export
+        </button>
+        <button id="bulk-actions-btn" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <span class="material-symbols-outlined text-base">playlist_add_check</span>
+          Bulk Actions
+        </button>
+      </div>
+    </div>
+
+    <!-- Applications Table -->
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-700">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <input type="checkbox" id="select-all-applications" class="rounded border-gray-300 text-primary focus:ring-primary">
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              Student
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              Course
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              Institution
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              Applied Date
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              Status
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody id="applications-table-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <!-- Applications will be loaded here -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex flex-col lg:flex-row items-center justify-between mt-6 px-4 py-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 rounded-b-lg">
+      <div class="text-sm text-gray-700 dark:text-gray-300 mb-4 lg:mb-0">
+        Showing <span id="pagination-start">1</span> to <span id="pagination-end">10</span> of <span id="pagination-total">0</span> results
+      </div>
+      <div class="flex gap-2">
+        <button id="prev-page" class="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+          Previous
+        </button>
+        <div class="flex gap-1" id="pagination-numbers"></div>
+        <button id="next-page" class="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
