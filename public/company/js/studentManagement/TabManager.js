@@ -1,5 +1,6 @@
 import { auth, db } from "../../../js/config/firebaseInit.js";
 import { ITBaseCompanyCloud } from "../../../js/fireabase/ITBaseCompanyCloud.js";
+import { createAvatarElement } from "../../../js/general/generalmethods.js";
 
 const it_base_companycloud = new ITBaseCompanyCloud();
 
@@ -127,6 +128,8 @@ class TabManager {
     //console.log("Training students by date:", this.trainingStudentsByDate);
   }
 
+
+  
   calculateApplicationStats() {
     const total = this.applications.length;
     const shortlistedCount = this.applicationsByStatus.shortlisted.length;
@@ -481,6 +484,132 @@ class TabManager {
       companyId: this.companyId,
     };
   }
+//************************* Applications Tab Section ******************************/
+
+openApplicationDetails(applicationId) {
+  console.log(`Opening application details for: ${applicationId}`);
+  
+  // Find the application
+  const applicationData = this.applications.find(
+    app => app.application.id === applicationId
+  );
+  
+  if (!applicationData) {
+    console.error(`Application ${applicationId} not found`);
+    return;
+  }
+
+  // You can implement a modal or redirect to details page
+  this.showApplicationModal(applicationData);
+}
+
+  async updateApplicationStatus(applicationId, newStatus) {
+  console.log(`Updating application ${applicationId} to status: ${newStatus}`);
+  
+  // Find the application
+  const applicationIndex = this.applications.findIndex(
+    app => app.application.id === applicationId
+  );
+  
+  if (applicationIndex === -1) {
+    console.error(`Application ${applicationId} not found`);
+    return false;
+  }
+
+  // Update the status
+  var applicationData = this.applications[applicationIndex];
+  var application = applicationData.application;  
+  application.status = newStatus;
+  console.log(`Local status updated for application ${applicationId}`);
+  console.log(application);
+  //companyId, itId, applicationId, status
+  await it_base_companycloud.updateApplicationStatus(
+    applicationData.training.company.id,
+    applicationData.opportunityId,
+    applicationId,
+    newStatus
+  );
+  
+  // Re-process the data to update categorizations
+  this.processApplicationsData();
+  this.updateSharedStats();
+  this.refreshCurrentTab();
+  
+  console.log(`Successfully updated application ${applicationId} to ${newStatus}`);
+  return true;
+}
+
+showApplicationModal(applicationData) {
+  // Simple implementation - you can enhance this with a proper modal
+  const student = applicationData.application.student || {};
+  const opportunity = applicationData.opportunity || {};
+  console.log("application data in modal ", applicationData);
+  console.log("student data in modal ", student);
+  
+  const modalContent = `
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white">Application Details</h3>
+          <button id="close-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        
+        <div class="space-y-4">
+          <div class="flex items-center gap-4">
+            ${createAvatarElement(student.fullName, student.imageUrl, 60)}
+            <div>
+              <h4 class="text-lg font-semibold text-gray-900 dark:text-white">${student.fullName || 'Unknown Student'}</h4>
+              <p class="text-gray-600 dark:text-gray-400">${student.email || 'No email'}</p>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Course</label>
+              <p class="text-gray-900 dark:text-white">${student.courseOfStudy || 'N/A'}</p>
+            </div>
+            <div>
+              <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Institution</label>
+              <p class="text-gray-900 dark:text-white">${student.institution || 'N/A'}</p>
+            </div>
+            <div>
+              <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+              <p class="text-gray-900 dark:text-white">${applicationData.application.status || 'Pending'}</p>
+            </div>
+            <div>
+              <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Applied Date</label>
+              <p class="text-gray-900 dark:text-white">${new Date(applicationData.application.applicationDate).toLocaleDateString()}</p>
+            </div>
+          </div>
+          
+          <!-- Add more application details as needed -->
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Create and show modal
+  const modal = document.createElement('div');
+  modal.innerHTML = modalContent;
+  document.body.appendChild(modal);
+  
+  // Add close functionality
+  const closeBtn = modal.querySelector('#close-modal');
+  closeBtn.addEventListener('click', () => {
+    document.body.removeChild(modal);
+  });
+  
+  // Close when clicking outside
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      document.body.removeChild(modal);
+    }
+  });
+}
+
+
 }
 
 // Initialize the tab system when DOM is loaded

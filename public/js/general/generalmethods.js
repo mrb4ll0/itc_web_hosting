@@ -1320,11 +1320,27 @@ export { isFormExist };
 
 function generateShareableUrl(pagePath, itid, applicationId) {
   // Get current host and protocol
-  const baseUrl = window.location.origin;
-
+  let baseUrl = window.location.origin;
+  
+  // Check if we're in test environment
+  const isTestEnvironment = window.location.hostname.includes('test') || 
+                           window.location.hostname.includes('localhost') ||
+                           window.location.hostname.includes('127.0.0.1') ||
+                           window.location.hostname.includes(':3000') || // Common dev port
+                           window.location.hostname.includes(':8080');   // Common dev port
+  
+  // Add /public for test environments
+  if (isTestEnvironment) {
+    // Check if baseUrl already ends with /public to avoid duplicates
+    if (!baseUrl.endsWith('/public')) {
+      baseUrl += '/public';
+    }
+  }
+  
   // Construct the full URL with proper query parameters
   const fullUrl = `${baseUrl}${pagePath}?itid=${itid}&id=${applicationId}`;
-
+  
+  console.log('Generated URL:', fullUrl, 'Test environment:', isTestEnvironment);
   return fullUrl;
 }
 export { generateShareableUrl };

@@ -174,9 +174,9 @@ export class StudentApplication {
   }
 
   // Create instance from map/object - updated with duration field
-  static fromMap(map, itId = null) {
+  static fromMap(map, itId = null,appId=null) {
     return new StudentApplication({
-      id: map.id || null,
+      id: appId || null,
       student: Student.fromMap(map.student),
       internship: IndustrialTraining.fromMap(map.internship, itId),
       applicationStatus: map.applicationStatus,
@@ -716,4 +716,133 @@ export class StudentApplication {
   get hasDuration() {
     return this.hasValidDuration();
   }
+
+  // Setters for nested properties
+set studentName(name) {
+  if (!this.student) this.student = {};
+  this.student.fullName = name;
+}
+
+set studentEmail(email) {
+  if (!this.student) this.student = {};
+  this.student.email = email;
+}
+
+set position(title) {
+  if (!this.internship) this.internship = {};
+  this.internship.title = title;
+}
+
+set companyName(companyName) {
+  if (!this.internship) this.internship = {};
+  if (!this.internship.company) this.internship.company = {};
+  this.internship.company.name = companyName;
+}
+
+set appliedAt(date) {
+  this.applicationDate = date;
+}
+
+set status(newStatus) {
+  this.applicationStatus = newStatus;
+}
+
+// Duration-specific setters
+set durationMonths(months) {
+  if (!this.duration) this.duration = {};
+  this.duration.months = months;
+  // Optionally recalculate other duration properties
+  this.updateDurationDisplay();
+}
+
+set durationDisplayText(displayText) {
+  if (!this.duration) this.duration = {};
+  this.duration.displayText = displayText;
+}
+
+set durationStartDate(startDate) {
+  if (!this.duration) this.duration = {};
+  this.duration.startDate = startDate;
+  // Optionally recalculate end date and total days
+  this.updateDurationCalculations();
+}
+
+set durationEndDate(endDate) {
+  if (!this.duration) this.duration = {};
+  this.duration.endDate = endDate;
+  // Optionally recalculate total days
+  this.updateDurationCalculations();
+}
+
+set durationTotalDays(totalDays) {
+  if (!this.duration) this.duration = {};
+  this.duration.totalDays = totalDays;
+}
+
+// Helper methods for duration calculations
+updateDurationCalculations() {
+  if (!this.duration) return;
+  
+  const { startDate, endDate } = this.duration;
+  
+  if (startDate && endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    this.duration.totalDays = diffDays;
+    this.duration.months = Math.round(diffDays / 30);
+    this.updateDurationDisplay();
+  }
+}
+
+updateDurationDisplay() {
+  if (!this.duration) return;
+  
+  const { months, totalDays, startDate, endDate } = this.duration;
+  
+  if (months !== undefined) {
+    this.duration.displayText = `${months} month${months !== 1 ? 's' : ''}`;
+  } else if (totalDays !== undefined) {
+    this.duration.displayText = `${totalDays} day${totalDays !== 1 ? 's' : ''}`;
+  } else if (startDate && endDate) {
+    const start = new Date(startDate).toLocaleDateString();
+    const end = new Date(endDate).toLocaleDateString();
+    this.duration.displayText = `${start} - ${end}`;
+  } else {
+    this.duration.displayText = 'Duration not specified';
+  }
+}
+
+// Convenience method to set entire duration object
+setDuration({ startDate, endDate, months, totalDays, displayText }) {
+  if (!this.duration) this.duration = {};
+  
+  if (startDate !== undefined) this.duration.startDate = startDate;
+  if (endDate !== undefined) this.duration.endDate = endDate;
+  if (months !== undefined) this.duration.months = months;
+  if (totalDays !== undefined) this.duration.totalDays = totalDays;
+  if (displayText !== undefined) this.duration.displayText = displayText;
+  
+  // If startDate and endDate are provided, calculate other values
+  if (startDate && endDate && !totalDays) {
+    this.updateDurationCalculations();
+  }
+}
+
+// Bulk update method
+updateApplication(updates) {
+  const allowedProperties = [
+    'studentName', 'studentEmail', 'position', 'companyName', 
+    'appliedAt', 'status', 'durationMonths', 'durationDisplayText',
+    'durationStartDate', 'durationEndDate', 'durationTotalDays'
+  ];
+  
+  Object.keys(updates).forEach(key => {
+    if (allowedProperties.includes(key) && this[key] !== undefined) {
+      this[key] = updates[key];
+    }
+  });
+}
 }

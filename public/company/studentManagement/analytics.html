@@ -1,0 +1,184 @@
+<div id="analytics">
+  <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm mb-8">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6">
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 lg:mb-0">
+        Training Analytics
+      </h2>
+      <div class="flex gap-3">
+        <div class="flex items-center gap-2">
+          <label class="text-sm text-gray-700 dark:text-gray-300">Period:</label>
+          <select id="analytics-period" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/50">
+            <option value="7d">Last 7 Days</option>
+            <option value="30d" selected>Last 30 Days</option>
+            <option value="90d">Last 90 Days</option>
+            <option value="1y">Last Year</option>
+            <option value="all">All Time</option>
+          </select>
+        </div>
+        <button id="export-analytics-btn" class="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <span class="material-symbols-outlined text-base">download</span>
+          Export Report
+        </button>
+      </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Total Applications -->
+      <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl p-6 border border-blue-200 dark:border-blue-700">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-blue-600 dark:text-blue-400">Total Applications</p>
+            <p class="text-2xl font-bold text-blue-900 dark:text-blue-100 mt-2" id="total-applications">0</p>
+            <p class="text-xs text-blue-700 dark:text-blue-300 mt-1" id="applications-trend"></p>
+          </div>
+          <div class="p-3 bg-blue-500 rounded-lg">
+            <span class="material-symbols-outlined text-white">description</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acceptance Rate -->
+      <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl p-6 border border-green-200 dark:border-green-700">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-green-600 dark:text-green-400">Acceptance Rate</p>
+            <p class="text-2xl font-bold text-green-900 dark:text-green-100 mt-2" id="acceptance-rate">0%</p>
+            <p class="text-xs text-green-700 dark:text-green-300 mt-1" id="acceptance-trend"></p>
+          </div>
+          <div class="p-3 bg-green-500 rounded-lg">
+            <span class="material-symbols-outlined text-white">trending_up</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Completion Rate -->
+      <div class="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl p-6 border border-purple-200 dark:border-purple-700">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-purple-600 dark:text-purple-400">Completion Rate</p>
+            <p class="text-2xl font-bold text-purple-900 dark:text-purple-100 mt-2" id="completion-rate">0%</p>
+            <p class="text-xs text-purple-700 dark:text-purple-300 mt-1" id="completion-trend"></p>
+          </div>
+          <div class="p-3 bg-purple-500 rounded-lg">
+            <span class="material-symbols-outlined text-white">check_circle</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Average Duration -->
+      <div class="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-xl p-6 border border-orange-200 dark:border-orange-700">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-orange-600 dark:text-orange-400">Avg. Training Duration</p>
+            <p class="text-2xl font-bold text-orange-900 dark:text-orange-100 mt-2" id="avg-duration">0 days</p>
+            <p class="text-xs text-orange-700 dark:text-orange-300 mt-1" id="duration-trend"></p>
+          </div>
+          <div class="p-3 bg-orange-500 rounded-lg">
+            <span class="material-symbols-outlined text-white">schedule</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <!-- Applications Over Time -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Applications Over Time</h3>
+        <div id="applications-chart" class="h-64">
+          <div class="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+            <div class="text-center">
+              <span class="material-symbols-outlined text-4xl mb-2 opacity-50">bar_chart</span>
+              <p>Loading chart...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Distribution -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Application Status Distribution</h3>
+        <div id="status-chart" class="h-64">
+          <div class="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+            <div class="text-center">
+              <span class="material-symbols-outlined text-4xl mb-2 opacity-50">pie_chart</span>
+              <p>Loading chart...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <!-- Course Performance -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Course Performance</h3>
+        <div id="course-chart" class="h-64">
+          <div class="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+            <div class="text-center">
+              <span class="material-symbols-outlined text-4xl mb-2 opacity-50">stacked_bar_chart</span>
+              <p>Loading chart...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Institution Comparison -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Institution Performance</h3>
+        <div id="institution-chart" class="h-64">
+          <div class="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+            <div class="text-center">
+              <span class="material-symbols-outlined text-4xl mb-2 opacity-50">compare</span>
+              <p>Loading chart...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Analytics -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Top Performing Courses -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 lg:col-span-2">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Top Performing Courses</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b border-gray-200 dark:border-gray-700">
+                <th class="text-left text-sm font-medium text-gray-500 dark:text-gray-300 pb-3">Course</th>
+                <th class="text-left text-sm font-medium text-gray-500 dark:text-gray-300 pb-3">Applications</th>
+                <th class="text-left text-sm font-medium text-gray-500 dark:text-gray-300 pb-3">Acceptance Rate</th>
+                <th class="text-left text-sm font-medium text-gray-500 dark:text-gray-300 pb-3">Completion Rate</th>
+                <th class="text-left text-sm font-medium text-gray-500 dark:text-gray-300 pb-3">Avg. Duration</th>
+              </tr>
+            </thead>
+            <tbody id="course-performance-body">
+              <!-- Course performance data will be loaded here -->
+              <tr>
+                <td colspan="5" class="text-center py-8 text-gray-500 dark:text-gray-400">
+                  <span class="material-symbols-outlined text-4xl mb-2 opacity-50">school</span>
+                  <p>No course data available</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Performance Insights -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Performance Insights</h3>
+        <div id="insights-list" class="space-y-4">
+          <!-- Insights will be loaded here -->
+          <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+            <span class="material-symbols-outlined text-4xl mb-2 opacity-50">insights</span>
+            <p>No insights available</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

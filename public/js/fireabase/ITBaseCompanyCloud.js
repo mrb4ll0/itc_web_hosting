@@ -4,6 +4,7 @@ import { Company } from "../../js/model/Company.js";
 import { IndustrialTraining } from "../../js/model/internship_model.js";
 import { StudentApplication } from "../../js/model/studentApplication.js";
 import { StudentCloudDB } from "./StudentCloud.js";
+const studentCloudDB = new StudentCloudDB();
 
 class ITBaseCompanyCloud {
     constructor() {
@@ -448,8 +449,15 @@ async getApplicationsForIndustrialTraining(companyId, itId) {
                 
                 // Get industrial training data
                 const industrialTraining = await this.getIndustrialTrainingById(companyId, itId);
-                  var app = StudentApplication.fromMap(data,itId);
+                
+                  var app = StudentApplication.fromMap(data,itId,docSnap.id);
+                  if(app.student.uid)
+                  {
+                     app.student = await studentCloudDB.getStudentById(app.student.uid);
+                  }
+                  
                 app.industrialTraining = industrialTraining;
+                
                 //console.log("applicationDate before returning "+JSON.stringify(app.applicationDate));
                 // Create proper StudentApplication object using fromMap
                 return app;

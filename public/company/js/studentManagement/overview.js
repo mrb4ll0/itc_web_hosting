@@ -1,3 +1,7 @@
+import { ITBaseCompanyCloud } from "../../../js/fireabase/ITBaseCompanyCloud.js";
+import { generateShareableUrl } from "../../../js/general/generalmethods.js";
+var it_base_companycloud = new ITBaseCompanyCloud();
+
 export default class overview {
   constructor(tabManager) {
     this.tabManager = tabManager;
@@ -34,12 +38,16 @@ export default class overview {
       "current-trainees-section"
     );
     this.traineesGrid = document.getElementById("trainees-grid");
-    console.log("Overview elements initialized traineesGrid:", this.traineesGrid);
+    console.log(
+      "Overview elements initialized traineesGrid:",
+      this.traineesGrid
+    );
   }
 
   buildOverviewContent() {
     // Get data from TabManager
     const data = this.tabManager.getDashboardData();
+     this.populateFilterOptions(this.tabManager.getAllCompanyApplications());
 
     this.buildPendingApplicationsSection();
     this.buildAcceptedApplicationsSection();
@@ -90,7 +98,7 @@ export default class overview {
 
     const currentTrainees =
       this.tabManager.getTrainingStudentsByDate("current");
-      console.log("about to build trainee cards with ", currentTrainees);
+    console.log("about to build trainee cards with ", currentTrainees);
     this.buildTraineeCards(currentTrainees);
   }
 
@@ -152,6 +160,7 @@ export default class overview {
     opportunity,
     status
   ) {
+    console.log("application is ", applicationId, application);
     // Your existing createApplicationCard implementation
     const card = document.createElement("div");
     card.className = `bg-white dark:bg-gray-800 rounded-lg p-4 border ${
@@ -230,8 +239,8 @@ export default class overview {
             </div>
             <div class="flex gap-2 mt-3">
                 <button 
-                    id="view-${status}-btn-${applicationId}" 
-                    class="flex-1 bg-primary text-white text-sm py-2 rounded-lg hover:bg-primary/90 transition-colors"
+                    data-app-id="${applicationId}" 
+                    class="view-btn view-${status}  flex-1 bg-primary text-white text-sm py-2 rounded-lg hover:bg-primary/90 transition-colors"
                 >
                     View
                 </button>
@@ -243,37 +252,46 @@ export default class overview {
   }
 
   getActionButtons(status, applicationId) {
-    // Your existing getActionButtons implementation
+    const seeDetailsBtn = `
+    <button id="see-details-btn-${applicationId}" 
+            class="flex-1 bg-primary text-white text-sm py-2 rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-1">
+      <span class="material-symbols-outlined text-base">open_in_new</span>
+      Details
+    </button>
+  `;
+
     switch (status) {
       case "pending":
         return `
-                    <button id="accept-pending-btn-${applicationId}" class="flex-1 bg-green-600 text-white text-sm py-2 rounded-lg hover:bg-green-700 transition-colors">
-                        Accept
-                    </button>
-                    <button id="reject-pending-btn-${applicationId}" class="flex-1 bg-red-600 text-white text-sm py-2 rounded-lg hover:bg-red-700 transition-colors">
-                        Reject
-                    </button>
-                `;
+         ${seeDetailsBtn}
+        <button id="accept-pending-btn-${applicationId}" class="flex-1 bg-green-600 text-white text-sm py-2 rounded-lg hover:bg-green-700 transition-colors">
+          Accept
+        </button>
+        <button id="reject-pending-btn-${applicationId}" class="flex-1 bg-red-600 text-white text-sm py-2 rounded-lg hover:bg-red-700 transition-colors">
+          Reject
+        </button>
+      `;
 
       case "accepted":
         return `
-                    <button id="message-accepted-btn-${applicationId}" class="flex-1 bg-blue-600 text-white text-sm py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                        Contact
-                    </button>
-                `;
+         ${seeDetailsBtn}
+        <button id="message-accepted-btn-${applicationId}" class="flex-1 bg-blue-600 text-white text-sm py-2 rounded-lg hover:bg-blue-700 transition-colors">
+          Contact
+        </button>
+      `;
 
       case "rejected":
         return `
-                    <button id="undo-reject-btn-${applicationId}" class="flex-1 bg-gray-600 text-white text-sm py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                        Undo
-                    </button>
-                `;
+          ${seeDetailsBtn}
+        <button id="undo-reject-btn-${applicationId}" class="flex-1 bg-gray-600 text-white text-sm py-2 rounded-lg hover:bg-gray-700 transition-colors">
+          Undo
+        </button>
+      `;
 
       default:
         return "";
     }
   }
-
   buildTraineeCards(trainees) {
     // Your trainee cards implementation
     console.log("training grid is ", this.traineesGrid);
@@ -420,12 +438,14 @@ export default class overview {
       });
     });
 
-    document.addEventListener("click", (e) => {
+
+
+    document.addEventListener("click", async (e) => {
       const target = e.target;
 
       // View button
-      if (target.id.startsWith("view-")) {
-        const appId = target.id.split("-").pop();
+      if (target.classList.contains("view-btn")) {
+        const appId = target.dataset.appId;
         console.log(`View application ${appId}`);
         this.tabManager.openApplicationDetails(appId);
       }
@@ -433,35 +453,543 @@ export default class overview {
       // Accept button
       if (target.id.startsWith("accept-pending-btn-")) {
         const appId = target.id.replace("accept-pending-btn-", "");
-        console.log(`Accepting application ${appId}`);
-        this.tabManager.updateApplicationStatus(appId, "accepted");
-        this.refresh(this.tabManager);
+        await this.handleAcceptApplication(appId);
       }
 
       // Reject button
       if (target.id.startsWith("reject-pending-btn-")) {
         const appId = target.id.replace("reject-pending-btn-", "");
-        console.log(`Rejecting application ${appId}`);
-        this.tabManager.updateApplicationStatus(appId, "rejected");
-        this.refresh(this.tabManager);
+        this.handleRejectApplication(appId);
       }
 
       // Undo reject
       if (target.id.startsWith("undo-reject-btn-")) {
         const appId = target.id.replace("undo-reject-btn-", "");
-        console.log(`Undoing rejection for ${appId}`);
-        this.tabManager.updateApplicationStatus(appId, "pending");
-        this.refresh(this.tabManager);
+        this.handleUndoRejection(appId);
+      }
+
+      // Contact button (for accepted applications)
+      if (target.id.startsWith("message-accepted-btn-")) {
+        const appId = target.id.replace("message-accepted-btn-", "");
+        this.handleContactStudent(appId);
+      }
+
+      // In initializeEventListeners - add this to your click handler
+      if (target.id.startsWith("see-details-btn-")) {
+        const parts = target.id.split("-");
+        const appId = parts.slice(3).join("-");
+        console.log(`See details for application ${appId}`);
+
+        // Find the application data
+        const applications = this.tabManager.getAllCompanyApplications();
+        const applicationData = applications.find(
+          (app) => app.application.id === appId
+        );
+
+        if (applicationData) {
+          this.openStudentProfile(applicationData);
+        } else {
+          console.error(`Application ${appId} not found for details view`);
+        }
       }
     });
+  }
 
-    const refreshButton = document.getElementById("refresh-overview");
-    if (refreshButton) {
-      refreshButton.addEventListener("click", () => {
-        console.log("Refreshing Overview tab...");
-        this.refresh(this.tabManager);
+messageDialog(hideCancel = true, application) {
+  this.currentApplication = application;
+  const modalOverlay = document.createElement("div");
+  modalOverlay.style.cssText = `
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; 
+      align-items: center; z-index: 1000; font-family: sans-serif;
+  `;
+
+  const modal = document.createElement("div");
+  modal.style.cssText = `
+      background: white; padding: 24px; border-radius: 8px; 
+      width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;
+  `;
+
+  // Get student email for email mode
+  const studentEmail = this.currentApplication.student?.email || '';
+  const studentName = this.currentApplication.student?.fullName || 'Student';
+
+  // Conditionally render the buttons based on hideCancel parameter
+  const buttonsHTML = hideCancel
+      ? `<div style="display: flex; justify-content: flex-end; gap: 12px;">
+          <button id="send-notification" style="padding: 8px 16px; border: 1px solid #007bff; border-radius: 4px; background: white; color: #007bff; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+              <span id="notification-text">Send Notification</span>
+              <span id="notification-loading" style="display: none;">Sending...</span>
+          </button>
+          <button id="send-email" style="padding: 8px 16px; border: none; border-radius: 4px; background: #28a745; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+              <span id="email-text">Send Email</span>
+              <span id="email-loading" style="display: none;">Sending...</span>
+          </button>
+      </div>`
+      : `<div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button id="cancel-message" style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; background: white; cursor: pointer;">
+              Cancel
+          </button>
+          <button id="send-notification" style="padding: 8px 16px; border: 1px solid #007bff; border-radius: 4px; background: white; color: #007bff; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+              <span id="notification-text">Send Notification</span>
+              <span id="notification-loading" style="display: none;">Sending...</span>
+          </button>
+          <button id="send-email" style="padding: 8px 16px; border: none; border-radius: 4px; background: #28a745; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+              <span id="email-text">Send Email</span>
+              <span id="email-loading" style="display: none;">Sending...</span>
+          </button>
+      </div>`;
+
+  modal.innerHTML = `
+      <h2 style="margin: 0 0 20px 0; color: #333;">Contact Student</h2>
+      
+      <!-- Communication Mode Selection -->
+      <div style="margin-bottom: 20px; padding: 16px; background: #f8f9fa; border-radius: 6px;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #495057;">Communication Method</h3>
+          <div style="display: flex; gap: 16px;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                  <input type="radio" name="communication-mode" value="notification" checked>
+                  <span>In-App Notification</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                  <input type="radio" name="communication-mode" value="email">
+                  <span>Email</span>
+              </label>
+          </div>
+      </div>
+
+      <!-- Student Information -->
+      <div style="margin-bottom: 16px;">
+          <label style="display: block; margin-bottom: 6px; font-weight: 500;">Student Name</label>
+          <input type="text" id="student-name" placeholder="Enter student name" 
+              value="${studentName}"
+              style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;">
+      </div>
+
+      <!-- Email Field (shown when email mode is selected) -->
+      <div id="email-field" style="margin-bottom: 16px; display: none;">
+          <label style="display: block; margin-bottom: 6px; font-weight: 500;">Email Address</label>
+          <input type="email" id="student-email" placeholder="Enter student email" 
+              value="${studentEmail}"
+              style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;">
+          <small style="color: #6c757d; font-size: 12px;">This will open your default email client</small>
+      </div>
+
+      <!-- Message Field -->
+      <div style="margin-bottom: 16px;">
+          <label style="display: block; margin-bottom: 6px; font-weight: 500;">Message</label>
+          <textarea id="message-text" rows="6" placeholder="Type your message to the student..."
+                  style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; font-family: inherit;">
+Hello ${studentName},
+
+I'd like to schedule a time to discuss your industrial training progress.
+
+Are you available sometime this week?
+
+Best regards
+          </textarea>
+      </div>
+
+      <!-- Message Templates -->
+      <div style="margin-bottom: 16px;">
+          <label style="display: block; margin-bottom: 6px; font-weight: 500;">Quick Templates</label>
+          <select id="message-templates" style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; background: white;">
+              <option value="">Select a template...</option>
+              <option value="progress_check">Progress Check</option>
+              <option value="meeting_request">Meeting Request</option>
+              <option value="document_request">Document Submission Reminder</option>
+              <option value="feedback_request">Feedback Request</option>
+          </select>
+      </div>
+
+      ${buttonsHTML}
+  `;
+
+  modalOverlay.appendChild(modal);
+  document.body.appendChild(modalOverlay);
+
+  // Get references to elements
+  const sendNotificationBtn = modal.querySelector("#send-notification");
+  const sendEmailBtn = modal.querySelector("#send-email");
+  const notificationText = modal.querySelector("#notification-text");
+  const notificationLoading = modal.querySelector("#notification-loading");
+  const emailText = modal.querySelector("#email-text");
+  const emailLoading = modal.querySelector("#email-loading");
+  const studentNameInput = modal.querySelector("#student-name");
+  const studentEmailInput = modal.querySelector("#student-email");
+  const messageTextarea = modal.querySelector("#message-text");
+  const emailField = modal.querySelector("#email-field");
+  const communicationModeRadios = modal.querySelectorAll('input[name="communication-mode"]');
+  const templateSelect = modal.querySelector("#message-templates");
+
+  // Message templates
+  const messageTemplates = {
+      progress_check: `Hello {name},
+
+I hope you're doing well with your industrial training. I'd like to check on your progress and see how everything is going.
+
+Could you please provide a brief update on your current tasks and any challenges you're facing?
+
+Looking forward to hearing from you.
+
+Best regards`,
+
+      meeting_request: `Hello {name},
+
+I'd like to schedule a meeting to discuss your industrial training progress and address any questions or concerns you may have.
+
+Please let me know your availability for this week.
+
+Best regards`,
+
+      document_request: `Hello {name},
+
+This is a friendly reminder to submit your required training documents if you haven't already done so.
+
+Please ensure all documents are submitted by the deadline.
+
+Thank you for your cooperation.
+
+Best regards`,
+
+      feedback_request: `Hello {name},
+
+I'd like to get your feedback on the industrial training program so far. Your input is valuable for improving the experience.
+
+Please share any suggestions or concerns you may have.
+
+Best regards`
+  };
+
+  // Event handlers
+  const closeModal = () => document.body.removeChild(modalOverlay);
+
+  // Function to set loading state for notification
+  const setNotificationLoadingState = (isLoading) => {
+      if (isLoading) {
+          sendNotificationBtn.disabled = true;
+          sendNotificationBtn.style.opacity = "0.6";
+          sendNotificationBtn.style.cursor = "not-allowed";
+          notificationText.style.display = "none";
+          notificationLoading.style.display = "inline";
+      } else {
+          sendNotificationBtn.disabled = false;
+          sendNotificationBtn.style.opacity = "1";
+          sendNotificationBtn.style.cursor = "pointer";
+          notificationText.style.display = "inline";
+          notificationLoading.style.display = "none";
+      }
+  };
+
+  // Function to set loading state for email
+  const setEmailLoadingState = (isLoading) => {
+      if (isLoading) {
+          sendEmailBtn.disabled = true;
+          sendEmailBtn.style.opacity = "0.6";
+          sendEmailBtn.style.cursor = "not-allowed";
+          emailText.style.display = "none";
+          emailLoading.style.display = "inline";
+      } else {
+          sendEmailBtn.disabled = false;
+          sendEmailBtn.style.opacity = "1";
+          sendEmailBtn.style.cursor = "pointer";
+          emailText.style.display = "inline";
+          emailLoading.style.display = "none";
+      }
+  };
+
+  // Function to disable all inputs
+  const disableInputs = (disabled) => {
+      studentNameInput.disabled = disabled;
+      messageTextarea.disabled = disabled;
+      if (studentEmailInput) studentEmailInput.disabled = disabled;
+      templateSelect.disabled = disabled;
+      communicationModeRadios.forEach(radio => radio.disabled = disabled);
+  };
+
+  // Communication mode change handler
+  communicationModeRadios.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+          if (e.target.value === 'email') {
+              emailField.style.display = 'block';
+              sendNotificationBtn.style.display = 'none';
+              sendEmailBtn.style.display = 'flex';
+          } else {
+              emailField.style.display = 'none';
+              sendNotificationBtn.style.display = 'flex';
+              sendEmailBtn.style.display = 'none';
+          }
       });
+  });
+
+  // Template selection handler
+  templateSelect.addEventListener('change', (e) => {
+      const template = e.target.value;
+      if (template && messageTemplates[template]) {
+          messageTextarea.value = messageTemplates[template].replace(/{name}/g, studentNameInput.value);
+      }
+  });
+
+  // Only add cancel event listener if cancel button exists
+  if (!hideCancel) {
+      modal.querySelector("#cancel-message").addEventListener("click", closeModal);
+  }
+
+  // Send Notification Handler
+  sendNotificationBtn.addEventListener("click", async () => {
+      const studentName = studentNameInput.value;
+      const messageText = messageTextarea.value;
+
+      if (!studentName || !messageText) {
+          alert("Please enter student name and message");
+          return;
+      }
+
+      // Set loading state
+      setNotificationLoadingState(true);
+      disableInputs(true);
+
+      try {
+          const studentUid = this.currentApplication.student?.uid;
+          const companyName = this.currentApplication.companyName || 'Our Company';
+
+          if (!studentUid) {
+              alert("Student information is missing");
+              setNotificationLoadingState(false);
+              disableInputs(false);
+              return;
+          }
+
+          const result = await it_base_companycloud.sendNotificationToStudent(
+              studentUid,
+              {
+                  title: "New Message from " + companyName,
+                  message: messageText,
+                  type: "message",
+                  timestamp: new Date().toISOString()
+              }
+          );
+
+          if (result.success) {
+              setTimeout(() => {
+                  alert(`Notification sent to ${studentName}`);
+                  closeModal();
+              }, 500);
+          } else {
+              alert("Failed to send notification: " + (result.error || 'Unknown error'));
+              setNotificationLoadingState(false);
+              disableInputs(false);
+          }
+      } catch (error) {
+          alert("Error sending notification: " + error.message);
+          setNotificationLoadingState(false);
+          disableInputs(false);
+      }
+  });
+
+  // Send Email Handler
+  sendEmailBtn.addEventListener("click", async () => {
+      const studentName = studentNameInput.value;
+      const studentEmail = studentEmailInput.value;
+      const messageText = messageTextarea.value;
+
+      if (!studentName || !studentEmail || !messageText) {
+          alert("Please enter student name, email, and message");
+          return;
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(studentEmail)) {
+          alert("Please enter a valid email address");
+          return;
+      }
+
+      // Set loading state
+      setEmailLoadingState(true);
+      disableInputs(true);
+
+      try {
+          // Create email subject and body
+          const companyName = this.currentApplication.companyName || 'Our Company';
+          const subject = `Message from ${companyName} - Industrial Training`;
+          const body = messageText;
+
+          // Encode the email parameters
+          const encodedSubject = encodeURIComponent(subject);
+          const encodedBody = encodeURIComponent(body);
+
+          // Create mailto link
+          const mailtoLink = `mailto:${studentEmail}?subject=${encodedSubject}&body=${encodedBody}`;
+
+          // Open email client
+          window.open(mailtoLink, '_blank');
+
+          // Simulate sending completion (since we can't track email actually being sent)
+          setTimeout(() => {
+              setEmailLoadingState(false);
+              disableInputs(false);
+              alert(`Email opened for ${studentName}. Please send it from your email client.`);
+              closeModal();
+          }, 1000);
+
+      } catch (error) {
+          alert("Error preparing email: " + error.message);
+          setEmailLoadingState(false);
+          disableInputs(false);
+      }
+  });
+
+  // Only allow clicking outside to close if cancel button is visible
+  if (!hideCancel) {
+      modalOverlay.addEventListener("click", (e) => {
+          if (e.target === modalOverlay) closeModal();
+      });
+  }
+
+  // Initialize UI state
+  communicationModeRadios[0].checked = true; // Default to notification mode
+  sendEmailBtn.style.display = 'none'; // Hide email button initially
+}
+
+  openStudentProfile(applicationData) {
+  const student = applicationData.application.student || {};
+  const application = applicationData.application;
+  
+  // Get the IT ID and Application ID
+  const itId = applicationData.opportunityId || 'unknown';
+  const appId = application.id || 'unknown';
+  
+  console.log('Opening student profile:', { itId, appId, student });
+  if(appId==='unknown'){
+    console.error('Application ID is unknown, cannot open profile');
+    return;
+  }
+  if(itId==='unknown'){ 
+    console.error('Industrial Training ID is unknown, cannot open profile');
+    return;
+  }
+  
+  // Use your global method to generate the URL
+  if (typeof generateShareableUrl === 'function') {
+    const profileUrl = generateShareableUrl(
+      "/company/student_profile.html",
+      itId,
+      appId
+    );
+    
+    console.log('Generated URL:', profileUrl);
+    window.location.href = profileUrl;
+  } else {
+    console.error('generateShareableUrl function not found');
+    // Fallback: create a basic URL
+    const fallbackUrl = `/company/student_profile.html?itId=${itId}&appId=${appId}`;
+    window.location.href = fallbackUrl;
+  }
+}
+
+
+  // Add these methods to your Overview class
+  async handleAcceptApplication(applicationId) {
+    if (confirm("Are you sure you want to accept this application?")) {
+      console.log(`Accepting application ${applicationId}`);
+      const success = await this.tabManager.updateApplicationStatus(
+        applicationId,
+        "accepted"
+      );
+
+      if (success) {
+        this.showNotification("Application accepted successfully!", "success");
+        this.refresh(this.tabManager);
+      } else {
+        this.showNotification("Failed to accept application", "error");
+      }
     }
+  }
+
+  handleRejectApplication(applicationId) {
+    if (confirm("Are you sure you want to reject this application?")) {
+      console.log(`Rejecting application ${applicationId}`);
+      const success = this.tabManager.updateApplicationStatus(
+        applicationId,
+        "rejected"
+      );
+
+      if (success) {
+        this.showNotification("Application rejected", "success");
+        this.refresh(this.tabManager);
+      } else {
+        this.showNotification("Failed to reject application", "error");
+      }
+    }
+  }
+
+  handleUndoRejection(applicationId) {
+    if (confirm("Are you sure you want to undo the rejection?")) {
+      console.log(`Undoing rejection for ${applicationId}`);
+      const success = this.tabManager.updateApplicationStatus(
+        applicationId,
+        "pending"
+      );
+
+      if (success) {
+        this.showNotification(
+          "Rejection undone - application is now pending",
+          "success"
+        );
+        this.refresh(this.tabManager);
+      } else {
+        this.showNotification("Failed to undo rejection", "error");
+      }
+    }
+  }
+
+  handleContactStudent(applicationId) {
+    const applicationData = this.tabManager.applications.find(
+      (app) => app.application.id === applicationId
+    );
+
+    if (applicationData && applicationData.application.student) {
+      const student = applicationData.application.student;
+      this.messageDialog(false,applicationData.application);
+      // const email = student.email;
+
+      // if (email) {
+      //   // Open email client or show contact options
+      //   window.open(
+      //     `mailto:${email}?subject=Regarding Your Training Application`,
+      //     "_blank"
+      //   );
+      // } else {
+      //   this.showNotification(
+      //     "No email address available for this student",
+      //     "warning"
+      //   );
+      // }
+    }
+  }
+
+  showNotification(message, type = "info") {
+    // Simple notification implementation
+    const notification = document.createElement("div");
+    const bgColor =
+      type === "success"
+        ? "bg-green-500"
+        : type === "error"
+        ? "bg-red-500"
+        : type === "warning"
+        ? "bg-yellow-500"
+        : "bg-blue-500";
+
+    notification.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300`;
+    notification.textContent = message;
+
+    document.body.appendChild(notification);
+
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
   }
 
   //*********************************************** Filtering logic *****************************/
