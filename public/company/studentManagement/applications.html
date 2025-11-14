@@ -16,8 +16,8 @@
       </div>
     </div>
 
-    <!-- Applications Table -->
-    <div class="overflow-x-auto">
+    <!-- Desktop Table (hidden on mobile) -->
+    <div class="hidden lg:block overflow-x-auto">
       <table class="w-full min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-700">
           <tr>
@@ -28,7 +28,7 @@
               Student
             </th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-              Course
+              Industrial Training
             </th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
               Institution
@@ -48,6 +48,11 @@
           <!-- Applications will be loaded here -->
         </tbody>
       </table>
+    </div>
+
+    <!-- Mobile List (hidden on desktop) -->
+    <div id="applications-mobile-list" class="lg:hidden space-y-4">
+      <!-- Mobile application cards will be loaded here -->
     </div>
 
     <!-- Pagination -->

@@ -1,5 +1,5 @@
 import { ITBaseCompanyCloud } from "../../../js/fireabase/ITBaseCompanyCloud.js";
-import { generateShareableUrl } from "../../../js/general/generalmethods.js";
+import { generateShareableUrl, messageDialog } from "../../../js/general/generalmethods.js";
 var it_base_companycloud = new ITBaseCompanyCloud();
 
 export default class overview {
@@ -890,7 +890,24 @@ Best regards`
 
 
   // Add these methods to your Overview class
-  async handleAcceptApplication(applicationId) {
+  async handleAcceptApplication(applicationId) 
+  {
+    var application = this.tabManager.getAllCompanyApplications().find(app=>
+    {
+      if(app.application.id === applicationId)
+       {
+        //console.log("got a match "+JSON.stringify(app.application));
+          return app.application;
+       }
+    }
+    );
+    console.log("applications is "+JSON.stringify(application));
+
+    if(!application || !application.application.student)
+    {
+       console.log("application student is"+JSON.stringify(application.application.student));
+      return;
+    }
     if (confirm("Are you sure you want to accept this application?")) {
       console.log(`Accepting application ${applicationId}`);
       const success = await this.tabManager.updateApplicationStatus(
@@ -900,6 +917,7 @@ Best regards`
 
       if (success) {
         this.showNotification("Application accepted successfully!", "success");
+        messageDialog(true,application.application,false);
         this.refresh(this.tabManager);
       } else {
         this.showNotification("Failed to accept application", "error");
@@ -908,6 +926,25 @@ Best regards`
   }
 
   handleRejectApplication(applicationId) {
+
+    var application = this.tabManager.getAllCompanyApplications().find(app=>
+    {
+      if(app.application.id === applicationId)
+       {
+        //console.log("got a match "+JSON.stringify(app.application));
+          return app.application;
+       }
+    }
+    );
+    console.log("applications is "+JSON.stringify(application));
+
+    if(!application || !application.application.student)
+    {
+       console.log("application student is"+JSON.stringify(application.application.student));
+      return;
+    }
+
+
     if (confirm("Are you sure you want to reject this application?")) {
       console.log(`Rejecting application ${applicationId}`);
       const success = this.tabManager.updateApplicationStatus(
@@ -917,6 +954,7 @@ Best regards`
 
       if (success) {
         this.showNotification("Application rejected", "success");
+         messageDialog(true,application.application,false);
         this.refresh(this.tabManager);
       } else {
         this.showNotification("Failed to reject application", "error");
@@ -1251,8 +1289,8 @@ Best regards`
 
       // Course filter
       if (course !== "all") {
-        const studentCourse = student.courseOfStudy || student.program || "";
-        if (studentCourse.toLowerCase() !== course.toLowerCase()) {
+        const industrialTraining = applicationData.opportunity|| "";
+        if (industrialTraining.toLowerCase() !== course.toLowerCase()) {
           return false;
         }
       }
@@ -1628,8 +1666,8 @@ Best regards`
         applications
           .map(
             (app) =>
-              app.application.student?.courseOfStudy ||
-              app.application.student?.program
+              app.opportunity||
+              app.application.internship?.title
           )
           .filter(Boolean)
       ),

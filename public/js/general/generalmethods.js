@@ -1,7 +1,7 @@
 import { Company } from "../model/Company.js";
 import { ITBaseCompanyCloud } from "../fireabase/ITBaseCompanyCloud.js";
 import { CompanyCloud } from "../fireabase/CompanyCloud.js";
-const companyCloud = new ITBaseCompanyCloud();
+const it_base_companycloud = new ITBaseCompanyCloud();
 
 function getNigerianIndustryDescription(industry) {
   if (!industry) return "Other";
@@ -1872,3 +1872,365 @@ export default {
   viewExistingFile,
   showUploadedFileDialog,
 };
+
+
+function messageDialog(hideCancel = true, application , fromEdit=true) {
+  var currentApplication = application;
+  const modalOverlay = document.createElement("div");
+  modalOverlay.style.cssText = `
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; 
+      align-items: center; z-index: 1000; font-family: sans-serif;
+  `;
+
+  const modal = document.createElement("div");
+  modal.style.cssText = `
+      background: white; padding: 24px; border-radius: 8px; 
+      width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;
+  `;
+
+  // Get student email for email mode
+  const studentEmail = currentApplication.student?.email || '';
+  const studentName = currentApplication.student?.fullName || 'Student';
+
+  // Conditionally render the buttons based on hideCancel parameter
+  const buttonsHTML = hideCancel
+      ? `<div style="display: flex; justify-content: flex-end; gap: 12px;">
+          <button id="send-notification" style="padding: 8px 16px; border: 1px solid #007bff; border-radius: 4px; background: white; color: #007bff; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+              <span id="notification-text">Send Notification</span>
+              <span id="notification-loading" style="display: none;">Sending...</span>
+          </button>
+          <button id="send-email" style="padding: 8px 16px; border: none; border-radius: 4px; background: #28a745; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+              <span id="email-text">Send Email</span>
+              <span id="email-loading" style="display: none;">Sending...</span>
+          </button>
+      </div>`
+      : `<div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button id="cancel-message" style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; background: white; cursor: pointer;">
+              Cancel
+          </button>
+          <button id="send-notification" style="padding: 8px 16px; border: 1px solid #007bff; border-radius: 4px; background: white; color: #007bff; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+              <span id="notification-text">Send Notification</span>
+              <span id="notification-loading" style="display: none;">Sending...</span>
+          </button>
+          <button id="send-email" style="padding: 8px 16px; border: none; border-radius: 4px; background: #28a745; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+              <span id="email-text">Send Email</span>
+              <span id="email-loading" style="display: none;">Sending...</span>
+          </button>
+      </div>`;
+
+      var edit = fromEdit?'<p style="margin: 0 0 20px 0; color: #333;"> Kindly leave a note for the student </p>':'<h2 style="margin: 0 0 20px 0; color: #333;">Contact Student</h2>';
+      console.log("from edit is "+fromEdit);
+
+  modal.innerHTML = `
+        ${edit}  
+      <!-- Communication Mode Selection -->
+      <div style="margin-bottom: 20px; padding: 16px; background: #f8f9fa; border-radius: 6px;">
+          <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #495057;">Communication Method</h3>
+          <div style="display: flex; gap: 16px;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                  <input type="radio" name="communication-mode" value="notification" checked>
+                  <span>In-App Notification</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                  <input type="radio" name="communication-mode" value="email">
+                  <span>Email</span>
+              </label>
+          </div>
+      </div>
+
+      <!-- Student Information -->
+      <div style="margin-bottom: 16px;">
+          <label style="display: block; margin-bottom: 6px; font-weight: 500;">Student Name</label>
+          <input type="text" id="student-name" placeholder="Enter student name" 
+              value="${studentName}"
+              style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;">
+      </div>
+
+      <!-- Email Field (shown when email mode is selected) -->
+      <div id="email-field" style="margin-bottom: 16px; display: none;">
+          <label style="display: block; margin-bottom: 6px; font-weight: 500;">Email Address</label>
+          <input type="email" id="student-email" placeholder="Enter student email" 
+              value="${studentEmail}"
+              style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;">
+          <small style="color: #6c757d; font-size: 12px;">This will open your default email client</small>
+      </div>
+
+      <!-- Message Field -->
+      <div style="margin-bottom: 16px;">
+          <label style="display: block; margin-bottom: 6px; font-weight: 500;">Message</label>
+          <textarea id="message-text" rows="6" placeholder="Type your message to the student..."
+                  style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; font-family: inherit;">
+Hello ${studentName},
+
+I'd like to schedule a time to discuss your industrial training progress.
+
+Are you available sometime this week?
+
+Best regards
+          </textarea>
+      </div>
+
+      <!-- Message Templates -->
+      <div style="margin-bottom: 16px;">
+          <label style="display: block; margin-bottom: 6px; font-weight: 500;">Quick Templates</label>
+          <select id="message-templates" style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; background: white;">
+              <option value="">Select a template...</option>
+              <option value="progress_check">Progress Check</option>
+              <option value="meeting_request">Meeting Request</option>
+              <option value="document_request">Document Submission Reminder</option>
+              <option value="feedback_request">Feedback Request</option>
+          </select>
+      </div>
+
+      ${buttonsHTML}
+  `;
+
+  modalOverlay.appendChild(modal);
+  document.body.appendChild(modalOverlay);
+
+  // Get references to elements
+  const sendNotificationBtn = modal.querySelector("#send-notification");
+  const sendEmailBtn = modal.querySelector("#send-email");
+  const notificationText = modal.querySelector("#notification-text");
+  const notificationLoading = modal.querySelector("#notification-loading");
+  const emailText = modal.querySelector("#email-text");
+  const emailLoading = modal.querySelector("#email-loading");
+  const studentNameInput = modal.querySelector("#student-name");
+  const studentEmailInput = modal.querySelector("#student-email");
+  const messageTextarea = modal.querySelector("#message-text");
+  const emailField = modal.querySelector("#email-field");
+  const communicationModeRadios = modal.querySelectorAll('input[name="communication-mode"]');
+  const templateSelect = modal.querySelector("#message-templates");
+
+  // Message templates
+  const messageTemplates = {
+      progress_check: `Hello {name},
+
+I hope you're doing well with your industrial training. I'd like to check on your progress and see how everything is going.
+
+Could you please provide a brief update on your current tasks and any challenges you're facing?
+
+Looking forward to hearing from you.
+
+Best regards`,
+
+      meeting_request: `Hello {name},
+
+I'd like to schedule a meeting to discuss your industrial training progress and address any questions or concerns you may have.
+
+Please let me know your availability for this week.
+
+Best regards`,
+
+      document_request: `Hello {name},
+
+This is a friendly reminder to submit your required training documents if you haven't already done so.
+
+Please ensure all documents are submitted by the deadline.
+
+Thank you for your cooperation.
+
+Best regards`,
+
+      feedback_request: `Hello {name},
+
+I'd like to get your feedback on the industrial training program so far. Your input is valuable for improving the experience.
+
+Please share any suggestions or concerns you may have.
+
+Best regards`
+  };
+
+  // Event handlers
+  const closeModal = () => document.body.removeChild(modalOverlay);
+
+  // Function to set loading state for notification
+  const setNotificationLoadingState = (isLoading) => {
+      if (isLoading) {
+          sendNotificationBtn.disabled = true;
+          sendNotificationBtn.style.opacity = "0.6";
+          sendNotificationBtn.style.cursor = "not-allowed";
+          notificationText.style.display = "none";
+          notificationLoading.style.display = "inline";
+      } else {
+          sendNotificationBtn.disabled = false;
+          sendNotificationBtn.style.opacity = "1";
+          sendNotificationBtn.style.cursor = "pointer";
+          notificationText.style.display = "inline";
+          notificationLoading.style.display = "none";
+      }
+  };
+
+  // Function to set loading state for email
+  const setEmailLoadingState = (isLoading) => {
+      if (isLoading) {
+          sendEmailBtn.disabled = true;
+          sendEmailBtn.style.opacity = "0.6";
+          sendEmailBtn.style.cursor = "not-allowed";
+          emailText.style.display = "none";
+          emailLoading.style.display = "inline";
+      } else {
+          sendEmailBtn.disabled = false;
+          sendEmailBtn.style.opacity = "1";
+          sendEmailBtn.style.cursor = "pointer";
+          emailText.style.display = "inline";
+          emailLoading.style.display = "none";
+      }
+  };
+
+  // Function to disable all inputs
+  const disableInputs = (disabled) => {
+      studentNameInput.disabled = disabled;
+      messageTextarea.disabled = disabled;
+      if (studentEmailInput) studentEmailInput.disabled = disabled;
+      templateSelect.disabled = disabled;
+      communicationModeRadios.forEach(radio => radio.disabled = disabled);
+  };
+
+  // Communication mode change handler
+  communicationModeRadios.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+          if (e.target.value === 'email') {
+              emailField.style.display = 'block';
+              sendNotificationBtn.style.display = 'none';
+              sendEmailBtn.style.display = 'flex';
+          } else {
+              emailField.style.display = 'none';
+              sendNotificationBtn.style.display = 'flex';
+              sendEmailBtn.style.display = 'none';
+          }
+      });
+  });
+
+  // Template selection handler
+  templateSelect.addEventListener('change', (e) => {
+      const template = e.target.value;
+      if (template && messageTemplates[template]) {
+          messageTextarea.value = messageTemplates[template].replace(/{name}/g, studentNameInput.value);
+      }
+  });
+
+  // Only add cancel event listener if cancel button exists
+  if (!hideCancel) {
+      modal.querySelector("#cancel-message").addEventListener("click", closeModal);
+  }
+
+  // Send Notification Handler
+  sendNotificationBtn.addEventListener("click", async () => {
+      const studentName = studentNameInput.value;
+      const messageText = messageTextarea.value;
+
+      if (!studentName || !messageText) {
+          alert("Please enter student name and message");
+          return;
+      }
+
+      // Set loading state
+      setNotificationLoadingState(true);
+      disableInputs(true);
+
+      try {
+          const studentUid = currentApplication.student?.uid;
+          const companyName = currentApplication.companyName || 'Our Company';
+
+          if (!studentUid) {
+              alert("Student information is missing");
+              setNotificationLoadingState(false);
+              disableInputs(false);
+              return;
+          }
+
+          const result = await it_base_companycloud.sendNotificationToStudent(
+              studentUid,
+              {
+                  title: "New Message from " + companyName,
+                  message: messageText,
+                  type: "message",
+                  timestamp: new Date().toISOString()
+              }
+          );
+
+          if (result.success) {
+              setTimeout(() => {
+                  alert(`Notification sent to ${studentName}`);
+                  closeModal();
+              }, 500);
+          } else {
+              alert("Failed to send notification: " + (result.error || 'Unknown error'));
+              setNotificationLoadingState(false);
+              disableInputs(false);
+          }
+      } catch (error) {
+          alert("Error sending notification: " + error.message);
+          setNotificationLoadingState(false);
+          disableInputs(false);
+      }
+  });
+
+  // Send Email Handler
+  sendEmailBtn.addEventListener("click", async () => {
+      const studentName = studentNameInput.value;
+      const studentEmail = studentEmailInput.value;
+      const messageText = messageTextarea.value;
+
+      if (!studentName || !studentEmail || !messageText) {
+          alert("Please enter student name, email, and message");
+          return;
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(studentEmail)) {
+          alert("Please enter a valid email address");
+          return;
+      }
+
+      // Set loading state
+      setEmailLoadingState(true);
+      disableInputs(true);
+
+      try {
+          // Create email subject and body
+          const companyName = currentApplication.companyName || 'Our Company';
+          const subject = `Message from ${companyName} - Industrial Training`;
+          const body = messageText;
+
+          // Encode the email parameters
+          const encodedSubject = encodeURIComponent(subject);
+          const encodedBody = encodeURIComponent(body);
+
+          // Create mailto link
+          const mailtoLink = `mailto:${studentEmail}?subject=${encodedSubject}&body=${encodedBody}`;
+
+          // Open email client
+          window.open(mailtoLink, '_blank');
+
+          // Simulate sending completion (since we can't track email actually being sent)
+          setTimeout(() => {
+              setEmailLoadingState(false);
+              disableInputs(false);
+              alert(`Email opened for ${studentName}. Please send it from your email client.`);
+              closeModal();
+          }, 1000);
+
+      } catch (error) {
+          alert("Error preparing email: " + error.message);
+          setEmailLoadingState(false);
+          disableInputs(false);
+      }
+  });
+
+  // Only allow clicking outside to close if cancel button is visible
+  if (!hideCancel) {
+      modalOverlay.addEventListener("click", (e) => {
+          if (e.target === modalOverlay) closeModal();
+      });
+  }
+
+  // Initialize UI state
+  communicationModeRadios[0].checked = true; // Default to notification mode
+  sendEmailBtn.style.display = 'none'; // Hide email button initially
+}
+
+export {messageDialog}

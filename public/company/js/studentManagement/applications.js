@@ -1,4 +1,4 @@
-import { getAvatarInitials } from "../../../js/general/generalmethods.js";
+import { generateShareableUrl, getAvatarInitials, messageDialog } from "../../../js/general/generalmethods.js";
 
 export default class Applications {
   constructor(tabManager) {
@@ -23,9 +23,12 @@ export default class Applications {
   }
 
   initializeElements() {
-    // Table and pagination elements
+    // Table and mobile list elements
     this.applicationsTableBody = document.getElementById(
       "applications-table-body"
+    );
+    this.applicationsMobileList = document.getElementById(
+      "applications-mobile-list"
     );
     this.selectAllCheckbox = document.getElementById("select-all-applications");
     this.exportBtn = document.getElementById("export-applications-btn");
@@ -148,7 +151,7 @@ export default class Applications {
   }
 
   renderApplicationsTable() {
-    if (!this.applicationsTableBody) return;
+    if (!this.applicationsTableBody && !this.applicationsMobileList) return;
 
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
@@ -157,12 +160,18 @@ export default class Applications {
       endIndex
     );
 
-    this.applicationsTableBody.innerHTML = "";
+    // Clear both table and mobile list
+    if (this.applicationsTableBody) {
+      this.applicationsTableBody.innerHTML = "";
+    }
+    if (this.applicationsMobileList) {
+      this.applicationsMobileList.innerHTML = "";
+    }
 
     if (currentApplications.length === 0) {
-      this.applicationsTableBody.innerHTML = `
+      const emptyMessage = `
         <tr>
-          <td colspan="7" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+          <td colspan="7" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
             <div class="flex flex-col items-center">
               <span class="material-symbols-outlined text-4xl mb-2 text-gray-300">inbox</span>
               <p class="text-lg font-medium mb-1">No applications found</p>
@@ -171,24 +180,55 @@ export default class Applications {
           </td>
         </tr>
       `;
+
+      const mobileEmptyMessage = `
+        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-8 text-center">
+          <span class="material-symbols-outlined text-4xl mb-2 text-gray-300">inbox</span>
+          <p class="text-lg font-medium mb-1 text-gray-500 dark:text-gray-400">No applications found</p>
+          <p class="text-sm text-gray-400">Try adjusting your search or filters</p>
+        </div>
+      `;
+
+      if (this.applicationsTableBody) {
+        this.applicationsTableBody.innerHTML = emptyMessage;
+      }
+      if (this.applicationsMobileList) {
+        this.applicationsMobileList.innerHTML = mobileEmptyMessage;
+      }
       return;
     }
 
-    currentApplications.forEach((applicationData, index) => {
-      const application = applicationData.application;
-      const student = application.student || {};
-      const opportunity = applicationData.opportunity || {};
-      const applicationId = application.id || `app-${startIndex + index}`;
+    // Render desktop table
+    if (this.applicationsTableBody) {
+      currentApplications.forEach((applicationData, index) => {
+        const application = applicationData.application;
+        const student = application.student || {};
+        const opportunity = applicationData.opportunity || {};
+        console.log("opportunity " + opportunity);
+        const applicationId = application.id || `app-${startIndex + index}`;
 
-      const row = this.createApplicationRow(
-        applicationId,
-        student,
-        application,
-        opportunity,
-        startIndex + index
-      );
-      this.applicationsTableBody.appendChild(row);
-    });
+        const row = this.createApplicationRow(
+          applicationId,
+          student,
+          application,
+          opportunity,
+          startIndex + index,
+          applicationData
+        );
+        this.applicationsTableBody.appendChild(row);
+      });
+    }
+
+    // Render mobile list
+    if (this.applicationsMobileList) {
+      currentApplications.forEach((applicationData, index) => {
+        const card = this.createMobileApplicationCard(
+          applicationData,
+          startIndex + index
+        );
+        this.applicationsMobileList.appendChild(card);
+      });
+    }
   }
 
   createApplicationRow(
@@ -196,7 +236,8 @@ export default class Applications {
     student,
     application,
     opportunity,
-    index
+    index,
+    appData
   ) {
     const row = document.createElement("tr");
     row.className = "hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors";
@@ -273,7 +314,7 @@ export default class Applications {
             <span class="material-symbols-outlined text-base">visibility</span>
           </button>
           <button class="edit-application text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors" data-application-id="${applicationId}">
-            <span class="material-symbols-outlined text-base">edit</span>
+            <span class="material-symbols-outlined text-base">undo</span>
           </button>
           <button class="delete-application text-red-600 hover:text-red-800 transition-colors" data-application-id="${applicationId}">
             <span class="material-symbols-outlined text-base">delete</span>
@@ -283,9 +324,137 @@ export default class Applications {
     `;
 
     // Add event listeners to the row elements
-    this.attachRowEventListeners(row, applicationId);
+    this.attachRowEventListeners(row, appData);
 
     return row;
+  }
+
+  // New method for mobile cards
+  createMobileApplicationCard(applicationData, index) {
+    const application = applicationData.application;
+    const student = application.student || {};
+    const opportunity = applicationData.training || {};
+    const applicationId = application.id || `app-${index}`;
+
+    const appliedDate = application.applicationDate;
+    const formattedDate = appliedDate
+      ? new Date(appliedDate).toLocaleDateString()
+      : "N/A";
+
+    const status = application.status || "pending";
+    const statusConfig = this.getStatusConfig(status);
+
+    const avatarContent = getAvatarInitials(student.fullName, student.imageUrl);
+    const hasImage = avatarContent.startsWith("url(");
+
+    const card = document.createElement("div");
+    card.className =
+      "bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700";
+    card.dataset.applicationId = applicationId;
+
+    card.innerHTML = `
+      <!-- Header with checkbox and student info -->
+      <div class="flex items-start justify-between mb-3">
+        <div class="flex items-center gap-3">
+          <input type="checkbox" class="application-checkbox rounded border-gray-300 text-primary focus:ring-primary" data-application-id="${applicationId}">
+          <div class="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-white font-semibold text-sm ${
+            hasImage
+              ? "bg-cover bg-center"
+              : "bg-gradient-to-br from-blue-500 to-purple-600"
+          }" ${hasImage ? `style="background-image: ${avatarContent}"` : ""}>
+            ${!hasImage ? avatarContent : ""}
+          </div>
+        </div>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+          statusConfig.class
+        }">
+          ${statusConfig.text}
+        </span>
+      </div>
+
+      <!-- Student Details -->
+      <div class="space-y-2 mb-4">
+        <div>
+          <h3 class="font-semibold text-gray-900 dark:text-white text-sm">${
+            student.fullName || "Unknown Student"
+          }</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">${
+            student.email || "No email"
+          }</p>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div>
+            <span class="font-medium text-gray-600 dark:text-gray-300">Industrail Training:</span>
+            <p class="text-gray-900 dark:text-white truncate">${
+              opportunity.title || "N/A"
+            }</p>
+          </div>
+          <div>
+            <span class="font-medium text-gray-600 dark:text-gray-300">Institution:</span>
+            <p class="text-gray-900 dark:text-white truncate">${
+              student.institution || "N/A"
+            }</p>
+          </div>
+          <div class="col-span-2">
+            <span class="font-medium text-gray-600 dark:text-gray-300">Applied:</span>
+            <p class="text-gray-900 dark:text-white">${formattedDate}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-2 pt-3 border-t border-gray-200 dark:border-gray-600">
+        <button class="view-application flex-1 bg-primary text-white text-xs py-2 rounded-lg hover:bg-primary/90 transition-colors" data-application-id="${applicationId}">
+          View
+        </button>
+        <button class="edit-application flex-1 bg-gray-600 text-white text-xs py-2 rounded-lg hover:bg-gray-700 transition-colors" data-application-id="${applicationId}">
+          Reverse
+        </button>
+        <button class="delete-application flex-1 bg-red-600 text-white text-xs py-2 rounded-lg hover:bg-red-700 transition-colors" data-application-id="${applicationId}">
+          Delete
+        </button>
+      </div>
+    `;
+
+    // Attach event listeners to mobile card
+    this.attachMobileCardEventListeners(card, applicationData);
+    return card;
+  }
+
+  // Method to attach event listeners to mobile cards
+  attachMobileCardEventListeners(card, applicationData) {
+    const checkbox = card.querySelector(".application-checkbox");
+    const viewBtn = card.querySelector(".view-application");
+    const editBtn = card.querySelector(".edit-application");
+    const deleteBtn = card.querySelector(".delete-application");
+
+    if (checkbox) {
+      checkbox.addEventListener("change", (e) => {
+        this.handleApplicationSelect(
+          applicationData.application.id,
+          e.target.checked
+        );
+      });
+    }
+
+    if (viewBtn) {
+      viewBtn.addEventListener("click", () =>
+        this.viewApplication(applicationData)
+      );
+    }
+
+    if (editBtn) {
+      editBtn.addEventListener("click", async () =>
+        this.editApplication(applicationData)
+      );
+    }
+
+    if (deleteBtn) {
+      deleteBtn.addEventListener("click", () =>
+        this.deleteApplication(applicationData)
+      );
+    }
   }
 
   getStatusConfig(status) {
@@ -322,12 +491,12 @@ export default class Applications {
     return configs[status] || configs.pending;
   }
 
-  attachRowEventListeners(row, applicationId) {
+  attachRowEventListeners(row, appData) {
     // Checkbox
     const checkbox = row.querySelector(".application-checkbox");
     if (checkbox) {
       checkbox.addEventListener("change", (e) => {
-        this.handleApplicationSelect(applicationId, e.target.checked);
+        this.handleApplicationSelect(appData, e.target.checked);
       });
     }
 
@@ -335,15 +504,15 @@ export default class Applications {
     const viewBtn = row.querySelector(".view-application");
     if (viewBtn) {
       viewBtn.addEventListener("click", () => {
-        this.viewApplication(applicationId);
+        this.viewApplication(appData);
       });
     }
 
     // Edit button
     const editBtn = row.querySelector(".edit-application");
     if (editBtn) {
-      editBtn.addEventListener("click", () => {
-        this.editApplication(applicationId);
+      editBtn.addEventListener("click", async () => {
+        this.editApplication(appData);
       });
     }
 
@@ -351,17 +520,23 @@ export default class Applications {
     const deleteBtn = row.querySelector(".delete-application");
     if (deleteBtn) {
       deleteBtn.addEventListener("click", () => {
-        this.deleteApplication(applicationId);
+        this.deleteApplication(appData);
       });
     }
   }
 
   handleSelectAll(checked) {
-    const checkboxes = this.applicationsTableBody.querySelectorAll(
-      ".application-checkbox"
-    );
+    // Handle both desktop and mobile checkboxes
+    const desktopCheckboxes = this.applicationsTableBody
+      ? this.applicationsTableBody.querySelectorAll(".application-checkbox")
+      : [];
+    const mobileCheckboxes = this.applicationsMobileList
+      ? this.applicationsMobileList.querySelectorAll(".application-checkbox")
+      : [];
 
-    checkboxes.forEach((checkbox) => {
+    const allCheckboxes = [...desktopCheckboxes, ...mobileCheckboxes];
+
+    allCheckboxes.forEach((checkbox) => {
       checkbox.checked = checked;
       const applicationId = checkbox.dataset.applicationId;
 
@@ -482,15 +657,38 @@ export default class Applications {
   }
 
   // Action Methods
-  viewApplication(applicationId) {
-    console.log("View application:", applicationId);
-    // Implement view application logic
-    // Could open a modal or navigate to detail page
+  viewApplication(applicationData) {
+    var itid = applicationData.training.id;
+    var appId = applicationData.application.id;
+    if(!itid || !appId)
+    {
+      console.log("itid "+itid);
+      console.log("appId "+appId);
+      return;
+    }
+    console.log("View application:", applicationData);
+    if (typeof generateShareableUrl === "function") {
+      const profileUrl = generateShareableUrl(
+        "/company/student_profile.html",
+        itid,
+        appId
+      );
+
+      console.log("Generated URL:", profileUrl);
+      window.location.href = profileUrl;
+    }
   }
 
-  editApplication(applicationId) {
-    console.log("Edit application:", applicationId);
-    // Implement edit application logic
+  async editApplication(appData) {
+    console.log("Edit application:", appData);
+    if(appData.application.applicationStatus == 'pending')
+    {
+      alert("Status is Pending Already");
+      return;
+    }
+    await this.tabManager.updateApplicationStatus(appData.application.id,"pending")
+    this.renderApplicationsTable();
+    messageDialog(true,appData.application,true);
   }
 
   deleteApplication(applicationId) {
