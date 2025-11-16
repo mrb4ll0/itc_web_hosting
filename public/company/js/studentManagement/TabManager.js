@@ -344,9 +344,17 @@ class TabManager {
   }
 
   getTabClassName(tabId) {
-    // Convert 'overview-tab' to 'OverviewTab'
-    return tabId;
-  }
+  // Convert tab IDs to proper class names and file paths
+  const tabMap = {
+    'overview': 'overview',
+    'applications': 'applications',
+    'current_trainee': 'current_trainee', // Make sure this matches your file name
+    'upcoming_trainee': 'upcoming_trainee',
+    'completed_trainee': 'completed_trainee'
+  };
+  
+  return tabMap[tabId] || tabId;
+}
 
   async fetchHTML(url) {
     const response = await fetch(url);
@@ -503,7 +511,7 @@ openApplicationDetails(applicationId) {
   this.showApplicationModal(applicationData);
 }
 
-  async updateApplicationStatus(applicationId, newStatus) {
+  async updateApplicationStatus(applicationId, newStatus, notificationMessage = null) {
   console.log(`Updating application ${applicationId} to status: ${newStatus}`);
   
   // Find the application
@@ -516,27 +524,98 @@ openApplicationDetails(applicationId) {
     return false;
   }
 
-  // Update the status
+  // Get application data
   var applicationData = this.applications[applicationIndex];
   var application = applicationData.application;  
+  
+  // Store old status for comparison
+  const oldStatus = application.status;
+  
+  // Update the status locally
   application.status = newStatus;
   console.log(`Local status updated for application ${applicationId}`);
   console.log(application);
-  //companyId, itId, applicationId, status
-  await it_base_companycloud.updateApplicationStatus(
-    applicationData.training.company.id,
-    applicationData.opportunityId,
-    applicationId,
-    newStatus
-  );
-  
-  // Re-process the data to update categorizations
-  this.processApplicationsData();
-  this.updateSharedStats();
-  this.refreshCurrentTab();
-  
-  console.log(`Successfully updated application ${applicationId} to ${newStatus}`);
-  return true;
+
+  try {
+    // Update status in the cloud
+    await it_base_companycloud.updateApplicationStatus(
+      applicationData.training.company.id,
+      applicationData.opportunityId,
+      applicationId,
+      newStatus
+    );
+
+    // Send notification to student if status changed and message is provided
+    if (oldStatus !== newStatus && notificationMessage) {
+      await this.sendStatusNotification(
+        applicationData, 
+        newStatus, 
+        notificationMessage,
+        applicationData.training.company.name
+      );
+    }
+
+    // Re-process the data to update categorizations
+    this.processApplicationsData();
+    this.updateSharedStats();
+    this.refreshCurrentTab();
+    
+    console.log(`Successfully updated application ${applicationId} to ${newStatus}`);
+    return true;
+
+  } catch (error) {
+    // Revert local status if cloud update fails
+    application.status = oldStatus;
+    console.error(`Failed to update application ${applicationId}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Send notification to student about status change
+ */
+async sendStatusNotification(applicationData, newStatus, messageText, companyName) {
+  try {
+    const studentUid = applicationData.application.student.uid;
+    
+    if (!studentUid) {
+      console.warn('No student UID found for notification');
+      return;
+    }
+
+    // Generate appropriate title based on status
+    const statusTitles = {
+      'accepted': 'Application Accepted!',
+      'rejected': 'Application Update',
+      'pending': 'Application Under Review',
+      'shortlisted': 'Application Shortlisted!'
+    };
+
+    const title = statusTitles[newStatus] || 'Application Status Updated';
+
+    console.log(`Sending notification to student ${studentUid} about status change to ${newStatus}`);
+
+    const result = await it_base_companycloud.sendNotificationToStudent(
+      studentUid,
+      {
+          title: `${title} - ${companyName}`,
+          message: messageText,
+          type: "application_status",
+          status: newStatus,
+          applicationId: applicationData.application.id,
+          companyName: companyName,
+          timestamp: new Date().toISOString()
+      }
+    );
+
+    console.log('Notification sent successfully:', result);
+    return result;
+
+  } catch (error) {
+    console.error('Failed to send notification to student:', error);
+    // Don't throw error here - we don't want notification failure to block status update
+    return null;
+  }
 }
 
 showApplicationModal(applicationData) {

@@ -32,7 +32,8 @@ import {
   collectionGroup,
   addDoc,
   arrayUnion,
-  limit
+  limit,
+  Timestamp
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 import {
   getStorage,
@@ -106,5 +107,6 @@ export {
   firebaseConfig,
   initializeApp,
   limit,
-  getMetadata
+  getMetadata,
+  Timestamp
 };

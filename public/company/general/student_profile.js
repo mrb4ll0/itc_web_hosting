@@ -1,7 +1,7 @@
 // application_details.js
 import { ITBaseCompanyCloud } from "../../js/fireabase/ITBaseCompanyCloud.js";
 import { auth } from "../../js/config/firebaseInit.js";
-import { viewExistingFile } from "../../js/general/generalmethods.js";
+import { validateStorageUrl, viewExistingFile } from "../../js/general/generalmethods.js";
 
 class StudentApplication {
   constructor() {
@@ -122,7 +122,7 @@ class StudentApplication {
         return;
       }
 
-      this.populateApplicationData();
+      await this.populateApplicationData();
       this.showLoading(false);
     } catch (error) {
       console.error("Error loading application data:", error);
@@ -134,7 +134,7 @@ class StudentApplication {
   /**
    * Populate the HTML with application data
    */
-  populateApplicationData() {
+  async populateApplicationData() {
     const app = this.currentApplication;
     //console.log("app is "+JSON.stringify(app));
 
@@ -222,7 +222,7 @@ class StudentApplication {
       app.student.phoneNumber;
 
     // Populate documents section
-    this.populateDocuments(app);
+    await this.populateDocuments(app);
 
     // Set industrial training info
     // //console.log("appIt " + JSON.stringify(app));
@@ -246,7 +246,8 @@ class StudentApplication {
       "internship-company-value",
       app.companyName || "Not specified"
     );
-    this.setTextContent(
+
+      this.setTextContent(
       "internship-department-value",
       app.internship.department || "Not specified"
     );
@@ -255,13 +256,87 @@ class StudentApplication {
       app.internship.address || "Not specified"
     );
 
-    // You can also update the page title to include the position
+
+    // Handle dates
+    const startDate = app.duration.startDate ;
+    const endDate = app.duration.endDate ;
+    // console.log("start Date "+startDate);
+    // console.log(" end Date "+endDate);
+    // console.log("duratios is "+JSON.stringify(app.duration));
+    // console.log("app id is "+app.id);
+
+    this.setTextContent(
+      "internship-start-date-value",
+      this.formatInternshipDate(startDate) || "Not specified"
+    );
+    this.setTextContent(
+      "internship-end-date-value",
+      this.formatInternshipDate(endDate) || "Not specified"
+    );
+
+    // Calculate and display duration if you have that field
+    if (app.internship.duration?.displayText) {
+      this.setTextContent(
+        "internship-duration-value",
+        app.internship.duration.displayText
+      );
+    } else if (startDate && endDate) {
+      // Calculate duration from dates
+      const durationText = this.calculateDuration(startDate, endDate);
+      this.setTextContent(
+        "internship-duration-value",
+        durationText
+      );
+    }
+
+    // Update page title
     const titleElement = document.getElementById("applicant-name-title");
     if (titleElement && app.position) {
       titleElement.textContent = `${app.studentName}'s Application - ${app.position}`;
     }
   }
 
+  formatInternshipDate(dateString) {
+    if (!dateString) return null;
+    
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return null;
+      
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (error) {
+      console.warn('Error formatting date:', error);
+      return null;
+    }
+  }
+
+  calculateDuration(startDate, endDate) {
+    try {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        return "Not specified";
+      }
+      
+      const diffTime = Math.abs(end - start);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const diffMonths = Math.floor(diffDays / 30);
+      
+      if (diffMonths > 0) {
+        return `${diffMonths} month${diffMonths !== 1 ? 's' : ''}`;
+      } else {
+        return `${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+      }
+    } catch (error) {
+      console.warn('Error calculating duration:', error);
+      return "Not specified";
+    }
+  }
   setTextContent(elementId, text) {
     const element = document.getElementById(elementId);
     if (element) {
@@ -308,7 +383,7 @@ class StudentApplication {
   /**
    * Populate documents section with file URLs
    */
-  populateDocuments(application) {
+ async populateDocuments(application) {
     const files = application.applicationFiles || {};
     //console.log("applicationFiles " + JSON.stringify(files));
 
@@ -316,14 +391,33 @@ class StudentApplication {
      var idCard = files.idCard ?? application.student.studentIDCard
      var itLetter = files.trainingLetter ?? application.student.studentITLetter;
     if (idCard) {
+      var ifIDCard = await validateStorageUrl(idCard);
+      //console.log("if ID card "+ifIDCard);
+      if(ifIDCard)
+      {
       this.setupDocumentButtons("id-card", idCard);
+      }
+      else
+      {
+        document.getElementById("id-card-document").style.display = "none";
+      }
     } else {
       document.getElementById("id-card-document").style.display = "none";
     }
 
     // Training Letter (Application Letter)
     if (itLetter) {
+      var   ifITLetter = await validateStorageUrl(itLetter);
+       console.log("itLetter validation "+ifITLetter);
+       if(ifITLetter)
+       {
       this.setupDocumentButtons("application-letter", itLetter);
+       }
+       else
+       {
+        document.getElementById("application-letter-document").style.display =
+        "none";
+       }
     } else {
       document.getElementById("application-letter-document").style.display =
         "none";
@@ -409,14 +503,17 @@ class StudentApplication {
    * Download document
    */
   downloadDocument(fileUrl) {
+    // Ensure fileUrl is a string
+    const urlString = String(fileUrl);
+    console.log("fileUrl is", urlString);
+    
     const link = document.createElement("a");
-    link.href = fileUrl;
-    link.download = fileUrl.split("/").pop() || "document";
+    link.href = urlString;
+    link.download = urlString.split("/").pop() || "document";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  }
-
+}
   /**
    * Setup event listeners for action buttons
    */

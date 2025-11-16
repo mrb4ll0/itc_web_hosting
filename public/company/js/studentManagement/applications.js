@@ -1,4 +1,10 @@
-import { generateShareableUrl, getAvatarInitials, messageDialog } from "../../../js/general/generalmethods.js";
+import {
+  generateShareableUrl,
+  getAvatarInitials,
+  messageDialog,
+} from "../../../js/general/generalmethods.js";
+import { ITBaseCompanyCloud } from "../../../js/fireabase/ITBaseCompanyCloud.js";
+const it_base_companycloud = new ITBaseCompanyCloud();
 
 export default class Applications {
   constructor(tabManager) {
@@ -11,7 +17,7 @@ export default class Applications {
   }
 
   async init() {
-    console.log("Initializing Applications Tab");
+    //console.log("Initializing Applications Tab");
     this.initializeElements();
     this.initializeEventListeners();
     await this.buildApplicationsContent();
@@ -42,7 +48,7 @@ export default class Applications {
     this.paginationEnd = document.getElementById("pagination-end");
     this.paginationTotal = document.getElementById("pagination-total");
 
-    console.log("Applications elements initialized");
+    //console.log("Applications elements initialized");
   }
 
   initializeEventListeners() {
@@ -204,7 +210,7 @@ export default class Applications {
         const application = applicationData.application;
         const student = application.student || {};
         const opportunity = applicationData.opportunity || {};
-        console.log("opportunity " + opportunity);
+        //console.log("opportunity " + opportunity);
         const applicationId = application.id || `app-${startIndex + index}`;
 
         const row = this.createApplicationRow(
@@ -244,12 +250,12 @@ export default class Applications {
     row.dataset.applicationId = applicationId;
 
     const appliedDate = application.applicationDate;
-    console.log(
-      "Applied date for application ",
-      applicationId,
-      " is ",
-      appliedDate
-    );
+    // console.log(
+    //   "Applied date for application ",
+    //   applicationId,
+    //   " is ",
+    //   appliedDate
+    // );
     const formattedDate = appliedDate
       ? new Date(appliedDate).toLocaleDateString()
       : "N/A";
@@ -496,7 +502,7 @@ export default class Applications {
     const checkbox = row.querySelector(".application-checkbox");
     if (checkbox) {
       checkbox.addEventListener("change", (e) => {
-        this.handleApplicationSelect(appData, e.target.checked);
+        this.handleApplicationSelect(appData.application.id, e.target.checked);
       });
     }
 
@@ -660,10 +666,9 @@ export default class Applications {
   viewApplication(applicationData) {
     var itid = applicationData.training.id;
     var appId = applicationData.application.id;
-    if(!itid || !appId)
-    {
-      console.log("itid "+itid);
-      console.log("appId "+appId);
+    if (!itid || !appId) {
+      console.log("itid " + itid);
+      console.log("appId " + appId);
       return;
     }
     console.log("View application:", applicationData);
@@ -679,96 +684,458 @@ export default class Applications {
     }
   }
 
-  async editApplication(appData) {
+  async editApplication(appData, e = null) {
     console.log("Edit application:", appData);
-    if(appData.application.applicationStatus == 'pending')
-    {
+
+    if (appData.application.applicationStatus == "pending") {
       alert("Status is Pending Already");
       return;
     }
-    await this.tabManager.updateApplicationStatus(appData.application.id,"pending")
-    this.renderApplicationsTable();
-    messageDialog(true,appData.application,true);
+
+    // Find the edit button that was clicked
+    const editButton = event?.target?.closest(".edit-application");
+    if (editButton) {
+      this.showButtonLoading(
+        editButton,
+        '<span class="material-symbols-outlined text-base">undo</span>'
+      );
+    }
+
+    try {
+      this.showGlobalLoading("Reversing application...");
+      await this.tabManager.updateApplicationStatus(
+        appData.application.id,
+        "pending"
+      );
+      this.renderApplicationsTable();
+      messageDialog(true, appData.application, true);
+    } catch (error) {
+      console.error("Error reversing application:", error);
+      alert("Failed to reverse application. Please try again.");
+    } finally {
+      this.hideGlobalLoading();
+      if (editButton) {
+        this.hideButtonLoading(editButton);
+      }
+    }
   }
 
-  deleteApplication(applicationId) {
+  async deleteApplication(appData) {
     if (
-      confirm(
+      !confirm(
         "Are you sure you want to delete this application? This action cannot be undone."
       )
     ) {
-      console.log("Delete application:", applicationId);
-      // Implement delete application logic
-      // Refresh the table after deletion
+      return;
+    }
+
+    // Find the delete button that was clicked
+    const deleteButton = event?.target?.closest(".delete-application");
+    if (deleteButton) {
+      this.showButtonLoading(
+        deleteButton,
+        '<span class="material-symbols-outlined text-base">delete</span>'
+      );
+    }
+
+    try {
+      this.showGlobalLoading("Deleting application...");
+      console.log("Delete application:", appData);
+
+      await this.removeApplicationFromData(appData.application.id);
+
       this.buildApplicationsContent();
+
+      // Show success message
+      this.showTempMessage("Application deleted successfully", "success");
+    } catch (error) {
+      console.error("Error deleting application:", error);
+      this.showTempMessage("Failed to delete application", "error");
+    } finally {
+      this.hideGlobalLoading();
+      if (deleteButton) {
+        this.hideButtonLoading(deleteButton);
+      }
+    }
+  }
+
+  async removeApplicationFromData(applicationId) {
+    try {
+      // Remove from main applications array in tabManager
+      const allApplications = this.tabManager.getAllCompanyApplications();
+      const applicationIndex = allApplications.findIndex(
+        (app) => app.application.id === applicationId
+      );
+
+      // Find the application to get the IT ID
+      const application = allApplications.find(
+        (app) => app.application.id === applicationId
+      );
+
+      console.log("given applications is applciation");
+      if (!application) {
+        console.warn(`Application ${applicationId} not found`);
+        return Promise.resolve();
+      }
+
+      if (applicationIndex !== -1) {
+        // Remove the application from the array
+        allApplications.splice(applicationIndex, 1);
+        console.log(
+          `Removed application ${applicationId} at index ${applicationIndex}`
+        );
+      }
+
+      // Also remove from filtered applications
+      const filteredIndex = this.filteredApplications.findIndex(
+        (app) => app.application.id === applicationId
+      );
+
+      if (filteredIndex !== -1) {
+        this.filteredApplications.splice(filteredIndex, 1);
+      }
+
+      // Remove from selected applications
+      this.selectedApplications.delete(applicationId);
+
+      // Get the correct IDs for deletion
+      const itId = application.opportunityId; // This matches your data structure
+      const compId = application.training.company.id; // Get company ID from tabManager
+
+      if (!itId || !compId) {
+        throw new Error("Missing IT ID or Company ID for deletion");
+      }
+
+      console.log(
+        `Deleting application: Company=${compId}, IT=${itId}, App=${applicationId}`
+      );
+
+      await it_base_companycloud.deleteCompanyApplication(
+        compId,
+        itId,
+        applicationId
+      );
+      //console.log("given application is "+ JSON.stringify(application));
+      messageDialog(true,application.application);
+      this.tabManager.processApplicationsData();
+      this.tabManager.updateSharedStats();
+      this.tabManager.refreshCurrentTab();
+
+      return Promise.resolve();
+    } catch (error) {
+      console.error("Error in removeApplicationFromData:", error);
+      // Re-throw the error so calling code can handle it
+      throw error;
     }
   }
 
   exportApplications() {
-    console.log("Export applications");
-    // Implement export logic (CSV, Excel, etc.)
-    const applicationsToExport =
-      this.selectedApplications.size > 0
-        ? this.filteredApplications.filter((app) =>
-            this.selectedApplications.has(app.application.id)
-          )
-        : this.filteredApplications;
+  console.log("Export applications");
+  
+  const applicationsToExport =
+    this.selectedApplications.size > 0
+      ? this.filteredApplications.filter((app) =>
+          this.selectedApplications.has(app.application.id)
+        )
+      : this.filteredApplications;
 
-    console.log("Exporting applications:", applicationsToExport);
-    // Add actual export implementation here
+  if (applicationsToExport.length === 0) {
+    alert("No applications to export");
+    return;
   }
 
+  try {
+    this.showGlobalLoading("Preparing export...");
+    
+    // Generate CSV
+    const csvContent = this.generateCSV(applicationsToExport);
+    
+    // Create and trigger download
+    this.downloadCSV(csvContent, `applications_${new Date().toISOString().split('T')[0]}.csv`);
+    
+    this.showTempMessage(`Exported ${applicationsToExport.length} applications successfully`, "success");
+    
+  } catch (error) {
+    console.error("Error exporting applications:", error);
+    this.showTempMessage("Failed to export applications", "error");
+  } finally {
+    this.hideGlobalLoading();
+  }
+}
+
+generateCSV(applications) {
+  const headers = [
+    'Student Name',
+    'Student Email', 
+    'Institution',
+    'Industrial Training',
+    'Applied Date',
+    'Status',
+    'Cover Letter',
+    'Resume URL'
+  ];
+
+  // CSV header row
+  let csv = headers.join(',') + '\n';
+
+  // Data rows
+  applications.forEach(app => {
+    const application = app.application;
+    const student = application.student || {};
+    const row = [
+      `"${(student.fullName || '').replace(/"/g, '""')}"`,
+      `"${(student.email || '').replace(/"/g, '""')}"`,
+      `"${(student.institution || '').replace(/"/g, '""')}"`,
+      `"${(app.opportunity || '').replace(/"/g, '""')}"`,
+      `"${application.applicationDate ? new Date(application.applicationDate).toLocaleDateString() : ''}"`,
+      `"${application.applicationStatus || ''}"`,
+      `"${(application.coverLetter || '').replace(/"/g, '""')}"`,
+      `"${application.resumeURL || ''}"`
+    ];
+    csv += row.join(',') + '\n';
+  });
+
+  return csv;
+}
+
+downloadCSV(csvContent, filename) {
+  // Create blob and download link
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  
+  link.setAttribute('href', url);
+  link.setAttribute('download', filename);
+  link.style.visibility = 'hidden';
+  
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
   showBulkActions() {
     if (this.selectedApplications.size === 0) {
-      alert("Please select at least one application to perform bulk actions.");
-      return;
+        alert("Please select at least one application to perform bulk actions.");
+        return;
     }
 
-    // Simple bulk actions menu - you can enhance this with a proper dropdown
     const action = prompt(
-      `Bulk actions for ${this.selectedApplications.size} applications:\n\nEnter action (status: pending/shortlisted/accepted/rejected):`
+        `Bulk actions for ${this.selectedApplications.size} applications:\n\n` +
+        `Available actions:\n` +
+        `- "accept" → Status: accepted\n` +
+        `- "reject" → Status: rejected\n` +
+        `- "pend"   → Status: pending\n` +
+        `Enter your action:`
     );
 
-    if (
-      action &&
-      ["pending", "shortlisted", "accepted", "rejected"].includes(
-        action.toLowerCase()
-      )
-    ) {
-      this.performBulkAction(action.toLowerCase());
-    } else if (action) {
-      alert(
-        "Invalid action. Please use: pending, shortlisted, accepted, or rejected"
-      );
+    if (action) {
+        const normalizedAction = action.toLowerCase().trim();
+        
+        const actionMap = {
+            'accept': 'accepted',
+            'reject': 'rejected',
+            'pend': 'pending',
+        };
+
+        const finalStatus = actionMap[normalizedAction];
+        
+        if (finalStatus) {
+            this.performBulkAction(finalStatus);
+        } else {
+            alert("Invalid action. Please use: accept, reject or pend");
+        }
     }
-  }
+}
 
   async performBulkAction(action) {
     console.log(
       `Performing bulk action: ${action} on ${this.selectedApplications.size} applications`
     );
 
-    // Here you would typically make API calls to update the applications
-    // For now, we'll just show a confirmation and refresh
+    // Auto-generate message based on status
+    const autoMessage = this.generateAutoMessage(action);
+    
+    // Ask if they want to customize the notification message
+    const useCustomMessage = confirm(
+        `Update ${this.selectedApplications.size} applications to "${action}"?\n\n` +
+        `Auto-generated notification: "${autoMessage}"\n\n` +
+        `Click OK to use this message, or Cancel to customize.`
+    );
 
-    if (
-      confirm(
-        `Are you sure you want to mark ${this.selectedApplications.size} applications as ${action}?`
-      )
-    ) {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+    let notificationMessage = autoMessage;
+    
+    if (!useCustomMessage) {
+        const customMessage = prompt('Enter custom notification message:', autoMessage);
+        if (customMessage === null) {
+            return; // User cancelled the entire operation
+        }
+        notificationMessage = customMessage.trim() || autoMessage;
+    }
 
-      // Clear selection and refresh
-      this.selectedApplications.clear();
-      if (this.selectAllCheckbox) {
-        this.selectAllCheckbox.checked = false;
-      }
-      this.buildApplicationsContent();
+    if (!confirm(`Are you sure you want to mark ${this.selectedApplications.size} applications as ${action}?`)) {
+        return;
+    }
 
-      alert(
-        `Successfully updated ${this.selectedApplications.size} applications to ${action}`
-      );
+    // Show loading on bulk actions button
+    if (this.bulkActionsBtn) {
+        this.showButtonLoading(this.bulkActionsBtn);
+    }
+
+    try {
+        this.showGlobalLoading(`Updating ${this.selectedApplications.size} applications...`);
+        
+        // Show bulk progress indicator
+        //this.showBulkProgress(this.selectedApplications.size);
+        
+        console.log("appId is " + JSON.stringify(this.selectedApplications));
+        
+        // Process all applications with the notification message
+        const applicationsArray = Array.from(this.selectedApplications);
+        for (const appId of applicationsArray) {
+            await this.tabManager.updateApplicationStatus(appId, action, notificationMessage);
+        }
+        
+        // Clear selection and refresh
+        this.showTempMessage(
+            `Successfully updated ${this.selectedApplications.size} applications to ${action}`,
+            "success"
+        );
+        this.selectedApplications.clear();
+        
+        if (this.selectAllCheckbox) {
+            this.selectAllCheckbox.checked = false;
+        }
+        
+        this.buildApplicationsContent();
+
+    } catch (error) {
+        console.error("Error performing bulk action:", error);
+        this.showTempMessage("Failed to update applications", "error");
+    } finally {
+        this.hideGlobalLoading();
+        if (this.bulkActionsBtn) {
+            this.hideButtonLoading(this.bulkActionsBtn);
+        }
+    }
+}
+
+// Add these helper methods to your class:
+
+/**
+ * Generate auto message based on status
+ */
+generateAutoMessage(status) {
+    const messages = {
+        'accepted': 'Congratulations! Your application has been accepted. We look forward to working with you.',
+        'rejected': 'Thank you for your application. After careful consideration, we have decided to move forward with other candidates at this time.',
+        'pending': 'Your application is currently under review. We will notify you once a decision has been made.',
+        'shortlisted': 'Great news! Your application has been shortlisted. We will contact you soon for the next steps.'
+    };
+    return messages[status] || `Your application status has been updated to ${status}.`;
+}
+
+/**
+ * Show bulk progress indicator
+ */
+showBulkProgress(total) {
+    // Remove existing progress if any
+    const existingProgress = document.getElementById('bulk-progress');
+    if (existingProgress) {
+        existingProgress.remove();
+    }
+
+    const progress = document.createElement('div');
+    progress.className = 'fixed top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+    progress.innerHTML = `
+        <div class="flex items-center gap-2">
+            <div class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+            <span>Processing ${total} applications...</span>
+        </div>
+    `;
+    progress.id = 'bulk-progress';
+    
+    document.body.appendChild(progress);
+}
+
+/**
+ * Hide bulk progress indicator
+ */
+hideBulkProgress() {
+    const progress = document.getElementById('bulk-progress');
+    if (progress) {
+        progress.remove();
+    }
+}
+  showTempMessage(message, type = "info") {
+    const messageDiv = document.createElement("div");
+    const bgColor =
+      type === "success"
+        ? "bg-green-500"
+        : type === "error"
+        ? "bg-red-500"
+        : "bg-blue-500";
+
+    messageDiv.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-opacity duration-300`;
+    messageDiv.textContent = message;
+
+    document.body.appendChild(messageDiv);
+
+    setTimeout(() => {
+      messageDiv.style.opacity = "0";
+      setTimeout(() => {
+        if (messageDiv.parentNode) {
+          messageDiv.parentNode.removeChild(messageDiv);
+        }
+      }, 300);
+    }, 3000);
+  }
+
+  showGlobalLoading(message = "Processing...") {
+    this.isLoading = true;
+
+    // Create or get loading overlay
+    let overlay = document.getElementById("global-loading-overlay");
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = "global-loading-overlay";
+      overlay.className = "loading-overlay";
+      overlay.innerHTML = `
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 flex items-center gap-3">
+          <div class="loading-spinner"></div>
+          <span class="text-gray-700 dark:text-gray-300">${message}</span>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+    }
+
+    // Disable interactive elements
+    document.body.classList.add("disabled-during-loading");
+  }
+
+  hideGlobalLoading() {
+    this.isLoading = false;
+    const overlay = document.getElementById("global-loading-overlay");
+    if (overlay) {
+      overlay.remove();
+    }
+    document.body.classList.remove("disabled-during-loading");
+  }
+
+  showButtonLoading(button, originalText = null) {
+    if (!button) return;
+
+    button.dataset.originalText = originalText || button.innerHTML;
+    button.classList.add("button-loading");
+    button.disabled = true;
+  }
+
+  hideButtonLoading(button) {
+    if (!button) return;
+
+    button.classList.remove("button-loading");
+    button.disabled = false;
+    if (button.dataset.originalText) {
+      button.innerHTML = button.dataset.originalText;
+      delete button.dataset.originalText;
     }
   }
 }

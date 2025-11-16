@@ -2,6 +2,8 @@ import { Company } from "../model/Company.js";
 import { ITBaseCompanyCloud } from "../fireabase/ITBaseCompanyCloud.js";
 import { CompanyCloud } from "../fireabase/CompanyCloud.js";
 const it_base_companycloud = new ITBaseCompanyCloud();
+import {getStorage, ref, getMetadata  } from "../config/firebaseInit.js";
+//import { getStorage, ref, getMetadata } from "firebase/storage";
 
 function getNigerianIndustryDescription(industry) {
   if (!industry) return "Other";
@@ -1357,34 +1359,45 @@ let escapeHandler = null;
  */
 export function showFileDialog(
   file,
-  fileType = "image",
+  fileType = "image", 
   fileName = "Document"
 ) {
   // Create modal overlay
+  console.log("file is ", file);
+  
+  // FIX: Handle the case where file is an array
+  let actualFile;
+  if (Array.isArray(file)) {
+    if (file.length > 0) {
+      actualFile = file[0]; // Take the first element
+      console.log("Extracted file from array:", actualFile);
+    } else {
+      console.error("File array is empty");
+      return;
+    }
+  } else {
+    actualFile = file;
+  }
+
   const modalOverlay = document.createElement("div");
-  modalOverlay.className =
-    "fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4";
+  modalOverlay.className = "fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4";
   modalOverlay.id = "file-viewer-modal";
 
   // Create modal content
   const modalContent = document.createElement("div");
-  modalContent.className =
-    "bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col";
+  modalContent.className = "bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col";
 
   // Create header
   const header = document.createElement("div");
-  header.className =
-    "flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700";
+  header.className = "flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700";
 
   const title = document.createElement("h3");
   title.className = "text-lg font-semibold text-slate-900 dark:text-white";
   title.textContent = fileName;
 
   const closeButton = document.createElement("button");
-  closeButton.className =
-    "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1";
-  closeButton.innerHTML =
-    '<span class="material-symbols-outlined">close</span>';
+  closeButton.className = "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1";
+  closeButton.innerHTML = '<span class="material-symbols-outlined">close</span>';
   closeButton.onclick = () => closeFileDialog();
 
   header.appendChild(title);
@@ -1400,28 +1413,43 @@ export function showFileDialog(
 
   if (fileType === "image") {
     fileContent = document.createElement("img");
-    fileContent.className =
-      "max-w-full h-auto mx-auto max-h-[70vh] object-contain";
+    fileContent.className = "max-w-full h-auto mx-auto max-h-[70vh] object-contain";
     fileContent.alt = fileName;
 
-    if (typeof file === "string") {
-      fileContent.src = file;
-    } else if (file instanceof File) {
-      objectURL = URL.createObjectURL(file);
+    // FIX: Use actualFile instead of file
+    if (typeof actualFile === "string") {
+      console.log("Setting image src to:", actualFile);
+      fileContent.src = actualFile;
+      
+      // Add error handling
+      fileContent.onerror = () => {
+        console.error("Failed to load image");
+        fileContent.alt = "Failed to load image";
+        // You could show a fallback message here
+      };
+      
+    } else if (actualFile instanceof File) {
+      objectURL = URL.createObjectURL(actualFile);
       fileContent.src = objectURL;
-      objectURLs.push(objectURL);
+      // Make sure objectURLs array exists
+      if (typeof objectURLs !== 'undefined') {
+        objectURLs.push(objectURL);
+      }
     }
   } else if (fileType === "pdf") {
     fileContent = document.createElement("iframe");
     fileContent.className = "w-full h-[70vh] border-0";
     fileContent.title = fileName;
 
-    if (typeof file === "string") {
-      fileContent.src = file;
-    } else if (file instanceof File) {
-      objectURL = URL.createObjectURL(file);
+    // FIX: Use actualFile instead of file
+    if (typeof actualFile === "string") {
+      fileContent.src = actualFile;
+    } else if (actualFile instanceof File) {
+      objectURL = URL.createObjectURL(actualFile);
       fileContent.src = objectURL;
-      objectURLs.push(objectURL);
+      if (typeof objectURLs !== 'undefined') {
+        objectURLs.push(objectURL);
+      }
     }
   } else {
     // For unsupported file types or documents, show download option
@@ -1429,20 +1457,17 @@ export function showFileDialog(
     fileContent.className = "text-center py-8";
 
     const fileIcon = document.createElement("span");
-    fileIcon.className =
-      "material-symbols-outlined text-6xl text-slate-400 mb-4";
+    fileIcon.className = "material-symbols-outlined text-6xl text-slate-400 mb-4";
     fileIcon.textContent = "description";
 
     const message = document.createElement("p");
     message.className = "text-slate-600 dark:text-slate-400 mb-4";
-    message.textContent =
-      "This file type cannot be previewed. Please download to view.";
+    message.textContent = "This file type cannot be previewed. Please download to view.";
 
     const downloadButton = document.createElement("button");
-    downloadButton.className =
-      "bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/80 transition-colors";
+    downloadButton.className = "bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/80 transition-colors";
     downloadButton.textContent = "Download File";
-    downloadButton.onclick = () => downloadFile(file, fileName);
+    downloadButton.onclick = () => downloadFile(actualFile, fileName); // FIX: Use actualFile
 
     fileContent.appendChild(fileIcon);
     fileContent.appendChild(message);
@@ -1453,19 +1478,15 @@ export function showFileDialog(
 
   // Create footer with actions
   const footer = document.createElement("div");
-  footer.className =
-    "flex justify-end gap-3 p-4 border-t border-slate-200 dark:border-slate-700";
+  footer.className = "flex justify-end gap-3 p-4 border-t border-slate-200 dark:border-slate-700";
 
   const downloadBtn = document.createElement("button");
-  downloadBtn.className =
-    "flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600";
-  downloadBtn.innerHTML =
-    '<span class="material-symbols-outlined text-base">download</span> Download';
-  downloadBtn.onclick = () => secureDownloadFile(file, fileName);
+  downloadBtn.className = "flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600";
+  downloadBtn.innerHTML = '<span class="material-symbols-outlined text-base">download</span> Download';
+  downloadBtn.onclick = () => secureDownloadFile(actualFile, fileName); // FIX: Use actualFile
 
   const closeBtn = document.createElement("button");
-  closeBtn.className =
-    "bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/80 transition-colors";
+  closeBtn.className = "bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/80 transition-colors";
   closeBtn.textContent = "Close";
   closeBtn.onclick = () => closeFileDialog();
 
@@ -1482,7 +1503,7 @@ export function showFileDialog(
   document.body.appendChild(modalOverlay);
 
   // Add escape key listener
-  escapeHandler = (e) => {
+  const escapeHandler = (e) => {
     if (e.key === "Escape") {
       closeFileDialog();
     }
@@ -1492,6 +1513,7 @@ export function showFileDialog(
   // Prevent background scrolling
   document.body.style.overflow = "hidden";
 }
+
 
 /**
  * Close the file dialog and clean up
@@ -1893,6 +1915,10 @@ function messageDialog(hideCancel = true, application , fromEdit=true) {
   const studentEmail = currentApplication.student?.email || '';
   const studentName = currentApplication.student?.fullName || 'Student';
 
+  // Get training program and company information
+  const trainingProgram = currentApplication.training?.title || 'Industrial Training';
+  const companyName = currentApplication.companyName || currentApplication.training?.company?.name || 'Our Company';
+
   // Conditionally render the buttons based on hideCancel parameter
   const buttonsHTML = hideCancel
       ? `<div style="display: flex; justify-content: flex-end; gap: 12px;">
@@ -1947,6 +1973,20 @@ function messageDialog(hideCancel = true, application , fromEdit=true) {
               style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;">
       </div>
 
+      <!-- Training Information Display -->
+      <div style="margin-bottom: 16px; padding: 12px; background: #f8f9fa; border-radius: 4px;">
+          <div style="display: flex; justify-content: space-between; gap: 16px;">
+              <div>
+                  <label style="display: block; margin-bottom: 4px; font-size: 12px; color: #6c757d;">Training Program</label>
+                  <span style="font-weight: 500;">${trainingProgram}</span>
+              </div>
+              <div>
+                  <label style="display: block; margin-bottom: 4px; font-size: 12px; color: #6c757d;">Company</label>
+                  <span style="font-weight: 500;">${companyName}</span>
+              </div>
+          </div>
+      </div>
+
       <!-- Email Field (shown when email mode is selected) -->
       <div id="email-field" style="margin-bottom: 16px; display: none;">
           <label style="display: block; margin-bottom: 6px; font-weight: 500;">Email Address</label>
@@ -1963,7 +2003,7 @@ function messageDialog(hideCancel = true, application , fromEdit=true) {
                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; font-family: inherit;">
 Hello ${studentName},
 
-I'd like to schedule a time to discuss your industrial training progress.
+I'd like to schedule a time to discuss your progress in the ${trainingProgram} at ${companyName}.
 
 Are you available sometime this week?
 
@@ -2003,11 +2043,11 @@ Best regards
   const communicationModeRadios = modal.querySelectorAll('input[name="communication-mode"]');
   const templateSelect = modal.querySelector("#message-templates");
 
-  // Message templates
+  // Message templates - updated with training program and company
   const messageTemplates = {
       progress_check: `Hello {name},
 
-I hope you're doing well with your industrial training. I'd like to check on your progress and see how everything is going.
+I hope you're doing well with your ${trainingProgram} at ${companyName}. I'd like to check on your progress and see how everything is going.
 
 Could you please provide a brief update on your current tasks and any challenges you're facing?
 
@@ -2017,7 +2057,7 @@ Best regards`,
 
       meeting_request: `Hello {name},
 
-I'd like to schedule a meeting to discuss your industrial training progress and address any questions or concerns you may have.
+I'd like to schedule a meeting to discuss your progress in the ${trainingProgram} and address any questions or concerns you may have.
 
 Please let me know your availability for this week.
 
@@ -2025,7 +2065,7 @@ Best regards`,
 
       document_request: `Hello {name},
 
-This is a friendly reminder to submit your required training documents if you haven't already done so.
+This is a friendly reminder to submit your required training documents for the ${trainingProgram} if you haven't already done so.
 
 Please ensure all documents are submitted by the deadline.
 
@@ -2035,7 +2075,7 @@ Best regards`,
 
       feedback_request: `Hello {name},
 
-I'd like to get your feedback on the industrial training program so far. Your input is valuable for improving the experience.
+I'd like to get your feedback on the ${trainingProgram} at ${companyName} so far. Your input is valuable for improving the experience.
 
 Please share any suggestions or concerns you may have.
 
@@ -2107,7 +2147,10 @@ Best regards`
   templateSelect.addEventListener('change', (e) => {
       const template = e.target.value;
       if (template && messageTemplates[template]) {
-          messageTextarea.value = messageTemplates[template].replace(/{name}/g, studentNameInput.value);
+          messageTextarea.value = messageTemplates[template]
+              .replace(/{name}/g, studentNameInput.value)
+              .replace(/{training}/g, trainingProgram)
+              .replace(/{company}/g, companyName);
       }
   });
 
@@ -2132,7 +2175,6 @@ Best regards`
 
       try {
           const studentUid = currentApplication.student?.uid;
-          const companyName = currentApplication.companyName || 'Our Company';
 
           if (!studentUid) {
               alert("Student information is missing");
@@ -2144,10 +2186,12 @@ Best regards`
           const result = await it_base_companycloud.sendNotificationToStudent(
               studentUid,
               {
-                  title: "New Message from " + companyName,
+                  title: `Message from ${companyName} - ${trainingProgram}`,
                   message: messageText,
                   type: "message",
-                  timestamp: new Date().toISOString()
+                  timestamp: new Date().toISOString(),
+                  trainingProgram: trainingProgram,
+                  company: companyName
               }
           );
 
@@ -2192,8 +2236,7 @@ Best regards`
 
       try {
           // Create email subject and body
-          const companyName = currentApplication.companyName || 'Our Company';
-          const subject = `Message from ${companyName} - Industrial Training`;
+          const subject = `${trainingProgram} - Message from ${companyName}`;
           const body = messageText;
 
           // Encode the email parameters
@@ -2234,3 +2277,114 @@ Best regards`
 }
 
 export {messageDialog}
+
+/**
+ * Validate if a file exists in Firebase Storage using the full URL
+ * @param {string} fileUrl - The full storage URL
+ * @returns {Promise<boolean>} - True if file exists
+ */
+async function validateStorageUrl(fileUrl) {
+  try {
+    const storage = getStorage();
+    const fileRef = ref(storage, fileUrl);
+    
+    // Try to get file metadata
+    await getMetadata(fileRef);
+    return true;
+  } catch (error) {
+    console.error('File does not exist or error accessing:', error);
+    return false;
+  }
+}
+
+/**
+ * Validate if a file exists using the storage path
+ * @param {string} filePath - The storage path (e.g., 'users/uid/files/filename.jpg')
+ * @returns {Promise<boolean>} - True if file exists
+ */
+async function validateStoragePath(filePath) {
+  try {
+    const storage = getStorage();
+    const fileRef = ref(storage, filePath);
+    
+    await getMetadata(fileRef);
+    return true;
+  } catch (error) {
+    console.error('File does not exist:', error);
+    return false;
+  }
+}
+
+function getAvatarElement(fullName, imageUrl = null, size = 60) {
+  // Default values
+  const name = fullName || 'Unknown User';
+  const hasValidImage = imageUrl && 
+                       imageUrl !== "../images/Avatar.jpg" && 
+                       imageUrl.trim() !== "" &&
+                       !imageUrl.includes('undefined');
+
+  // Generate initials
+  const generateInitials = (name) => {
+    if (!name || name.trim() === "") return "??";
+    
+    const names = name.trim().split(' ');
+    if (names.length === 1) {
+      return names[0].charAt(0).toUpperCase();
+    } else {
+      return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
+    }
+  };
+
+  const initials = generateInitials(name);
+
+  // Size classes
+  const sizeClasses = {
+    40: 'h-10 w-10 text-sm',
+    60: 'h-15 w-15 text-base',
+    80: 'h-20 w-20 text-xl',
+    100: 'h-25 w-25 text-2xl'
+  };
+
+  const sizeClass = sizeClasses[size] || sizeClasses[60];
+
+  if (hasValidImage) {
+    return `
+      <div class="${sizeClass} rounded-full bg-cover bg-center border-2 border-white dark:border-gray-700 shadow-sm" 
+           style="background-image: url('${imageUrl}')"
+           title="${name}">
+      </div>
+    `;
+  } else {
+    // Generate background color based on name for consistency
+    const colors = [
+      'bg-gradient-to-br from-blue-500 to-blue-600',
+      'bg-gradient-to-br from-green-500 to-green-600',
+      'bg-gradient-to-br from-purple-500 to-purple-600',
+      'bg-gradient-to-br from-red-500 to-red-600',
+      'bg-gradient-to-br from-yellow-500 to-yellow-600',
+      'bg-gradient-to-br from-indigo-500 to-indigo-600',
+      'bg-gradient-to-br from-pink-500 to-pink-600',
+      'bg-gradient-to-br from-teal-500 to-teal-600'
+    ];
+    
+    // Simple hash function for consistent color based on name
+    const getColorIndex = (str) => {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return Math.abs(hash) % colors.length;
+    };
+    
+    const colorClass = colors[getColorIndex(name)];
+
+    return `
+      <div class="${sizeClass} rounded-full ${colorClass} flex items-center justify-center text-white font-semibold border-2 border-white dark:border-gray-700 shadow-sm" 
+           title="${name}">
+        ${initials}
+      </div>
+    `;
+  }
+}
+
+export{validateStoragePath,validateStorageUrl,getAvatarElement}

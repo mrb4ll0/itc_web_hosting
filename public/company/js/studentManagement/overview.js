@@ -160,7 +160,7 @@ export default class overview {
     opportunity,
     status
   ) {
-    console.log("application is ", applicationId, application);
+   // console.log("application is ", applicationId, application);
     // Your existing createApplicationCard implementation
     const card = document.createElement("div");
     card.className = `bg-white dark:bg-gray-800 rounded-lg p-4 border ${
@@ -901,11 +901,11 @@ Best regards`
        }
     }
     );
-    console.log("applications is "+JSON.stringify(application));
+    //console.log("applications is "+JSON.stringify(application));
 
     if(!application || !application.application.student)
     {
-       console.log("application student is"+JSON.stringify(application.application.student));
+      // console.log("application student is"+JSON.stringify(application.application.student));
       return;
     }
     if (confirm("Are you sure you want to accept this application?")) {
@@ -936,11 +936,11 @@ Best regards`
        }
     }
     );
-    console.log("applications is "+JSON.stringify(application));
+    //console.log("applications is "+JSON.stringify(application));
 
     if(!application || !application.application.student)
     {
-       console.log("application student is"+JSON.stringify(application.application.student));
+     //  console.log("application student is"+JSON.stringify(application.application.student));
       return;
     }
 

@@ -148,7 +148,7 @@ export class CompanyDashboardManager {
         total > 0 ? ((acceptedCount / total) * 100).toFixed(1) : 0,
     };
 
-    console.log("Application statistics:", this.applicationStats);
+    //console.log("Application statistics:", this.applicationStats);
   }
 
   populateApplicationsUI() {

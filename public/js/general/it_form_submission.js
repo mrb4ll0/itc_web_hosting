@@ -965,6 +965,11 @@ class ITFormSubmission {
   async handleSubmit(event, it) {
     event.preventDefault();
     // Check profile completion
+     // Simulate upload process
+    const submitBtn = event.target;
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = "Uploading...";
+    submitBtn.disabled = true;
     const profileResult = await this.checkProfileCompletion();
 
     if (profileResult.status !== "completed") {
@@ -1000,12 +1005,13 @@ class ITFormSubmission {
 
       // Optionally, redirect to profile edit page or highlight missing fields
       this.highlightMissingFields(profileResult.missingFieldDetails);
-
+      submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
       return false; // Prevent form submission
     }
 
     // If profile is complete, proceed with the application
-    return await this.submitApplication(event, it);
+    return await this.submitApplication(event, it,originalText);
   }
 
   // Helper method to highlight missing fields in the UI
@@ -1062,12 +1068,8 @@ class ITFormSubmission {
     errorMessages.forEach((error) => error.remove());
   }
 
-  async submitApplication(event, it) {
-    // Simulate upload process
+  async submitApplication(event, it,originalText) {
     const submitBtn = event.target;
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = "Uploading...";
-    submitBtn.disabled = true;
 
     if (!validateDurationSection()) {
       alert("Please complete the IT duration section correctly");
@@ -1199,7 +1201,7 @@ class ITFormSubmission {
 
         application = uploadResult.app;
       } else {
-        //console.log('📄 Using existing files only - no upload needed');
+        //console.log('Using existing files only - no upload needed');
         // Create application directly using existing files
         application = StudentApplication.createNewApplication(
           this.studentData,

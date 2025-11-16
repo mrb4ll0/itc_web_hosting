@@ -471,6 +471,9 @@ async getApplicationsForIndustrialTraining(companyId, itId) {
         throw error;
     }
 }
+
+
+
     /**
      * Update application status
      * @param {string} companyId - The company ID
@@ -1391,7 +1394,8 @@ async getApplicationById(companyId, itId, applicationId) {
                 applicationDate: data.applicationDate?.toDate?.() || data.applicationDate,
                 applicationFiles: data.applicationFiles || {},
                 coverLetter: data.coverLetter || "",
-                resumeURL: data.resumeURL || ""
+                resumeURL: data.resumeURL || "",
+                duration: data.duration
             });
 
            
@@ -1494,6 +1498,41 @@ async getAllCompanyApplications(companyId) {
 
     } catch (error) {
         console.error("Error getting all company applications:", error);
+        throw error;
+    }
+}
+
+
+/**
+ * Delete an application from Firestore
+ * @param {string} companyId - The company ID
+ * @param {string} itId - The industrial training ID
+ * @param {string} applicationId - The application ID to delete
+ * @returns {Promise<void>}
+ */
+async deleteCompanyApplication(companyId, itId, applicationId) {
+    if (!companyId || !itId || !applicationId) {
+        throw new Error("Company ID, Industrial Training ID, and Application ID are required");
+    }
+
+    try {
+        const applicationRef = doc(
+            this.db,
+            this.usersCollection,
+            this.companiesSubcollection,
+            this.companiesSubcollection,
+            companyId,
+            this.itSubcollection,
+            itId,
+            this.applicationsSubcollection,
+            applicationId
+        );
+
+        await deleteDoc(applicationRef);
+        console.log(`Successfully deleted application ${applicationId} from IT ${itId}`);
+        
+    } catch (error) {
+        console.error("Error deleting application:", error);
         throw error;
     }
 }

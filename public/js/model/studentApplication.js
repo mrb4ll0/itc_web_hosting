@@ -144,35 +144,56 @@ export class StudentApplication {
     });
   }
 
-  // Convert to plain object (map) for Firestore - updated with duration field
-  toMap() {
-    return {
-      id: this.id, // Include ID in the map
-      student: this._safeToMap(this.student),
-      internship: this._safeToMap(this.internship),
-      applicationStatus: this.applicationStatus,
-      applicationDate: this.applicationDate.toISOString(),
-      applicationFiles: {
-        idCard: this.applicationFiles.idCard,
-        trainingLetter: this.applicationFiles.trainingLetter,
-        applicationForms: this.applicationFiles.applicationForms,
-        resume: this.applicationFiles.resume,
-        coverLetter: this.applicationFiles.coverLetter,
-        otherDocuments: this.applicationFiles.otherDocuments
-      },
-      coverLetter: this.coverLetter,
-      resumeURL: this.resumeURL,
-      duration: {
-        months: this.duration.months,
-        displayText: this.duration.displayText,
-        startDate: this.duration.startDate ? this.duration.startDate.toISOString().split('T')[0] : null,
-        endDate: this.duration.endDate ? this.duration.endDate.toISOString().split('T')[0] : null,
-        totalDays: this.duration.totalDays,
-        totalWeeks: this.duration.totalWeeks
+ // Convert to plain object (map) for Firestore - updated with duration field
+toMap() {
+  // Helper function to safely convert dates
+  const safeDateToISO = (date) => {
+    if (!date) return null;
+    if (date instanceof Date) {
+      return date.toISOString().split('T')[0];
+    }
+    if (typeof date === 'string') {
+      // If it's already a string, try to parse and format it
+      try {
+        const parsedDate = new Date(date);
+        if (!isNaN(parsedDate.getTime())) {
+          return parsedDate.toISOString().split('T')[0];
+        }
+      } catch (e) {
+        console.warn('Invalid date string:', date);
       }
-    };
-  }
+      return date; // Return as-is if parsing fails
+    }
+    console.warn('Unexpected date type:', typeof date, date);
+    return null;
+  };
 
+  return {
+    id: this.id, // Include ID in the map
+    student: this._safeToMap(this.student),
+    internship: this._safeToMap(this.internship),
+    applicationStatus: this.applicationStatus,
+    applicationDate: this.applicationDate ? new Date(this.applicationDate).toISOString() : null,
+    applicationFiles: {
+      idCard: this.applicationFiles.idCard,
+      trainingLetter: this.applicationFiles.trainingLetter,
+      applicationForms: this.applicationFiles.applicationForms,
+      resume: this.applicationFiles.resume,
+      coverLetter: this.applicationFiles.coverLetter,
+      otherDocuments: this.applicationFiles.otherDocuments
+    },
+    coverLetter: this.coverLetter,
+    resumeURL: this.resumeURL,
+    duration: {
+      months: this.duration.months,
+      displayText: this.duration.displayText,
+      startDate: safeDateToISO(this.duration.startDate),
+      endDate: safeDateToISO(this.duration.endDate),
+      totalDays: this.duration.totalDays,
+      totalWeeks: this.duration.totalWeeks
+    }
+  };
+}
   // Create instance from map/object - updated with duration field
   static fromMap(map, itId = null,appId=null) {
     return new StudentApplication({

@@ -7,7 +7,7 @@ export default class Analytics {
   }
 
   async init() {
-    console.log("Initializing Analytics Tab");
+    //console.log("Initializing Analytics Tab");
     this.initializeElements();
     this.initializeEventListeners();
     await this.buildAnalyticsContent();
@@ -45,7 +45,7 @@ export default class Analytics {
     );
     this.insightsList = document.getElementById("insights-list");
 
-    console.log("Analytics elements initialized");
+    //console.log("Analytics elements initialized");
   }
 
   initializeEventListeners() {
@@ -66,7 +66,7 @@ export default class Analytics {
   }
 
   async buildAnalyticsContent() {
-    console.log("Building analytics content...");
+    //console.log("Building analytics content...");
 
     // Process analytics data
     this.processAnalyticsData();
