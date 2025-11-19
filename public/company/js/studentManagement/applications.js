@@ -14,6 +14,11 @@ export default class Applications {
     this.itemsPerPage = 10;
     this.selectedApplications = new Set();
     this.filteredApplications = [];
+    this.currentFilters = {
+      name: '',
+      training: '',
+      status: ''
+    };
   }
 
   async init() {
@@ -47,6 +52,12 @@ export default class Applications {
     this.paginationStart = document.getElementById("pagination-start");
     this.paginationEnd = document.getElementById("pagination-end");
     this.paginationTotal = document.getElementById("pagination-total");
+
+    // Filter elements
+    this.nameFilter = document.getElementById("name-filter");
+    this.trainingFilter = document.getElementById("training-filter");
+    this.statusFilter = document.getElementById("status-filter");
+    this.clearFiltersBtn = document.getElementById("clear-filters");
 
     //console.log("Applications elements initialized");
   }
@@ -86,8 +97,56 @@ export default class Applications {
       });
     }
 
+    // Filter event listeners
+    if (this.nameFilter) {
+      this.nameFilter.addEventListener("input", (e) => {
+        this.handleFilterChange('name', e.target.value);
+      });
+    }
+
+    if (this.trainingFilter) {
+      this.trainingFilter.addEventListener("change", (e) => {
+        this.handleFilterChange('training', e.target.value);
+      });
+    }
+
+    if (this.statusFilter) {
+      this.statusFilter.addEventListener("change", (e) => {
+        this.handleFilterChange('status', e.target.value);
+      });
+    }
+
+    if (this.clearFiltersBtn) {
+      this.clearFiltersBtn.addEventListener("click", () => {
+        this.clearFilters();
+      });
+    }
+
     // Listen to global filter changes from TabManager
     this.setupGlobalFilterListeners();
+  }
+
+  handleFilterChange(filterType, value) {
+    this.currentFilters[filterType] = value;
+    this.currentPage = 1; // Reset to first page when filtering
+    this.buildApplicationsContent();
+  }
+
+  clearFilters() {
+    // Reset filter inputs
+    if (this.nameFilter) this.nameFilter.value = '';
+    if (this.trainingFilter) this.trainingFilter.value = '';
+    if (this.statusFilter) this.statusFilter.value = '';
+
+    // Reset filter state
+    this.currentFilters = {
+      name: '',
+      training: '',
+      status: ''
+    };
+
+    this.currentPage = 1;
+    this.buildApplicationsContent();
   }
 
   setupGlobalFilterListeners() {
@@ -101,56 +160,83 @@ export default class Applications {
     const applications = this.tabManager.getAllCompanyApplications();
     this.filteredApplications = this.applyFilters(applications);
 
+    // Populate training filter dropdown
+    this.populateTrainingFilter(applications);
+
     this.renderApplicationsTable();
     this.updatePagination();
   }
 
+  populateTrainingFilter(applications) {
+    if (!this.trainingFilter) return;
+
+    // Get unique training opportunities
+    const trainings = new Set();
+    applications.forEach(app => {
+      const training = app.opportunity || app.training?.title || 'Unknown Training';
+      if (training) {
+        trainings.add(training);
+      }
+    });
+
+    // Get current value before clearing
+    const currentValue = this.trainingFilter.value;
+
+    // Clear existing options except the first one
+    const defaultOption = this.trainingFilter.querySelector('option[value=""]');
+    this.trainingFilter.innerHTML = '';
+    if (defaultOption) {
+      this.trainingFilter.appendChild(defaultOption);
+    } else {
+      const defaultOption = document.createElement('option');
+      defaultOption.value = '';
+      defaultOption.textContent = 'All Trainings';
+      this.trainingFilter.appendChild(defaultOption);
+    }
+
+    // Add training options
+    Array.from(trainings).sort().forEach(training => {
+      const option = document.createElement('option');
+      option.value = training;
+      option.textContent = training;
+      this.trainingFilter.appendChild(option);
+    });
+
+    // Restore current value if it still exists
+    if (currentValue && Array.from(trainings).includes(currentValue)) {
+      this.trainingFilter.value = currentValue;
+    }
+  }
+
   applyFilters(applications) {
-    const filters = this.tabManager.currentFilters || {};
     let filtered = [...applications];
 
-    // Search filter
-    if (filters.search) {
-      const searchTerm = filters.search.toLowerCase();
+    // Name filter
+    if (this.currentFilters.name) {
+      const searchTerm = this.currentFilters.name.toLowerCase();
       filtered = filtered.filter((app) => {
         const student = app.application.student || {};
-        const opportunity = app.opportunity || {};
-
         return (
           (student.fullName || "").toLowerCase().includes(searchTerm) ||
-          (student.email || "").toLowerCase().includes(searchTerm) ||
-          (opportunity.course || "").toLowerCase().includes(searchTerm) ||
-          (opportunity.institution || "").toLowerCase().includes(searchTerm) ||
-          (app.application.status || "").toLowerCase().includes(searchTerm)
+          (student.email || "").toLowerCase().includes(searchTerm)
         );
       });
     }
 
+    // Training filter
+    if (this.currentFilters.training) {
+      filtered = filtered.filter((app) => {
+        const training = app.opportunity || app.training?.title || '';
+        return training === this.currentFilters.training;
+      });
+    }
+
     // Status filter
-    if (filters.status && filters.status !== "all") {
-      filtered = filtered.filter(
-        (app) =>
-          (app.application.status || "").toLowerCase() ===
-          filters.status.toLowerCase()
-      );
-    }
-
-    // Institution filter
-    if (filters.institution && filters.institution !== "all") {
-      filtered = filtered.filter(
-        (app) =>
-          (app.opportunity?.institution || "").toLowerCase() ===
-          filters.institution.toLowerCase()
-      );
-    }
-
-    // Course filter
-    if (filters.course && filters.course !== "all") {
-      filtered = filtered.filter(
-        (app) =>
-          (app.opportunity?.course || "").toLowerCase() ===
-          filters.course.toLowerCase()
-      );
+    if (this.currentFilters.status) {
+      filtered = filtered.filter((app) => {
+        const status = app.application.status || app.application.applicationStatus || '';
+        return status.toLowerCase() === this.currentFilters.status.toLowerCase();
+      });
     }
 
     return filtered;
@@ -391,7 +477,7 @@ export default class Applications {
         
         <div class="grid grid-cols-2 gap-2 text-xs">
           <div>
-            <span class="font-medium text-gray-600 dark:text-gray-300">Industrail Training:</span>
+            <span class="font-medium text-gray-600 dark:text-gray-300">Industrial Training:</span>
             <p class="text-gray-900 dark:text-white truncate">${
               opportunity.title || "N/A"
             }</p>

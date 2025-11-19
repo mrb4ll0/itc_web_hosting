@@ -1,3 +1,5 @@
+import { removeNotification, showNotification, updateNotification } from "../../../js/general/generalmethods.js";
+
 export default class Analytics {
   constructor(tabManager) {
     this.tabManager = tabManager;
@@ -136,9 +138,13 @@ export default class Analytics {
     }
 
     return data.filter((item) => {
-      const itemDate = new Date(
-        item.application.submittedAt || item.application.createdAt
-      );
+      const applicationDate =
+        item.application?.applicationDate ||
+        item.application?.submittedAt ||
+        item.application?.createdAt;
+      if (!applicationDate) return false;
+
+      const itemDate = new Date(applicationDate);
       return itemDate >= startDate;
     });
   }
@@ -152,7 +158,7 @@ export default class Analytics {
     };
 
     data.forEach((item) => {
-      const status = item.application.status || "pending";
+      const status = item.application?.status || "pending";
       if (statusCounts[status] !== undefined) {
         statusCounts[status]++;
       }
@@ -165,7 +171,8 @@ export default class Analytics {
     const courseData = {};
 
     data.forEach((item) => {
-      const course = item.opportunity?.course || "Unknown Course";
+      // FIXED: Access opportunity directly, not opportunity.title
+      const course = item.opportunity || "Unknown Course";
       if (!courseData[course]) {
         courseData[course] = {
           count: 0,
@@ -178,16 +185,16 @@ export default class Analytics {
 
       courseData[course].count++;
 
-      if (item.application.status === "accepted") {
+      if (item.application?.status === "accepted") {
         courseData[course].accepted++;
       }
 
       // Calculate completion and duration for training metrics
-      if (item.application.progress === 100) {
+      if (item.application?.progress === 100) {
         courseData[course].completed++;
       }
 
-      const duration = item.application.duration;
+      const duration = item.application?.duration;
       if (duration?.startDate && duration?.endDate) {
         const start = new Date(duration.startDate);
         const end = new Date(duration.endDate);
@@ -204,8 +211,9 @@ export default class Analytics {
     const institutionData = {};
 
     data.forEach((item) => {
+      // FIXED: Access student.institution directly
       const institution =
-        item.opportunity?.institution || "Unknown Institution";
+        item.application?.student?.institution || "Unknown Institution";
       if (!institutionData[institution]) {
         institutionData[institution] = {
           count: 0,
@@ -216,11 +224,11 @@ export default class Analytics {
 
       institutionData[institution].count++;
 
-      if (item.application.status === "accepted") {
+      if (item.application?.status === "accepted") {
         institutionData[institution].accepted++;
       }
 
-      if (item.application.progress === 100) {
+      if (item.application?.progress === 100) {
         institutionData[institution].completed++;
       }
     });
@@ -244,9 +252,13 @@ export default class Analytics {
 
     // Count applications per day
     data.forEach((item) => {
-      const itemDate = new Date(
-        item.application.submittedAt || item.application.createdAt
-      );
+      const applicationDate =
+        item.application?.applicationDate ||
+        item.application?.submittedAt ||
+        item.application?.createdAt;
+      if (!applicationDate) return;
+
+      const itemDate = new Date(applicationDate);
       const dateKey = itemDate.toISOString().split("T")[0];
       if (timeData[dateKey] !== undefined) {
         timeData[dateKey]++;
@@ -255,6 +267,7 @@ export default class Analytics {
 
     return timeData;
   }
+
   calculateTrainingMetrics(data) {
     const metrics = {
       totalTrainees: 0,
@@ -267,17 +280,17 @@ export default class Analytics {
     };
 
     const acceptedApplications = data.filter(
-      (item) => item.application.status === "accepted"
+      (item) => item.application?.status === "accepted"
     );
     metrics.totalTrainees = acceptedApplications.length;
 
     metrics.completedTrainees = acceptedApplications.filter(
-      (item) => item.application.progress === 100
+      (item) => item.application?.progress === 100
     ).length;
 
     // Calculate durations
     acceptedApplications.forEach((item) => {
-      const duration = item.application.duration;
+      const duration = item.application?.duration;
       if (duration?.startDate && duration?.endDate) {
         const start = new Date(duration.startDate);
         const end = new Date(duration.endDate);
@@ -305,14 +318,50 @@ export default class Analytics {
   }
 
   calculateComparisonData(allData, currentPeriod) {
-    // This would compare current period with previous period
-    // For simplicity, we'll return some mock comparison data
+    // Calculate actual comparison with previous period
+    const currentData = this.filterDataByPeriod(allData, currentPeriod);
+    const previousData = this.filterDataByPeriod(
+      allData,
+      this.getPreviousPeriod(currentPeriod)
+    );
+
+    const currentMetrics = this.calculateTrainingMetrics(currentData);
+    const previousMetrics = this.calculateTrainingMetrics(previousData);
+
     return {
-      applicationsChange: 12.5, // percentage
-      acceptanceChange: 3.2,
-      completionChange: -2.1,
-      durationChange: 1.5,
+      applicationsChange: this.calculatePercentageChange(
+        previousData.length,
+        currentData.length
+      ),
+      acceptanceChange: this.calculatePercentageChange(
+        previousMetrics.acceptanceRate,
+        currentMetrics.acceptanceRate
+      ),
+      completionChange: this.calculatePercentageChange(
+        previousMetrics.completionRate,
+        currentMetrics.completionRate
+      ),
+      durationChange: this.calculatePercentageChange(
+        previousMetrics.avgDuration,
+        currentMetrics.avgDuration
+      ),
     };
+  }
+
+  getPreviousPeriod(currentPeriod) {
+    const periodMap = {
+      "7d": "7d",
+      "30d": "30d",
+      "90d": "90d",
+      "1y": "1y",
+      all: "all",
+    };
+    return periodMap[currentPeriod];
+  }
+
+  calculatePercentageChange(previous, current) {
+    if (!previous || previous === 0) return current > 0 ? 100 : 0;
+    return ((current - previous) / previous) * 100;
   }
 
   updateKeyMetrics() {
@@ -380,153 +429,185 @@ export default class Analytics {
   }
 
   renderApplicationsChart() {
-    if (!this.applicationsChart) return;
+  const chart = this.applicationsChart;
+  if (!chart) return;
 
-    const timeData = this.analyticsData.applicationsOverTime;
-    const labels = Object.keys(timeData);
-    const values = Object.values(timeData);
+  const timeData = this.analyticsData.applicationsOverTime;
+  
+  // Convert to arrays and sort by date
+  const labels = Object.keys(timeData).sort((a, b) => new Date(a) - new Date(b));
+  const values = labels.map(label => timeData[label]);
 
-    // If no data, show message
-    if (labels.length === 0 || values.every((v) => v === 0)) {
-      this.applicationsChart.innerHTML = `
+  // --- No Data Case ---
+  const noData = labels.length === 0 || values.every(v => v === 0);
+  if (noData) {
+    chart.innerHTML = `
       <div class="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
         <div class="text-center">
           <span class="material-symbols-outlined text-4xl mb-2 opacity-50">bar_chart</span>
           <p>No data available for selected period</p>
         </div>
-      </div>
-    `;
-      return;
+      </div>`;
+    return;
+  }
+
+  // --- Chart Dimensions ---
+  const maxValue = Math.max(...values, 1);
+  const width = 400;
+  const height = 200;
+  const chartHeight = 160;
+  const chartWidth = 380;
+  const margin = { top: 20, right: 20, bottom: 40, left: 40 };
+
+  // --- Bar Width ---
+  const innerWidth = chartWidth - margin.left - margin.right;
+  const barWidth = Math.max(6, Math.min(20, innerWidth / labels.length - 1)); // Smaller bars for more data points
+
+  // --- Label Interval (show fewer labels to avoid crowding) ---
+  const labelInterval = Math.max(1, Math.ceil(labels.length / 8)); // Reduced from 10 to 8
+
+  // --- Helpers ---
+  const formatLabel = (label, index) => {
+    const d = new Date(label);
+    
+    // For many data points, show only some labels to avoid crowding
+    if (index % labelInterval !== 0 && index !== labels.length - 1) {
+      return ''; // Return empty string for labels we want to skip
     }
+    
+    // Show month and day for better context with future dates
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  };
 
-    const maxValue = Math.max(...values, 1);
-    const chartHeight = 160;
-    const chartWidth = 380;
-    const margin = { top: 20, right: 20, bottom: 40, left: 40 };
+  const barItems = values
+    .map((value, i) => {
+      const barHeight = value > 0 ? (value / maxValue) * (chartHeight - margin.top - margin.bottom) : 0;
+      const x = margin.left + i * (barWidth + 1); // Reduced spacing
+      const y = chartHeight - barHeight - margin.bottom;
 
-    // Calculate dynamic bar width based on number of data points
-    const availableWidth = chartWidth - margin.left - margin.right;
-    const barWidth = Math.max(
-      8,
-      Math.min(30, availableWidth / labels.length - 2)
-    );
+      return `
+        <g>
+          <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}"
+                fill="#3b82f6"
+                class="opacity-80 hover:opacity-100 transition-opacity cursor-pointer"
+                data-value="${value}"
+                data-date="${labels[i]}">
+          </rect>
 
-    // Only show every nth label to prevent overlapping
-    const labelInterval = Math.max(1, Math.ceil(labels.length / 10));
-
-    this.applicationsChart.innerHTML = `
-    <svg viewBox="0 0 400 200" class="w-full h-full" preserveAspectRatio="xMidYMid meet">
-      <!-- Y-axis line -->
-      <line x1="${margin.left}" y1="${margin.top}" x2="${
-      margin.left
-    }" y2="${chartHeight}" stroke="#e5e7eb" class="dark:stroke-gray-600"/>
-      
-      <!-- X-axis line -->
-      <line x1="${margin.left}" y1="${chartHeight}" x2="${
-      chartWidth - margin.right
-    }" y2="${chartHeight}" stroke="#e5e7eb" class="dark:stroke-gray-600"/>
-      
-      <!-- Bars -->
-      ${values
-        .map((value, index) => {
-          if (value === 0) return "";
-
-          const barHeight =
-            (value / maxValue) * (chartHeight - margin.top - margin.bottom);
-          const x = margin.left + index * (barWidth + 2);
-          const y = chartHeight - barHeight - margin.bottom;
-
-          return `
-          <g>
-            <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" 
-                  fill="#3b82f6" class="opacity-80 hover:opacity-100 transition-opacity cursor-pointer"
-                  data-value="${value}"/>
-            
-            <!-- Value label on top of bar -->
-            <text x="${x + barWidth / 2}" y="${y - 5}" 
-                  text-anchor="middle" class="text-xs fill-gray-700 dark:fill-gray-300 font-medium">
-              ${value}
-            </text>
-          </g>
-        `;
-        })
-        .join("")}
-      
-      <!-- X-axis labels (only show some to prevent overlapping) -->
-      ${labels
-        .map((label, index) => {
-          if (index % labelInterval !== 0) return "";
-
-          const x = margin.left + index * (barWidth + 2) + barWidth / 2;
-          const y = chartHeight + 15;
-
-          // Format date based on period
-          let displayText;
-          if (this.currentPeriod === "7d") {
-            displayText = new Date(label).toLocaleDateString("en-US", {
-              weekday: "short",
-            });
-          } else if (this.currentPeriod === "30d") {
-            displayText = new Date(label).getDate();
-          } else {
-            displayText = new Date(label).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-            });
-          }
-
-          return `
-          <text x="${x}" y="${y}" 
-                text-anchor="middle" class="text-xs fill-gray-500 dark:fill-gray-400">
-            ${displayText}
+          ${value > 0 ? `
+          <text x="${x + barWidth / 2}" y="${y - 5}"
+                text-anchor="middle"
+                class="text-[10px] fill-gray-700 dark:fill-gray-300 font-medium">
+            ${value}
           </text>
-        `;
-        })
-        .join("")}
+          ` : ''}
+        </g>`;
+    })
+    .join("");
+
+  const xLabels = labels
+    .map((label, i) => {
+      const formattedLabel = formatLabel(label, i);
+      if (!formattedLabel) return ""; // Skip empty labels
       
-      <!-- Y-axis labels -->
-      ${[0, 0.25, 0.5, 0.75, 1]
-        .map((ratio) => {
-          const value = Math.round(maxValue * ratio);
-          const y =
-            chartHeight -
-            ratio * (chartHeight - margin.top - margin.bottom) -
-            margin.bottom;
+      const x = margin.left + i * (barWidth + 1) + barWidth / 2;
+      const y = chartHeight + 15;
 
-          return `
-          <g>
-            <line x1="${margin.left - 5}" y1="${y}" x2="${
-            margin.left
-          }" y2="${y}" stroke="#e5e7eb" class="dark:stroke-gray-600"/>
-            <text x="${margin.left - 8}" y="${y + 3}" 
-                  text-anchor="end" class="text-xs fill-gray-500 dark:fill-gray-400">
-              ${value}
-            </text>
-          </g>
-        `;
-        })
-        .join("")}
-    </svg>
-  `;
+      return `
+        <text x="${x}" y="${y}"
+              text-anchor="middle"
+              class="text-[10px] fill-gray-500 dark:fill-gray-400">
+          ${formattedLabel}
+        </text>`;
+    })
+    .join("");
 
-    // Add hover effects
-    this.addChartInteractivity();
+  const yLabels = [];
+  // Create Y-axis labels based on actual data range
+  const ySteps = maxValue <= 5 ? maxValue : 5;
+  for (let i = 0; i <= ySteps; i++) {
+    const value = Math.round((i / ySteps) * maxValue);
+    const y = chartHeight - (i / ySteps) * (chartHeight - margin.top - margin.bottom) - margin.bottom;
+
+    yLabels.push(`
+      <g>
+        <line x1="${margin.left - 5}" y1="${y}" 
+              x2="${margin.left}" y2="${y}"
+              stroke="#e5e7eb" class="dark:stroke-gray-600"></line>
+        <text x="${margin.left - 8}" y="${y + 3}"
+              text-anchor="end"
+              class="text-[10px] fill-gray-500 dark:fill-gray-400">
+          ${value}
+        </text>
+      </g>
+    `);
   }
 
-  addChartInteractivity() {
-    // Add hover tooltips to bars
-    const bars = this.applicationsChart.querySelectorAll("rect");
-    bars.forEach((bar) => {
-      bar.addEventListener("mouseenter", (e) => {
-        const value = e.target.getAttribute("data-value");
-        // You could add a tooltip here if needed
-      });
+  // --- Final SVG Output ---
+  chart.innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" class="w-full h-full" preserveAspectRatio="xMidYMid meet">
 
-      bar.addEventListener("mouseleave", () => {
-        // Remove tooltip if added
+      <!-- Y-axis -->
+      <line x1="${margin.left}" y1="${margin.top}"
+            x2="${margin.left}" y2="${chartHeight}"
+            stroke="#e5e7eb" class="dark:stroke-gray-600"></line>
+
+      <!-- X-axis -->
+      <line x1="${margin.left}" y1="${chartHeight}"
+            x2="${chartWidth - margin.right}" y2="${chartHeight}"
+            stroke="#e5e7eb" class="dark:stroke-gray-600"></line>
+
+      <!-- Grid lines -->
+      ${yLabels.map((_, i) => {
+        const y = chartHeight - (i / ySteps) * (chartHeight - margin.top - margin.bottom) - margin.bottom;
+        return `<line x1="${margin.left}" y1="${y}" x2="${chartWidth - margin.right}" y2="${y}" stroke="#f3f4f6" class="dark:stroke-gray-700" />`;
+      }).join('')}
+
+      ${barItems}
+      ${xLabels}
+      ${yLabels.join('')}
+    </svg>`;
+
+  this.addChartInteractivity();
+}
+
+addChartInteractivity() {
+  const bars = this.applicationsChart.querySelectorAll("rect");
+  bars.forEach((bar) => {
+    bar.addEventListener("mouseenter", (e) => {
+      const value = e.target.getAttribute("data-value");
+      const date = e.target.getAttribute("data-date");
+      const formattedDate = new Date(date).toLocaleDateString("en-US", { 
+        weekday: 'short', 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
       });
+      
+      // Simple tooltip
+      e.target.setAttribute('fill', '#1d4ed8'); // Darker blue on hover
+      console.log(`Applications: ${value} on ${formattedDate}`); // For debugging
     });
-  }
+
+    bar.addEventListener("mouseleave", (e) => {
+      e.target.setAttribute('fill', '#3b82f6'); // Restore original color
+    });
+  });
+}
+addChartInteractivity() {
+  // Add hover tooltips to bars
+  const bars = this.applicationsChart.querySelectorAll("rect");
+  bars.forEach((bar) => {
+    bar.addEventListener("mouseenter", (e) => {
+      const value = e.target.getAttribute("data-value");
+      // You could add a tooltip here if needed
+    });
+
+    bar.addEventListener("mouseleave", () => {
+      // Remove tooltip if added
+    });
+  });
+}
   renderStatusChart() {
     if (!this.statusChart) return;
 
@@ -547,6 +628,7 @@ export default class Analytics {
     `;
       return;
     }
+
     const colors = {
       pending: "#f59e0b",
       shortlisted: "#3b82f6",
@@ -561,18 +643,29 @@ export default class Analytics {
       rejected: "Rejected",
     };
 
+    // Calculate percentages and angles
+    const slices = Object.entries(statusData)
+      .filter(([_, count]) => count > 0)
+      .map(([status, count]) => {
+        const percentage = (count / total) * 100;
+        return { status, count, percentage };
+      });
+
+    // Sort by count descending for better visual arrangement
+    slices.sort((a, b) => b.count - a.count);
+
     let currentAngle = 0;
-    const radius = 80;
-    const centerX = 150;
+    const radius = 70;
+    const centerX = 120;
     const centerY = 100;
+    const svgWidth = 300;
+    const svgHeight = 200;
 
     this.statusChart.innerHTML = `
-      <svg viewBox="0 0 300 200" class="w-full h-full">
-        ${Object.entries(statusData)
-          .map(([status, count]) => {
-            if (count === 0) return "";
-
-            const percentage = (count / total) * 100;
+      <svg viewBox="0 0 ${svgWidth} ${svgHeight}" class="w-full h-full" preserveAspectRatio="xMidYMid meet">
+        <!-- Pie Chart -->
+        ${slices
+          .map(({ status, count, percentage }) => {
             const angle = (count / total) * 360;
             const largeArcFlag = angle > 180 ? 1 : 0;
 
@@ -588,32 +681,82 @@ export default class Analytics {
               radius * Math.sin(((currentAngle + angle) * Math.PI) / 180);
 
             const path = `
-            M ${centerX} ${centerY}
-            L ${x1} ${y1}
-            A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}
-            Z
-          `;
+              M ${centerX} ${centerY}
+              L ${x1} ${y1}
+              A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}
+              Z
+            `;
 
-            const slice = `<path d="${path}" fill="${colors[status]}" class="opacity-80 hover:opacity-100 transition-opacity"/>`;
+            // Calculate label position (middle of the slice)
+            const midAngle = currentAngle + angle / 2;
+            const labelRadius = radius * 0.6;
+            const labelX =
+              centerX + labelRadius * Math.cos((midAngle * Math.PI) / 180);
+            const labelY =
+              centerY + labelRadius * Math.sin((midAngle * Math.PI) / 180);
+
+            const slice = `
+              <g>
+                <path d="${path}" fill="${colors[status]}" 
+                      class="pie-slice opacity-80 hover:opacity-100 transition-all duration-200 cursor-pointer"
+                      data-status="${status}" data-count="${count}" data-percentage="${percentage.toFixed(
+              1
+            )}"/>
+                
+                <!-- Percentage label inside slice (only show if slice is large enough) -->
+                ${
+                  angle > 15
+                    ? `
+                  <text x="${labelX}" y="${labelY}" 
+                        text-anchor="middle" dominant-baseline="middle"
+                        class="percentage-label text-xs font-semibold fill-white pointer-events-none">
+                    ${percentage.toFixed(0)}%
+                  </text>
+                `
+                    : ""
+                }
+              </g>
+            `;
 
             currentAngle += angle;
             return slice;
           })
           .join("")}
         
-        <!-- Legend -->
-        <g transform="translate(200, 30)">
-          ${Object.entries(statusData)
-            .map(([status, count], index) => {
-              if (count === 0) return "";
-              const y = index * 25;
-              const percentage = ((count / total) * 100).toFixed(1);
+        <!-- Center total -->
+        <circle cx="${centerX}" cy="${centerY}" r="${
+      radius * 0.3
+    }" fill="white" class="dark:fill-gray-800"/>
+        <text x="${centerX}" y="${centerY - 5}" 
+              text-anchor="middle" class="text-sm font-bold fill-gray-700 dark:fill-gray-300">
+          ${total}
+        </text>
+        <text x="${centerX}" y="${centerY + 10}" 
+              text-anchor="middle" class="text-xs fill-gray-500 dark:fill-gray-400">
+          Total
+        </text>
+        
+        <!-- Legend - Positioned to the right with better spacing -->
+        <g transform="translate(180, 20)">
+          ${slices
+            .map(({ status, count, percentage }, index) => {
+              const y = index * 28;
+              const displayPercentage = percentage.toFixed(1);
 
               return `
-              <g transform="translate(0, ${y})">
-                <rect width="12" height="12" fill="${colors[status]}" rx="2"/>
-                <text x="20" y="10" class="text-sm fill-gray-700 dark:fill-gray-300">${statusLabels[status]}</text>
-                <text x="120" y="10" class="text-sm fill-gray-500 dark:fill-gray-400">${count} (${percentage}%)</text>
+              <g transform="translate(0, ${y})" class="legend-item cursor-pointer" data-status="${status}">
+                <!-- Color indicator -->
+                <rect width="14" height="14" fill="${colors[status]}" rx="3" class="shadow-sm legend-color"/>
+                
+                <!-- Status label -->
+                <text x="22" y="11" class="text-sm font-medium fill-gray-700 dark:fill-gray-300 legend-text">
+                  ${statusLabels[status]}
+                </text>
+                
+                <!-- Count and percentage -->
+                <text x="22" y="26" class="text-xs fill-gray-500 dark:fill-gray-400 legend-details">
+                  ${count} (${displayPercentage}%)
+                </text>
               </g>
             `;
             })
@@ -621,61 +764,387 @@ export default class Analytics {
         </g>
       </svg>
     `;
+
+    // Add interactivity
+    this.addPieChartInteractivity();
   }
 
+  addPieChartInteractivity() {
+    const slices = this.statusChart.querySelectorAll(".pie-slice");
+    const legendItems = this.statusChart.querySelectorAll(".legend-item");
+
+    const statusLabels = {
+      pending: "Pending",
+      shortlisted: "Shortlisted",
+      accepted: "Accepted",
+      rejected: "Rejected",
+    };
+
+    const colors = {
+      pending: "#f59e0b",
+      shortlisted: "#3b82f6",
+      accepted: "#10b981",
+      rejected: "#ef4444",
+    };
+
+    // Function to highlight a specific slice
+    const highlightSlice = (status, highlight = true) => {
+      const slice = this.statusChart.querySelector(
+        `.pie-slice[data-status="${status}"]`
+      );
+      const legendItem = this.statusChart.querySelector(
+        `.legend-item[data-status="${status}"]`
+      );
+      const legendColor = legendItem?.querySelector(".legend-color");
+      const legendText = legendItem?.querySelector(".legend-text");
+      const legendDetails = legendItem?.querySelector(".legend-details");
+
+      if (slice) {
+        if (highlight) {
+          slice.style.opacity = "1";
+          slice.style.filter = "drop-shadow(0 0 8px rgba(0,0,0,0.3))";
+          slice.style.transform = "scale(1.05)";
+          slice.style.transformOrigin = "center";
+        } else {
+          slice.style.opacity = "0.8";
+          slice.style.filter = "none";
+          slice.style.transform = "scale(1)";
+        }
+      }
+
+      if (legendItem && legendColor && legendText && legendDetails) {
+        if (highlight) {
+          legendColor.style.filter = "brightness(1.2)";
+          legendText.style.fontWeight = "bold";
+          legendDetails.style.fontWeight = "600";
+        } else {
+          legendColor.style.filter = "none";
+          legendText.style.fontWeight = "normal";
+          legendDetails.style.fontWeight = "normal";
+        }
+      }
+    };
+
+    // Function to show tooltip
+    const showTooltip = (event, status, count, percentage) => {
+      // Remove existing tooltip
+      const existingTooltip = this.statusChart.querySelector(".pie-tooltip");
+      if (existingTooltip) {
+        existingTooltip.remove();
+      }
+
+      // Create tooltip
+      const tooltip = document.createElement("div");
+      tooltip.className =
+        "pie-tooltip absolute bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg px-3 py-2 shadow-lg z-10";
+      tooltip.innerHTML = `
+        <div class="font-semibold">${statusLabels[status]}</div>
+        <div>${count} applications (${percentage}%)</div>
+      `;
+
+      // Position tooltip near cursor
+      const rect = this.statusChart.getBoundingClientRect();
+      tooltip.style.left = `${event.clientX - rect.left + 10}px`;
+      tooltip.style.top = `${event.clientY - rect.top - 40}px`;
+
+      this.statusChart.style.position = "relative";
+      this.statusChart.appendChild(tooltip);
+    };
+
+    // Function to hide tooltip
+    const hideTooltip = () => {
+      const tooltip = this.statusChart.querySelector(".pie-tooltip");
+      if (tooltip) {
+        tooltip.remove();
+      }
+    };
+
+    // Add event listeners to pie slices
+    slices.forEach((slice) => {
+      slice.addEventListener("mouseenter", (e) => {
+        const status = e.target.getAttribute("data-status");
+        const count = e.target.getAttribute("data-count");
+        const percentage = e.target.getAttribute("data-percentage");
+
+        highlightSlice(status, true);
+        showTooltip(e, status, count, percentage);
+      });
+
+      slice.addEventListener("mouseleave", (e) => {
+        const status = e.target.getAttribute("data-status");
+        highlightSlice(status, false);
+        hideTooltip();
+      });
+
+      slice.addEventListener("click", (e) => {
+        const status = e.target.getAttribute("data-status");
+        const count = e.target.getAttribute("data-count");
+        const percentage = e.target.getAttribute("data-percentage");
+
+        // Show notification about the slice
+        if (typeof showNotification === "function") {
+          showNotification(
+            `<strong>${statusLabels[status]}</strong><br>${count} applications (${percentage}%)`,
+            "info",
+            3000
+          );
+        }
+
+        // You could also filter the data based on the clicked status
+        console.log(`Clicked on ${status}: ${count} applications`);
+      });
+    });
+
+    // Add event listeners to legend items
+    legendItems.forEach((legendItem) => {
+      legendItem.addEventListener("mouseenter", (e) => {
+        const status = e.currentTarget.getAttribute("data-status");
+        const slice = this.statusChart.querySelector(
+          `.pie-slice[data-status="${status}"]`
+        );
+        if (slice) {
+          const count = slice.getAttribute("data-count");
+          const percentage = slice.getAttribute("data-percentage");
+          highlightSlice(status, true);
+          showTooltip(e, status, count, percentage);
+        }
+      });
+
+      legendItem.addEventListener("mouseleave", (e) => {
+        const status = e.currentTarget.getAttribute("data-status");
+        highlightSlice(status, false);
+        hideTooltip();
+      });
+
+      legendItem.addEventListener("click", (e) => {
+        const status = e.currentTarget.getAttribute("data-status");
+        const slice = this.statusChart.querySelector(
+          `.pie-slice[data-status="${status}"]`
+        );
+        if (slice) {
+          const count = slice.getAttribute("data-count");
+          const percentage = slice.getAttribute("data-percentage");
+
+          if (typeof showNotification === "function") {
+            showNotification(
+              `<strong>${statusLabels[status]}</strong><br>${count} applications (${percentage}%)`,
+              "info",
+              3000
+            );
+          }
+
+          console.log(`Clicked legend for ${status}: ${count} applications`);
+        }
+      });
+    });
+
+    // Add CSS for smooth transitions
+    if (!document.querySelector("#pie-chart-styles")) {
+      const styles = document.createElement("style");
+      styles.id = "pie-chart-styles";
+      styles.textContent = `
+        .pie-slice {
+          transition: all 0.3s ease;
+        }
+        .legend-item {
+          transition: all 0.2s ease;
+        }
+        .legend-item:hover .legend-color {
+          filter: brightness(1.2);
+        }
+        .legend-item:hover .legend-text {
+          font-weight: 600;
+        }
+        .pie-tooltip {
+          animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `;
+      document.head.appendChild(styles);
+    }
+  }
   renderCourseChart() {
     if (!this.courseChart) return;
 
     const courseData = this.analyticsData.applicationsByCourse;
     const courses = Object.keys(courseData).slice(0, 5); // Top 5 courses
+
+    if (courses.length === 0) {
+      this.courseChart.innerHTML = `
+            <div class="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+                <div class="text-center">
+                    <span class="material-symbols-outlined text-4xl mb-2 opacity-50">bar_chart</span>
+                    <p>No course data available</p>
+                </div>
+            </div>
+        `;
+      return;
+    }
+
     const maxApplications = Math.max(
       ...courses.map((course) => courseData[course].count),
       1
     );
-    const chartHeight = 150;
+
+    const chartHeight = 120;
+    const chartWidth = 350;
+    const margin = { top: 30, right: 20, bottom: 60, left: 40 };
+    const availableWidth = chartWidth - margin.left - margin.right;
+    const barWidth = Math.min(40, availableWidth / courses.length - 10);
 
     this.courseChart.innerHTML = `
-      <svg viewBox="0 0 400 200" class="w-full h-full">
-        ${courses
-          .map((course, index) => {
-            const applications = courseData[course].count;
-            const acceptanceRate =
-              courseData[course].accepted > 0
-                ? (courseData[course].accepted / applications) * 100
-                : 0;
+        <svg viewBox="0 0 400 200" class="w-full h-full" preserveAspectRatio="xMidYMid meet">
+            <!-- Y-axis line -->
+            <line x1="${margin.left}" y1="${margin.top}" x2="${
+      margin.left
+    }" y2="${chartHeight}" 
+                  stroke="#e5e7eb" class="dark:stroke-gray-600"/>
+            
+            <!-- X-axis line -->
+            <line x1="${margin.left}" y1="${chartHeight}" x2="${
+      chartWidth - margin.right
+    }" y2="${chartHeight}" 
+                  stroke="#e5e7eb" class="dark:stroke-gray-600"/>
+            
+            <!-- Chart title -->
+            <text x="${chartWidth / 2}" y="15" text-anchor="middle" 
+                  class="text-sm font-medium fill-gray-700 dark:fill-gray-300">
+                Top Courses by Applications
+            </text>
+            
+            <!-- Bars -->
+            ${courses
+              .map((course, index) => {
+                const applications = courseData[course].count;
+                const acceptanceRate =
+                  courseData[course].accepted > 0
+                    ? (courseData[course].accepted / applications) * 100
+                    : 0;
 
-            const barHeight = (applications / maxApplications) * chartHeight;
-            const x = index * 70;
-            const y = chartHeight - barHeight;
+                const barHeight =
+                  (applications / maxApplications) *
+                  (chartHeight - margin.top - margin.bottom);
+                const x = margin.left + index * (barWidth + 15);
+                const y = chartHeight - barHeight - margin.bottom;
 
-            return `
-            <g transform="translate(${x}, 0)">
-              <rect y="${y}" width="50" height="${barHeight}" 
-                    fill="#8b5cf6" class="opacity-70 hover:opacity-100 transition-opacity"/>
-              <text x="25" y="${chartHeight + 20}" text-anchor="middle" 
-                    class="text-xs fill-gray-500 dark:fill-gray-400" transform="rotate(45 25 ${
-                      chartHeight + 20
-                    })">
-                ${course.length > 10 ? course.substring(0, 10) + "..." : course}
-              </text>
-              <text x="25" y="${
-                y - 5
-              }" text-anchor="middle" class="text-xs fill-gray-700 dark:fill-gray-300">
-                ${applications}
-              </text>
-              <text x="25" y="${
-                y + 15
-              }" text-anchor="middle" class="text-xs fill-green-600 dark:fill-green-400">
-                ${acceptanceRate.toFixed(0)}%
-              </text>
-            </g>
-          `;
-          })
-          .join("")}
-        
-        <line x1="0" y1="${chartHeight}" x2="400" y2="${chartHeight}" stroke="#e5e7eb" class="dark:stroke-gray-600"/>
-      </svg>
+                // Truncate course name for display
+                const displayName =
+                  course.length > 12 ? course.substring(0, 12) + "..." : course;
+
+                return `
+                        <g class="cursor-pointer hover:opacity-80 transition-opacity">
+                            <!-- Bar -->
+                            <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" 
+                                  fill="#8b5cf6" class="opacity-80" 
+                                  data-course="${course}" data-applications="${applications}" 
+                                  data-acceptance="${acceptanceRate.toFixed(
+                                    1
+                                  )}%"/>
+                            
+                            <!-- Application count on bar -->
+                            <text x="${x + barWidth / 2}" y="${y - 8}" 
+                                  text-anchor="middle" class="text-xs font-medium fill-gray-700 dark:fill-gray-300">
+                                ${applications}
+                            </text>
+                            
+                            <!-- Acceptance rate below bar -->
+                            <text x="${x + barWidth / 2}" y="${
+                  y + barHeight + 15
+                }" 
+                                  text-anchor="middle" class="text-xs fill-green-600 dark:fill-green-400 font-medium">
+                                ${acceptanceRate.toFixed(0)}%
+                            </text>
+                            
+                            <!-- Course name label -->
+                            <text x="${x + barWidth / 2}" y="${
+                  chartHeight + 25
+                }" 
+                                  text-anchor="middle" class="text-xs fill-gray-500 dark:fill-gray-400">
+                                ${displayName}
+                            </text>
+                            
+                            <!-- Full course name tooltip (hidden) -->
+                            <title>${course}: ${applications} applications, ${acceptanceRate.toFixed(
+                  1
+                )}% acceptance rate</title>
+                        </g>
+                    `;
+              })
+              .join("")}
+            
+            <!-- Y-axis labels -->
+            ${[0, 0.25, 0.5, 0.75, 1]
+              .map((ratio) => {
+                const value = Math.round(maxApplications * ratio);
+                const y =
+                  chartHeight -
+                  ratio * (chartHeight - margin.top - margin.bottom) -
+                  margin.bottom;
+
+                return `
+                        <g>
+                            <line x1="${margin.left - 5}" y1="${y}" x2="${
+                  margin.left
+                }" y2="${y}" 
+                                  stroke="#e5e7eb" class="dark:stroke-gray-600"/>
+                            <text x="${margin.left - 8}" y="${y + 3}" 
+                                  text-anchor="end" class="text-xs fill-gray-500 dark:fill-gray-400">
+                                ${value}
+                            </text>
+                        </g>
+                    `;
+              })
+              .join("")}
+            
+            <!-- Y-axis label -->
+            <text x="${margin.left - 25}" y="${
+      chartHeight / 2
+    }" text-anchor="middle" 
+                  transform="rotate(-90 ${margin.left - 25} ${
+      chartHeight / 2
+    })" 
+                  class="text-xs fill-gray-500 dark:fill-gray-400">
+                Applications
+            </text>
+        </svg>
     `;
+
+    // Add interactivity
+    this.addCourseChartInteractivity();
+  }
+
+  addCourseChartInteractivity() {
+    const bars = this.courseChart.querySelectorAll("rect");
+
+    bars.forEach((bar) => {
+      bar.addEventListener("mouseenter", (e) => {
+        const course = e.target.getAttribute("data-course");
+        const applications = e.target.getAttribute("data-applications");
+        const acceptance = e.target.getAttribute("data-acceptance");
+
+        // Highlight the bar
+        e.target.style.opacity = "1";
+
+        // You could add a tooltip here if needed
+        console.log(
+          `Course: ${course}, Applications: ${applications}, Acceptance: ${acceptance}`
+        );
+      });
+
+      bar.addEventListener("mouseleave", (e) => {
+        // Reset opacity
+        e.target.style.opacity = "0.8";
+      });
+
+      bar.addEventListener("click", (e) => {
+        const course = e.target.getAttribute("data-course");
+        console.log(`Clicked on course: ${course}`);
+        // You could add functionality to filter by course or show details
+      });
+    });
   }
 
   renderInstitutionChart() {
@@ -888,19 +1357,152 @@ export default class Analytics {
 
   exportAnalytics() {
     console.log("Exporting analytics report");
-    // Implement export functionality (CSV, PDF, etc.)
-    const reportData = {
-      period: this.currentPeriod,
-      metrics: this.analyticsData.trainingMetrics,
-      courses: this.analyticsData.applicationsByCourse,
-      institutions: this.analyticsData.applicationsByInstitution,
-      generatedAt: new Date().toISOString(),
-    };
 
-    console.log("Exporting analytics:", reportData);
-    // Here you would typically generate and download a CSV or PDF report
-    alert(
-      "Analytics export functionality would generate a detailed report here."
-    );
+    if (this.analyticsData.totalApplications === 0) {
+      showNotification("No data to export", "warning");
+      return;
+    }
+
+    try {
+      const loadingNotification = showNotification(
+        "Preparing analytics export...",
+        "loading",
+        0
+      );
+
+      const csvContent = this.generateAnalyticsCSV();
+      const filename = `analytics_report_${this.currentPeriod}_${
+        new Date().toISOString().split("T")[0]
+      }.csv`;
+
+      this.downloadCSV(csvContent, filename);
+
+      updateNotification(
+        loadingNotification,
+        "Analytics report exported successfully!",
+        "success"
+      );
+
+      setTimeout(() => removeNotification(loadingNotification), 3000);
+    } catch (error) {
+      console.error("Export error:", error);
+      showNotification(`Export failed: ${error.message}`, "error");
+    }
+  }
+
+  generateAnalyticsCSV() {
+    const headers = ["Metric", "Value", "Period", "Generated Date"];
+
+    const metrics = this.analyticsData.trainingMetrics;
+    const rows = [
+      [
+        "Total Applications",
+        this.analyticsData.totalApplications,
+        this.currentPeriod,
+        new Date().toISOString(),
+      ],
+      [
+        "Acceptance Rate",
+        `${metrics.acceptanceRate.toFixed(1)}%`,
+        this.currentPeriod,
+        "",
+      ],
+      [
+        "Completion Rate",
+        `${metrics.completionRate.toFixed(1)}%`,
+        this.currentPeriod,
+        "",
+      ],
+      [
+        "Average Duration",
+        `${metrics.avgDuration.toFixed(0)} days`,
+        this.currentPeriod,
+        "",
+      ],
+      ["Total Trainees", metrics.totalTrainees, this.currentPeriod, ""],
+      ["Completed Trainees", metrics.completedTrainees, this.currentPeriod, ""],
+      ["", "", "", ""],
+      ["Status Breakdown", "", "", ""],
+      [
+        "Pending",
+        this.analyticsData.applicationsByStatus.pending,
+        this.currentPeriod,
+        "",
+      ],
+      [
+        "Shortlisted",
+        this.analyticsData.applicationsByStatus.shortlisted,
+        this.currentPeriod,
+        "",
+      ],
+      [
+        "Accepted",
+        this.analyticsData.applicationsByStatus.accepted,
+        this.currentPeriod,
+        "",
+      ],
+      [
+        "Rejected",
+        this.analyticsData.applicationsByStatus.rejected,
+        this.currentPeriod,
+        "",
+      ],
+    ];
+
+    // Add course performance data
+    rows.push(["", "", "", ""], ["Course Performance", "", "", ""]);
+    Object.entries(this.analyticsData.applicationsByCourse)
+      .sort((a, b) => b[1].count - a[1].count)
+      .slice(0, 10)
+      .forEach(([course, data]) => {
+        const acceptanceRate =
+          data.count > 0 ? (data.accepted / data.count) * 100 : 0;
+        rows.push([
+          course,
+          data.count,
+          `${acceptanceRate.toFixed(1)}% acceptance`,
+          "",
+        ]);
+      });
+
+    const csvArray = [headers, ...rows];
+    return csvArray
+      .map((row) =>
+        row
+          .map((field) => {
+            if (field === null || field === undefined) return "";
+            const stringField = String(field);
+            if (
+              stringField.includes(",") ||
+              stringField.includes('"') ||
+              stringField.includes("\n")
+            ) {
+              return `"${stringField.replace(/"/g, '""')}"`;
+            }
+            return stringField;
+          })
+          .join(",")
+      )
+      .join("\n");
+  }
+
+  downloadCSV(csvContent, filename) {
+    const BOM = "\uFEFF";
+    const blob = new Blob([BOM + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    link.style.visibility = "hidden";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
   }
 }

@@ -2387,4 +2387,361 @@ function getAvatarElement(fullName, imageUrl = null, size = 60) {
   }
 }
 
-export{validateStoragePath,validateStorageUrl,getAvatarElement}
+function showLoadingDialog(message = "Submitting...") {
+    // Remove existing dialog if any
+    const existingDialog = document.getElementById('loadingDialog');
+    if (existingDialog) {
+        existingDialog.remove();
+    }
+
+    // Create overlay container
+    const loadingDialog = document.createElement('div');
+    loadingDialog.id = 'loadingDialog';
+    
+    // Create CSS styles
+    const styles = `
+        #loadingDialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .loading-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            min-width: 250px;
+            max-width: 350px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin: 0;
+        }
+    `;
+
+    // Create HTML content
+    const htmlContent = `
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">${message}</p>
+        </div>
+    `;
+
+    // Add styles and content
+    const styleElement = document.createElement('style');
+    styleElement.textContent = styles;
+    loadingDialog.appendChild(styleElement);
+    loadingDialog.innerHTML += htmlContent;
+
+    // Add to document body
+    document.body.appendChild(loadingDialog);
+    
+    // Disable form buttons
+    const submitButtons = document.querySelectorAll('button[type="submit"], input[type="submit"]');
+    submitButtons.forEach(button => {
+        button.disabled = true;
+        if (!button.dataset.originalText) {
+            button.dataset.originalText = button.textContent || button.value;
+        }
+        button.textContent = 'Submitting...';
+        if (button.value) button.value = 'Submitting...';
+    });
+
+    return loadingDialog;
+}
+
+function hideLoadingDialog() {
+    // Remove loading dialog
+    const loadingDialog = document.getElementById('loadingDialog');
+    if (loadingDialog) {
+        loadingDialog.remove();
+    }
+    
+    // Re-enable form buttons
+    const submitButtons = document.querySelectorAll('button[type="submit"], input[type="submit"]');
+    submitButtons.forEach(button => {
+        button.disabled = false;
+        const originalText = button.dataset.originalText;
+        if (originalText) {
+            button.textContent = originalText;
+            if (button.value) button.value = originalText;
+        }
+    });
+}
+
+// Add this method to your class
+function safeConvertToTimestamp(timestamp) {
+    if (!timestamp) {
+        return new Date().getTime();
+    }
+    
+    // If it's already a Date object
+    if (timestamp instanceof Date) {
+        return timestamp.getTime();
+    }
+    
+    // If it's a Firestore Timestamp (has toDate method)
+    if (timestamp && typeof timestamp.toDate === 'function') {
+        return timestamp.toDate().getTime();
+    }
+    
+    // If it's a string that can be parsed as Date
+    if (typeof timestamp === 'string') {
+        const date = new Date(timestamp);
+        if (!isNaN(date.getTime())) {
+            return date.getTime();
+        }
+    }
+    
+    // If it's already a number (milliseconds)
+    if (typeof timestamp === 'number') {
+        return timestamp;
+    }
+    
+    // Fallback to current time
+    console.warn('Invalid timestamp format, using current time:', timestamp);
+    return new Date().getTime();
+}
+
+// Add this method to your class or as a global function
+function showNotification(message, type = 'info', duration = 5000) {
+    // Create notification container if it doesn't exist
+    let container = document.getElementById('notification-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'notification-container';
+        container.className = 'fixed top-4 right-4 z-50 space-y-2 max-w-sm w-full';
+        
+        // Add CSS styles
+        const styles = `
+            <style>
+            .notification {
+                padding: 12px 16px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                animation: slideIn 0.3s ease-out;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+            }
+
+            .notification.fade-out {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            .notification.success {
+                background: #f0fdf4;
+                border: 1px solid #bbf7d0;
+                color: #166534;
+            }
+
+            .notification.error {
+                background: #fef2f2;
+                border: 1px solid #fecaca;
+                color: #dc2626;
+            }
+
+            .notification.info {
+                background: #eff6ff;
+                border: 1px solid #bfdbfe;
+                color: #1e40af;
+            }
+
+            .notification.warning {
+                background: #fffbeb;
+                border: 1px solid #fed7aa;
+                color: #ea580c;
+            }
+
+            .notification.loading {
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                color: #475569;
+            }
+
+            .notification-icon {
+                font-size: 20px;
+                flex-shrink: 0;
+            }
+
+            .notification-content {
+                flex: 1;
+                font-size: 14px;
+                line-height: 1.4;
+                font-weight: 500;
+            }
+
+            .notification-close {
+                background: none;
+                border: none;
+                color: currentColor;
+                opacity: 0.7;
+                cursor: pointer;
+                padding: 4px;
+                border-radius: 4px;
+                transition: opacity 0.2s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .notification-close:hover {
+                opacity: 1;
+            }
+
+            .spinner {
+                width: 16px;
+                height: 16px;
+                border: 2px solid transparent;
+                border-top: 2px solid currentColor;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(100%);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            </style>
+        `;
+        document.head.insertAdjacentHTML('beforeend', styles);
+        document.body.appendChild(container);
+    }
+
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    
+    // Get icon based on type
+    const icons = {
+        success: '✓',
+        error: '✕',
+        warning: '⚠',
+        info: 'ℹ',
+        loading: '<div class="spinner"></div>'
+    };
+
+    notification.innerHTML = `
+        <div class="notification-icon">${icons[type] || icons.info}</div>
+        <div class="notification-content">${message}</div>
+        <button class="notification-close" onclick="this.parentElement.remove()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+        </button>
+    `;
+
+    // Add to container
+    container.appendChild(notification);
+
+    // Auto-remove after duration (unless it's a loading notification)
+    if (type !== 'loading' && duration > 0) {
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.classList.add('fade-out');
+                setTimeout(() => notification.remove(), 300);
+            }
+        }, duration);
+    }
+
+    return notification;
+}
+
+// Update notification method
+function updateNotification(notification, newMessage, newType = null) {
+    if (!notification || !notification.parentElement) return;
+    
+    const content = notification.querySelector('.notification-content');
+    const icon = notification.querySelector('.notification-icon');
+    
+    if (content) {
+        content.textContent = newMessage;
+    }
+    
+    if (newType) {
+        // Remove old type classes
+        notification.classList.remove('success', 'error', 'warning', 'info', 'loading');
+        // Add new type class
+        notification.classList.add(newType);
+        
+        // Update icon
+        const icons = {
+            success: '✓',
+            error: '✕',
+            warning: '⚠',
+            info: 'ℹ'
+        };
+        
+        if (icon) {
+            if (newType === 'loading') {
+                icon.innerHTML = '<div class="spinner"></div>';
+            } else {
+                icon.innerHTML = icons[newType] || icons.info;
+            }
+        }
+    }
+}
+
+// Remove notification method
+function removeNotification(notification) {
+    if (notification && notification.parentElement) {
+        notification.classList.add('fade-out');
+        setTimeout(() => notification.remove(), 300);
+    }
+}
+
+export{validateStoragePath,
+  validateStorageUrl,
+  getAvatarElement,
+  hideLoadingDialog,
+  showLoadingDialog,
+safeConvertToTimestamp,
+removeNotification,
+updateNotification,
+showNotification
+}
+
+

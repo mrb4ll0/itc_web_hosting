@@ -1368,24 +1368,14 @@ async getApplicationById(companyId, itId, applicationId) {
         //console.log(" Document ID:", applicationDoc.id);
         
         if (applicationDoc.exists()) {
-            //console.log(" Application document exists!");
+
             const data = applicationDoc.data();
-            //console.log("Raw Firestore data:", JSON.stringify(data, null, 2));
               data.student = await new StudentCloudDB().getStudentById(data.student.uid);
-            // Get industrial training data
+
             //console.log(" Fetching industrial training data...");
             const industrialTraining = await this.getIndustrialTrainingById(companyId, itId);
-            //console.log(" Industrial Training:", industrialTraining ? "Found" : "Not found");
             
-            // if (industrialTraining) {
-            //     //console.log(" Industrial Training details:", {
-            //     //     id: industrialTraining.id,
-            //     //     title: industrialTraining.title,
-            //     //     company: industrialTraining.company?.name
-            //     // });
-            // }
             
-            // Create StudentApplication object - FIXED: use 'internship' not 'industrialTraining'
             const studentApp = new StudentApplication({
                 id: applicationDoc.id,
                 student: data.student,
@@ -1533,6 +1523,48 @@ async deleteCompanyApplication(companyId, itId, applicationId) {
         
     } catch (error) {
         console.error("Error deleting application:", error);
+        throw error;
+    }
+}
+
+async updateCompanyApplicationDuration(durationObject, applicationId,itId,sid) {
+    await auth.authStateReady();
+    const companyId = auth.currentUser.uid;
+
+    if (!companyId || !applicationId || !durationObject) {
+        throw new Error("Company ID, Application ID, and duration object are required");
+    }
+
+    try {
+        const applicationRef = doc(
+            this.db,
+            this.usersCollection,
+            this.companiesSubcollection,
+            this.companiesSubcollection,
+            companyId,
+            'IT',
+            itId,
+            'applications',
+            applicationId
+
+        );
+
+        // First check if document exists
+        const docSnap = await getDoc(applicationRef);
+        
+        if (!docSnap.exists()) {
+            throw new Error(`Application ${applicationId} not found`);
+        }
+
+        // Update the duration field
+        await updateDoc(applicationRef, {
+            duration: durationObject
+        });
+
+        console.log(`Successfully updated duration for application ${applicationId}`);
+        
+    } catch (error) {
+        console.error("Error updating application duration:", error);
         throw error;
     }
 }

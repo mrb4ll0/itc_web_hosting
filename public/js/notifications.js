@@ -12,6 +12,7 @@ import {
 
 // Import your local modules
 import { CompanyCloud } from "../js/fireabase/CompanyCloud.js";
+import { safeConvertToTimestamp } from "./general/generalmethods.js";
 import { Student } from "./model/Student.js";
 
 
@@ -473,7 +474,7 @@ function unifiedNotificationsStream(studentUid, callback) {
           return {
             title: data.status || "No Title",
             body: data.message || "No Message",
-            timestamp: (data.timestamp?.toDate() || new Date()).getTime(),
+            timestamp: safeConvertToTimestamp(data.timestamp),
             type: "private",
             id: doc.id,
             docRef: doc.ref,
