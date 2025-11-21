@@ -58,6 +58,36 @@
           transform: translateX(0);
         }
       }
+      /* Notification Ticker Styles */
+      #notificationTicker {
+        animation: ticker-scroll 30s linear infinite;
+      }
+
+      .ticker-item {
+        display: inline-flex;
+        align-items: center;
+        padding: 0 1rem;
+      }
+
+      /* Pause animation on hover */
+      #notificationTicker:hover {
+        animation-play-state: paused;
+      }
+
+      /* Ticker scroll animation */
+      @keyframes ticker-scroll {
+        0% {
+          transform: translateX(100%);
+        }
+        100% {
+          transform: translateX(-100%);
+        }
+      }
+
+      /* Ensure smooth scrolling */
+      #notificationTicker {
+        will-change: transform;
+      }
     </style>
   </head>
   <body
@@ -346,6 +376,44 @@
               </button>
             </div>
           </header>
+
+          <!-- Notification Ticker -->
+          <div class="mb-6 lg:mb-8">
+            <div
+              class="bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700 rounded-lg p-3 shadow-lg"
+            >
+              <div class="flex items-center">
+                <!-- Notification Icon -->
+                <div class="flex-shrink-0 mr-3">
+                  <svg
+                    class="w-5 h-5 text-white"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.93 6 11v5l-2 2v1h16v-1l-2-2z"
+                    />
+                  </svg>
+                </div>
+
+                <!-- Ticker Container -->
+                <div class="flex-1 overflow-hidden">
+                  <div
+                    id="notificationTicker"
+                    class="flex space-x-8 whitespace-nowrap"
+                  >
+                    <!-- Loading message - will be replaced by real notifications -->
+                    <div
+                      class="ticker-item flex items-center text-white text-sm font-medium"
+                    >
+                      <span class="mr-2">⏳</span>
+                      Loading notifications...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <!-- Main Content Grid -->
           <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">

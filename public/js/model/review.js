@@ -20,11 +20,7 @@ export class CompanyReview {
     this.comment = comment;
     this.rating = rating;
     // Only use Date if it’s already a valid timestamp from Firestore
-    this.createdAt = createdAt instanceof Timestamp 
-      ? createdAt.toDate()
-      : createdAt instanceof Date 
-        ? createdAt 
-        : null;
+    this.createdAt = createdAt;
   }
 
   toMap() {
@@ -40,7 +36,7 @@ export class CompanyReview {
   }
 
   static fromMap(map) {
-    return new CompanyReview({
+    const review = new CompanyReview({
       id: map.id,
       companyId: map.companyId,
       studentId: map.studentId,
@@ -49,5 +45,7 @@ export class CompanyReview {
       rating: map.rating,
       createdAt: map.createdAt,
     });
+  return review;
+   
   }
 }

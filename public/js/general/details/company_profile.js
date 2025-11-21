@@ -46,10 +46,13 @@ class CompanyProfile {
     try {
       showLoadingOverlay("Loading company profile...");
       const company = await itc_firebase_logic.getCompany(this.companyId);
+      this.company = company;
 
       if (company) {
         const companyData = company;
         this.renderCompanyProfile(companyData);
+        // Load analytics after company profile is rendered
+        await this.loadCompanyAnalytics(company);
       } else {
         //console.log("No company profile found.");
         this.renderError("Company not found");
@@ -60,6 +63,153 @@ class CompanyProfile {
     }
   }
 
+  async loadCompanyAnalytics(company) {
+    try {
+      showLoadingOverlay("Loading company analytics...");
+      
+      // Get company analytics data
+      const analytics = await companyCloud.getCompanyAnalytics(this.companyId);
+      
+      if (analytics) {
+        this.renderCompanyAnalytics(analytics, company);
+      } else {
+        // If no analytics data, use default values
+        this.renderCompanyAnalytics(this.getDefaultAnalytics(), company);
+      }
+      hideLoadingOverlay();
+    } catch (error) {
+      console.error("Error loading company analytics:", error);
+      // Use default analytics if there's an error
+      this.renderCompanyAnalytics(this.getDefaultAnalytics(), company);
+      hideLoadingOverlay();
+    }
+  }
+
+  getDefaultAnalytics() {
+    return {
+      studentsPerYear: 0,
+      currentOpportunities: 0,
+      totalApplications: 0,
+      applicationsByRole: [],
+      acceptanceRate: 0,
+      isAcceptingApplications: false
+    };
+  }
+
+  renderCompanyAnalytics(analytics, company) {
+    // Update company status
+    this.renderCompanyStatus(analytics.isAcceptingApplications);
+    
+    // Update key metrics
+    this.renderKeyMetrics(analytics);
+    
+    // Update applications by role
+    this.renderApplicationsByRole(analytics.applicationsByRole);
+    
+    // Update acceptance rate
+    this.renderAcceptanceRate(analytics.acceptanceRate);
+  }
+
+  renderCompanyStatus(isAcceptingApplications) {
+    const statusElement = document.getElementById("company-status");
+    if (!statusElement) return;
+
+    if (isAcceptingApplications) {
+      statusElement.innerHTML = `
+        <span class="material-symbols-outlined text-sm mr-2">check_circle</span>
+        Currently Accepting Applications
+      `;
+      statusElement.className = "inline-flex items-center px-4 py-2 rounded-full text-white font-semibold text-sm status-open";
+    } else {
+      statusElement.innerHTML = `
+        <span class="material-symbols-outlined text-sm mr-2">cancel</span>
+        Currently Not Accepting Applications
+      `;
+      statusElement.className = "inline-flex items-center px-4 py-2 rounded-full text-white font-semibold text-sm status-closed";
+    }
+  }
+
+  renderKeyMetrics(analytics) {
+    // Students per year
+    const studentsPerYearElement = document.getElementById("students-per-year");
+    if (studentsPerYearElement) {
+      studentsPerYearElement.textContent = analytics.studentsPerYear.toLocaleString();
+    }
+
+    // Current opportunities
+    const currentOpportunitiesElement = document.getElementById("current-opportunities");
+    if (currentOpportunitiesElement) {
+      currentOpportunitiesElement.textContent = analytics.currentOpportunities.toLocaleString();
+    }
+
+    // Total applications
+    const totalApplicationsElement = document.getElementById("total-applications");
+    if (totalApplicationsElement) {
+      totalApplicationsElement.textContent = analytics.totalApplications.toLocaleString();
+    }
+  }
+
+  renderApplicationsByRole(applicationsByRole) {
+    const container = document.getElementById("applications-by-role");
+    if (!container) return;
+
+    if (!applicationsByRole || applicationsByRole.length === 0) {
+      container.innerHTML = `
+        <div class="text-center py-8 text-slate-500 dark:text-slate-400">
+          <span class="material-symbols-outlined text-4xl mb-2 opacity-50">bar_chart</span>
+          <p>No application data available</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Find the maximum application count for scaling
+    const maxApplications = Math.max(...applicationsByRole.map(item => item.count));
+
+    container.innerHTML = applicationsByRole.map(role => `
+      <div class="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700 last:border-b-0">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">
+              ${role.roleName}
+            </span>
+            <span class="text-sm text-slate-500 dark:text-slate-400 ml-2">
+              ${role.count} applications
+            </span>
+          </div>
+          <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+            <div 
+              class="bg-primary h-2 rounded-full progress-bar" 
+              style="width: ${(role.count / maxApplications) * 100}%"
+            ></div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  renderAcceptanceRate(acceptanceRate) {
+    const rateElement = document.getElementById("acceptance-rate");
+    const barElement = document.getElementById("acceptance-bar");
+    
+    if (rateElement) {
+      rateElement.textContent = `${acceptanceRate}%`;
+    }
+    
+    if (barElement) {
+      barElement.style.width = `${acceptanceRate}%`;
+      
+      // Color code based on acceptance rate
+      if (acceptanceRate >= 50) {
+        barElement.className = "bg-green-500 h-3 rounded-full progress-bar";
+      } else if (acceptanceRate >= 25) {
+        barElement.className = "bg-yellow-500 h-3 rounded-full progress-bar";
+      } else {
+        barElement.className = "bg-red-500 h-3 rounded-full progress-bar";
+      }
+    }
+  }
+
   renderCompanyProfile(company) {
     // Update page title
     document.title = `IT Connect - ${company.name}`;
@@ -67,8 +217,6 @@ class CompanyProfile {
     showLoadingOverlay("Loading company details...");
 
     var company_image = document.getElementById("company-image");
-    //`url('${company.logourl}')`;
-
     company_image.style.backgroundImage = `url('${company.logoURL}')`;
 
     // Update header company name
@@ -105,56 +253,32 @@ class CompanyProfile {
     const aboutSection = document.getElementById("about");
     const bigAbout = document.getElementById("about-header");
     if (aboutSection && company.industry) {
-      //console.log("about");
       const industryDescription =
         `${company.name} is a leading company in the ${company.industry} industry. We are dedicated to fostering innovation and providing cutting-edge solutions to businesses. Our mission is to empower organizations with the tools and expertise they need to thrive in the digital age.`;
         const aboutheader = company.name;
 
-     //console.log("industryDescription:", industryDescription);
         aboutSection.textContent = industryDescription;
         bigAbout.textContent = "About "+aboutheader;
     }
 
-    this.renderCompanyImages(company);
-  }
-
-  renderCompanyImages(company) {
-    var images = [];
-    if (company.images) {
-      images = company.images;
-    }
-    images = [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBJawAzS8kkHqj_JsWnjTRPzEVcmmkegp61lxYY6qFagg6kWC6rSEEG3GiZUsKaw0dHT0A1IR85_ogtTjI7z2es4jt-tJwWrupw2kRIBVV480HKFdrIT7h0DCEYu0H2wpak4FT1gIazDrAFZ6rLWRPOxGmUI8Gj5LqVlW0VPlD2aiRPXIjv-0j-Lrou89qj778BFt5R7w1UaA7ETCTzbWGu6IjsPzUuT5dDW-jim7CFj01TZTmVOWy0apRpQXR8_vTzl8SgOnBWBg",
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuCricPWXgg5TeKTHMryS_TISPUtWJUIRGQBktLHeB3RQ--YCJkzNST5XFWyHE1X9FxelkSaiSvSVKncJsnAuQnXcz6G5iKqocMIDPJ48p-boKYSYFmq0wOCi-OFLeYc5C4p81EUTFdhcv9n7oDsE8Oc0CEsz50HZo4-gGoGDmIwzGdQYtSYTOoi9ulOLHpLqVIkjzvhm70sGA4kfX6TBQo28C03aGoXII-dw6yjXCmeU_CAKROffVLleApEywoAy1Oja9mJW3czdw",
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAowzPo1wvhh83-aFJiMQjok8sssFYu4INbX7UoS9uOznxvJexC4YLqoc5XBfsJVEjPMK1bhFdaMZYSVg970xB__pbt0ogY7nPIskaSIU7MKiA7Dn4CNiKqEvtDxDQcqL_9PyELdWC7kZsIDOnGoXcPQvcepNoaR-jIb6JW7v7d3LEt5KhW_ViW9rvWhUVUzeT15LqUDMuBZg3sJq2T37-0NGz230vZNAv_fDYuukojhPq1hOcs-GuxQ-kz8qT40k20oQNTcQGQAA",
-    ];
-
-    const imageContainers = document.getElementById("main-image");
-    images.forEach((imageUrl, index) => {
-      if (imageContainers[index]) {
-        imageContainers[index].style.backgroundImage = `url('${imageUrl}')`;
-      }
-    });
+    // Remove image rendering since we're using analytics now
+    // this.renderCompanyImages(company);
   }
 
   renderSidebar(company) {
     // Update industry
-    //console.log("render sidebar called with company:", company);
     const industryElement = document.getElementById("industry");
     if (industryElement && company.industry) {
       industryElement.textContent = company.industry;
-      //console.log("Industry set to " + company.industry);
     }
 
     // Update locations
     const locationsElement = document.getElementById("locations");
     if (locationsElement) {
-      //console.log("Rendering locations for company:", company);
       const locations = [];
       if (company.state) locations.push(company.state);
       if (company.localGovernment) locations.push(company.localGovernment);
       if (company.address) locations.push(company.address);
-      //console.log("locations is " + locations.join("; "));
       locationsElement.textContent =
         locations.length > 0 ? locations.join("; ") : "Location not specified";
     }
@@ -234,12 +358,13 @@ class CompanyProfile {
         const description =
           opportunity.description || "No description available.";
         const location =
-          opportunity.company.address +
+          this.company.address +
             ", " +
-            opportunity.company.localGovernment +
+            this.company.localGovernment +
             ", " +
-            opportunity.company.state || "Location not specified";
+            this.company.state || "Location not specified";
         const duration = opportunity.duration || "Duration not specified";
+
         const stipend = opportunity.stipend
           ? `₦${opportunity.stipend.toLocaleString()}`
           : "Not specified";
@@ -259,6 +384,10 @@ class CompanyProfile {
         const statusClass =
           statusColors[status] ||
           "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
+          const date = this.formatDate(
+                      opportunity.postedAt
+                    );
+
 
         li.innerHTML = `
                 <div class="flex justify-between items-start mb-2">
@@ -294,9 +423,7 @@ class CompanyProfile {
                 </div>
                 
                 <div class="flex justify-between items-center mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-                    <span class="text-xs text-slate-500">Posted: ${this.formatDate(
-                      opportunity.postedAt
-                    )}</span>
+                    <span class="text-xs text-slate-500">Posted: ${date}</span>
                     <button class="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1 view-details-btn">
                         View Details
                         <span class="material-symbols-outlined text-sm">arrow_forward</span>
@@ -488,6 +615,7 @@ class CompanyProfile {
   }
 
   async renderReview(company) {
+    //console.log("render reviews");
     const companyReviewElement = document.getElementById("view-reviews");
     if (!companyReviewElement) {
       alert("An error occurred while switching");
@@ -514,6 +642,7 @@ class CompanyProfile {
 
       // Get reviews from the company
       const reviews = await this.getCompanyReviewsPromise(company.id);
+      console.log("company review is "+JSON.stringify(reviews));
 
       // Clear existing content
       reviewsList.innerHTML = "";
@@ -540,6 +669,7 @@ class CompanyProfile {
 
       // Render each review
       reviews.forEach((review, index) => {
+        //console.log("review is "+JSON.stringify(review));
         const li = document.createElement("li");
         li.className =
           "p-4 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors duration-200";
@@ -710,35 +840,38 @@ class CompanyProfile {
     try {
       let d = null;
 
-      // 1) Already a JS Date
       if (date instanceof Date) {
         d = date;
       }
-      // 2) Firestore Timestamp with toDate()
       else if (date && typeof date.toDate === "function") {
-        d = date.toDate();
+        try {
+          d = date.toDate();
+          if (!(d instanceof Date) || isNaN(d.getTime())) {
+            throw new Error("Invalid date from toDate()");
+          }
+        } catch (error) {
+          console.warn("toDate() failed, trying seconds/nanoseconds:", error);
+          if (date.seconds !== undefined) {
+            const ms = date.seconds * 1000 + (date.nanoseconds ? Math.round(date.nanoseconds / 1e6) : 0);
+            d = new Date(ms);
+          }
+        }
       }
-      // 3) Firestore-like object with seconds/nanoseconds
       else if (date && typeof date.seconds === "number") {
-        const ms =
-          date.seconds * 1000 +
-          (date.nanoseconds ? Math.round(date.nanoseconds / 1e6) : 0);
+        const ms = date.seconds * 1000 + (date.nanoseconds ? Math.round(date.nanoseconds / 1e6) : 0);
         d = new Date(ms);
       }
-      // 4) numeric (ms since epoch or seconds)
       else if (typeof date === "number") {
-        // guess: if < 1e12 it's seconds, otherwise milliseconds
         d = date < 1e12 ? new Date(date * 1000) : new Date(date);
       }
-      // 5) string
       else if (typeof date === "string") {
         d = new Date(date);
-        if (isNaN(d)) {
-          // try removing parenthetical timezone: " (West Africa Standard Time)"
+        if (isNaN(d.getTime())) {
           const cleaned = date.replace(/\s*\([^)]*\)$/, "");
           d = new Date(cleaned);
         }
       } else {
+        console.warn("Unsupported date format:", date);
         return "Invalid date";
       }
 
@@ -804,6 +937,9 @@ class CompanyProfile {
       const li = document.createElement("li");
       li.className =
         "p-4 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors duration-200";
+        const date = this.formatDate(
+                  review.createdAt
+                );
 
       li.innerHTML = `
             <div class="flex justify-between items-start mb-3">
@@ -828,9 +964,7 @@ class CompanyProfile {
                     </div>
                 </div>
                 <div class="class="flex flex-col items-end gap-1">
-                <span class="text-xs text-slate-500">${this.formatDate(
-                  review.createdAt
-                )}</span>
+                <span class="text-xs text-slate-500">${date}</span>
                 <button id=".delete-review-btn"
         class="text-red-500 hover:text-red-700 text-xs flex items-center gap-1 delete-review-btn"
         data-review-id="${review.id}"
@@ -1075,8 +1209,10 @@ class CompanyProfile {
         studentName: currentUser.fullName || "Anonymous Student",
         comment: comment.trim(),
         rating: rating,
-        createdAt: serverTimestamp(),
+        createdAt: new Date(),
       });
+
+      console.log("review timestamp "+review.createdAt);
 
       // Submit to Firebase
       //console.log("review before addCompanyReview ", review);

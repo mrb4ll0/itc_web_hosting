@@ -266,14 +266,17 @@ class StudentApplicationView {
     });
 
     // Create modal or alert with application details
-     //console.log("Showing details for application:"+JSON.stringify(application.internship));
+     //console.log("Showing details for application:"+JSON.stringify(application));
     const details = `
 Company: ${application.internship.company.name}
 Position: ${application.internship.title}
 Application Date: ${formattedDate}
 Status: ${application.applicationStatus.toUpperCase()}
 Location: ${application.internship.address}, ${application.internship.company.localGovernment}, ${application.internship.company.state}
-Duration: ${application.internship.duration}
+Start Date: ${application.internship.duration.startDate}
+End Date: ${application.internship.duration.endDate}
+Duration : ${application.internship.duration.duration} days
+Time: ${application.internship.duration.time}
     `.trim();
 
     alert(details); // You can replace this with a proper modal

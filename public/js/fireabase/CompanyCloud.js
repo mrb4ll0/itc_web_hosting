@@ -1,7 +1,3 @@
-// company_cloud.js
-// JS conversion of your Dart Company_Cloud class
-// Requires: initialized Firebase app elsewhere
-
 import {
   getFirestore,
   collection,
@@ -39,6 +35,8 @@ import { StudentApplication } from "../model/studentApplication.js";
 import { Company } from "../model/Company.js";
 import { CompanyReview } from "../model/review.js";
 import CloudStorage from "./Cloud_Storage.js";
+import { ITBaseCompanyCloud } from "./ITBaseCompanyCloud.js";
+const it_base_company_cloud = new ITBaseCompanyCloud();
 
 export class CompanyCloud {
   constructor() {
@@ -1063,36 +1061,30 @@ export class CompanyCloud {
       );
   }
 
-  /**
-   * Add company review
-   */
+  
   /**
    * Add company review
    */
   async addCompanyReview(review) {
-    //console.log("Adding review for company:", review.companyId);
     //console.log("Review data:", review);
 
     try {
       const reviewRef = doc(
         this._firebaseFirestore,
-        "users", // users collection
-        "companies", // companies subcollection
-        "companies", // companies documents
-        review.companyId, // specific company document
-        "reviews", // reviews subcollection
+        "users", 
+        "companies", 
+        "companies", 
+        review.companyId, 
+        "reviews", 
         review.id
       );
 
-      //console.log("Review Firestore path:", reviewRef.path);
-      //console.log("Review Data:", review.toMap());
 
       await setDoc(reviewRef, {
         ...review.toMap(),
         createdAt: serverTimestamp(), // Add server timestamp
       });
 
-      //console.log("Review added successfully");
     } catch (error) {
       console.error("Error in addCompanyReview:", error);
       throw error;
@@ -1168,6 +1160,7 @@ export class CompanyCloud {
       // Convert each document to IndustrialTraining object
       const itList = snapshot.docs.map((docSnap) => {
         const data = docSnap.data();
+         data.company = this.getCompany(data.company.id);
         return IndustrialTraining.fromMap(data, docSnap.id);
       });
 
@@ -2112,4 +2105,271 @@ prepareStudentUpdateData(updates) {
       throw error;
     }
   }
+
+  async getCompanyAnalytics(companyId) {
+    if (!companyId) {
+        throw new Error("Company ID is required");
+    }
+
+    try {
+        // Get all company applications
+        const allApplications = await it_base_company_cloud.getAllCompanyApplications(companyId);
+        
+        // Get current year for filtering
+        const currentYear = new Date().getFullYear();
+        
+        // Calculate basic metrics
+        const totalApplications = allApplications.length;
+        
+        // Count applications by status
+        const acceptedApplications = allApplications.filter(app => 
+            app.application.applicationStatus === 'accepted' || 
+            app.application.status === 'accepted'
+        );
+        
+        const rejectedApplications = allApplications.filter(app => 
+            app.application.applicationStatus === 'rejected' || 
+            app.application.status === 'rejected'
+        );
+        
+        const pendingApplications = allApplications.filter(app => 
+            app.application.applicationStatus === 'pending' || 
+            app.application.status === 'pending'
+        );
+        
+        // Calculate acceptance rate
+        const processedApplications = acceptedApplications.length + rejectedApplications.length;
+        const acceptanceRate = processedApplications > 0 
+            ? Math.round((acceptedApplications.length / processedApplications) * 100 * 10) / 10 
+            : 0;
+        
+        // Calculate applications by role (using opportunity titles)
+        const applicationsByRole = this.calculateApplicationsByRole(allApplications);
+        
+        // Calculate students per year (average based on historical data)
+        const studentsPerYear = this.calculateStudentsPerYear(allApplications);
+        
+        // Get current opportunities (distinct opportunity titles)
+        const currentOpportunities = this.getCurrentOpportunities(allApplications);
+        
+        // Check if company is currently accepting applications (has pending or recent applications)
+        const isAcceptingApplications = this.isCompanyAcceptingApplications(allApplications);
+        
+        return {
+            studentsPerYear,
+            currentOpportunities: currentOpportunities.length,
+            totalApplications,
+            applicationsByRole,
+            acceptanceRate,
+            isAcceptingApplications,
+            
+            // Additional detailed metrics
+            applicationStatus: {
+                accepted: acceptedApplications.length,
+                rejected: rejectedApplications.length,
+                pending: pendingApplications.length
+            },
+            
+            // Current year statistics
+            currentYearStats: this.getCurrentYearStats(allApplications, currentYear),
+            
+            // Popular roles (top 3)
+            popularRoles: applicationsByRole.slice(0, 3).map(role => role.roleName),
+            
+            // Processing time (if available in your data)
+            averageProcessingTime: this.calculateAverageProcessingTime(allApplications)
+        };
+        
+    } catch (error) {
+        console.error("Error getting company analytics:", error);
+        
+        // Return default structure with zeros if there's an error
+        return this.getDefaultAnalytics();
+    }
+}
+
+// Helper methods
+calculateApplicationsByRole(allApplications) {
+    const roleMap = new Map();
+    
+    allApplications.forEach(({ opportunity, application }) => {
+        const roleName = opportunity || 'Unknown Role';
+        roleMap.set(roleName, (roleMap.get(roleName) || 0) + 1);
+    });
+    
+    return Array.from(roleMap.entries())
+        .map(([roleName, count]) => ({
+            roleName,
+            count
+        }))
+        .sort((a, b) => b.count - a.count); // Sort by count descending
+}
+
+calculateStudentsPerYear(allApplications) {
+    if (allApplications.length === 0) return 0;
+    
+    // Group applications by year based on creation date
+    const applicationsByYear = new Map();
+    
+    allApplications.forEach(({ application }) => {
+        let applicationDate;
+        
+        // Try different possible date fields
+        if (application.createdAt) {
+            applicationDate = application.createdAt.toDate ? application.createdAt.toDate() : application.createdAt;
+        } else if (application.submittedAt) {
+            applicationDate = application.submittedAt.toDate ? application.submittedAt.toDate() : application.submittedAt;
+        } else if (application.timestamp) {
+            applicationDate = application.timestamp.toDate ? application.timestamp.toDate() : application.timestamp;
+        } else {
+            // Fallback to current date if no date found
+            applicationDate = new Date();
+        }
+        
+        const year = applicationDate.getFullYear();
+        applicationsByYear.set(year, (applicationsByYear.get(year) || 0) + 1);
+    });
+    
+    // Calculate average per year
+    const years = Array.from(applicationsByYear.keys());
+    if (years.length === 0) return 0;
+    
+    const totalApplications = Array.from(applicationsByYear.values())
+        .reduce((sum, count) => sum + count, 0);
+    
+    return Math.round(totalApplications / years.length);
+}
+
+getCurrentOpportunities(allApplications) {
+    // Get unique opportunity titles from applications
+    const opportunities = new Set();
+    
+    allApplications.forEach(({ opportunity }) => {
+        if (opportunity && opportunity !== 'Unknown Role') {
+            opportunities.add(opportunity);
+        }
+    });
+    
+    return Array.from(opportunities);
+}
+
+isCompanyAcceptingApplications(allApplications) {
+    if (allApplications.length === 0) return false;
+    
+    // Check if there are pending applications (indicates company is still accepting)
+    const hasPendingApplications = allApplications.some(app => 
+        app.application.applicationStatus === 'pending' || 
+        app.application.status === 'pending'
+    );
+    
+    // Check if there are recent applications (within last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const hasRecentApplications = allApplications.some(({ application }) => {
+        let applicationDate;
+        
+        if (application.createdAt) {
+            applicationDate = application.createdAt.toDate ? application.createdAt.toDate() : application.createdAt;
+        } else if (application.submittedAt) {
+            applicationDate = application.submittedAt.toDate ? application.submittedAt.toDate() : application.submittedAt;
+        } else {
+            return false;
+        }
+        
+        return applicationDate >= thirtyDaysAgo;
+    });
+    
+    return hasPendingApplications || hasRecentApplications;
+}
+
+getCurrentYearStats(allApplications, currentYear) {
+    const currentYearApplications = allApplications.filter(({ application }) => {
+        let applicationDate;
+        
+        if (application.createdAt) {
+            applicationDate = application.createdAt.toDate ? application.createdAt.toDate() : application.createdAt;
+        } else if (application.submittedAt) {
+            applicationDate = application.submittedAt.toDate ? application.submittedAt.toDate() : application.submittedAt;
+        } else {
+            return false;
+        }
+        
+        return applicationDate.getFullYear() === currentYear;
+    });
+    
+    const accepted = currentYearApplications.filter(({ application }) => 
+        application.applicationStatus === 'accepted' || 
+        application.status === 'accepted'
+    ).length;
+    
+    const rejected = currentYearApplications.filter(({ application }) => 
+        application.applicationStatus === 'rejected' || 
+        application.status === 'rejected'
+    ).length;
+    
+    const pending = currentYearApplications.filter(({ application }) => 
+        application.applicationStatus === 'pending' || 
+        application.status === 'pending'
+    ).length;
+    
+    return {
+        applications: currentYearApplications.length,
+        accepted,
+        rejected,
+        pending
+    };
+}
+
+calculateAverageProcessingTime(allApplications) {
+    const processedApplications = allApplications.filter(({ application }) => {
+        const isProcessed = (application.applicationStatus === 'accepted' || 
+                           application.applicationStatus === 'rejected' ||
+                           application.status === 'accepted' || 
+                           application.status === 'rejected');
+        
+        return isProcessed && application.submittedAt && application.processedAt;
+    });
+    
+    if (processedApplications.length === 0) return 0;
+    
+    const totalProcessingTime = processedApplications.reduce((sum, { application }) => {
+        const submitted = application.submittedAt.toDate ? 
+                         application.submittedAt.toDate() : application.submittedAt;
+        const processed = application.processedAt.toDate ? 
+                         application.processedAt.toDate() : application.processedAt;
+        
+        if (submitted && processed) {
+            const processingTime = (processed - submitted) / (1000 * 60 * 60 * 24); // Convert to days
+            return sum + processingTime;
+        }
+        return sum;
+    }, 0);
+    
+    return Math.round(totalProcessingTime / processedApplications.length);
+}
+
+getDefaultAnalytics() {
+    return {
+        studentsPerYear: 0,
+        currentOpportunities: 0,
+        totalApplications: 0,
+        applicationsByRole: [],
+        acceptanceRate: 0,
+        isAcceptingApplications: false,
+        applicationStatus: {
+            accepted: 0,
+            rejected: 0,
+            pending: 0
+        },
+        currentYearStats: {
+            applications: 0,
+            accepted: 0,
+            rejected: 0,
+            pending: 0
+        },
+        popularRoles: [],
+        averageProcessingTime: 0
+    };
+}
 }

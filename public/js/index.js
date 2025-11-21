@@ -4,6 +4,8 @@ import {
   signInWithPopup,
   onAuthStateChanged,
 } from "./config/firebaseInit.js";
+import { StudentCloudDB } from "./fireabase/StudentCloud.js";
+const studentCloudDB = new StudentCloudDB();
 
 document.getElementById("login").addEventListener("click", async (event) => {
   event.preventDefault(); // stop normal link navigation
@@ -12,7 +14,7 @@ document.getElementById("login").addEventListener("click", async (event) => {
 });
 
 function checkAuthState() {
-  onAuthStateChanged(auth, (user) => {
+  onAuthStateChanged(auth, async (user) => {
     if (user) {
       //console.log("User already logged in:", user.email);
       localStorage.setItem(
@@ -24,6 +26,12 @@ function checkAuthState() {
           image: user.photoURL || "",
         })
       );
+
+      var student = await studentCloudDB.getStudentById(auth.currentUser.uid);
+      if(!student)
+      {
+        window.location.href = "auth/login.html";
+      }
 
       // Redirect to dashboard
       window.location.replace("dashboard/itc_dashboard.html");

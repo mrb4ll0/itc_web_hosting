@@ -208,6 +208,7 @@ async updateCompanyIndustry(companyId, industry) {
      * @returns {Promise<IndustrialTraining|null>} Industrial training object or null if not found
      */
     async getIndustrialTrainingById(companyId, itId) {
+        console.log("companyId is "+companyId+" itId "+itId);
         if (!companyId || !itId) {
             throw new Error("Company ID and Industrial Training ID are required");
         }
@@ -443,7 +444,9 @@ async getApplicationsForIndustrialTraining(companyId, itId) {
         const snapshot = await getDocs(q);
         
         const applications = await Promise.all(
+            
             snapshot.docs.map(async (docSnap) => {
+                console.log("snap total is "+snapshot.docs.length);
                 const data = docSnap.data();
                 //console.log("applicationDate is " + JSON.stringify(data.applicationDate));
                 
@@ -470,6 +473,79 @@ async getApplicationsForIndustrialTraining(companyId, itId) {
         console.error("Error getting applications for industrial training:", error);
         throw error;
     }
+}
+
+
+async updateInternshipStatus(companyId, itId) {
+    if (!companyId || !itId) {
+        throw new Error("Company ID and Industrial Training ID are required");
+    }
+
+    try {
+        // Get current applications count
+        const applications = await this.getApplicationsForIndustrialTraining(companyId, itId);
+        const currentApplicationsCount = applications.length;
+
+        // Get internship data
+        const internship = await this.getIndustrialTrainingById(companyId, itId);
+        
+        console.log(`Current applications: ${currentApplicationsCount}, Intake capacity: ${internship.intakeCapacity}`);
+
+        let newStatus = internship.status;
+        
+        // Update status based on application count and intake capacity
+        if (internship.intakeCapacity && currentApplicationsCount >= internship.intakeCapacity) {
+            newStatus = 'closed';
+            console.log(`Application count (${currentApplicationsCount}) reached intake capacity (${internship.intakeCapacity}). Status set to: ${newStatus}`);
+        } else if (internship.status === 'closed' && currentApplicationsCount < internship.intakeCapacity) {
+            // Reopen if it was closed but now has capacity
+            newStatus = 'open';
+            console.log(`Application count (${currentApplicationsCount}) is below intake capacity (${internship.intakeCapacity}). Reopening status to: ${newStatus}`);
+        }
+
+        // Only update if status has changed
+        if (newStatus !== internship.status) {
+            await this.updateInternshipStatusInDatabase(companyId, itId, newStatus, currentApplicationsCount);
+            console.log(`Internship status updated from '${internship.status}' to '${newStatus}'`);
+        } else {
+            console.log(`Internship status unchanged: '${internship.status}'`);
+        }
+
+        return {
+            previousStatus: internship.status,
+            newStatus: newStatus,
+            applicationsCount: currentApplicationsCount,
+            intakeCapacity: internship.intakeCapacity
+        };
+
+    } catch (error) {
+        console.error("Error updating internship status:", error);
+        throw error;
+    }
+}
+
+async updateInternshipStatusInDatabase(companyId, itId, status, applicationsCount = null) {
+    const itRef = doc(
+        this.db,
+        this.usersCollection,
+        this.companiesSubcollection,
+        this.companiesSubcollection,
+        companyId,
+        this.itSubcollection,
+        itId
+    );
+
+    const updateData = {
+        status: status,
+        updatedAt: serverTimestamp()
+    };
+
+    // Only update applicationsCount if provided
+    if (applicationsCount !== null) {
+        updateData.applicationsCount = applicationsCount;
+    }
+
+    await updateDoc(itRef, updateData);
 }
 
 
@@ -675,6 +751,7 @@ async removeImageFromGallery(companyId, imageUrl) {
  * @returns {Promise<string>} The new status after toggling
  */
 async toggleITStatus(companyId, itId) {
+
     if (!companyId || !itId) {
         throw new Error("Company ID and Industrial Training ID are required");
     }
@@ -1320,13 +1397,20 @@ async submitITApplication(companyId, itId, applicationData) {
         
         const applicationDoc = {
             ...safeData,
-            applicationDate: serverTimestamp(), // Use server timestamp for consistency
+            applicationDate: serverTimestamp(),
             applicationStatus: 'pending',
             updatedAt: serverTimestamp()
         };
 
         const docRef = await addDoc(applicationsRef, applicationDoc);
-        //console.log("IT Application submitted with ID:", docRef.id);
+        
+        // Get IT document and update application count
+        const itDoc = await this.getIndustrialTrainingById(companyId, itId);
+        
+        // Update application count
+        await this.updateApplicationCount(companyId, itId, itDoc.applicationsCount || 0);
+        
+        console.log("IT Application submitted with ID:", docRef.id);
         
         return docRef.id;
 
@@ -1336,6 +1420,22 @@ async submitITApplication(companyId, itId, applicationData) {
     }
 }
 
+async updateApplicationCount(companyId, itId, currentCount) {
+    const itRef = doc(
+        this.db,
+        this.usersCollection,
+        this.companiesSubcollection,
+        this.companiesSubcollection,
+        companyId,
+        this.itSubcollection,
+        itId
+    );
+    
+    await updateDoc(itRef, {
+        applicationsCount: currentCount + 1,
+        updatedAt: serverTimestamp()
+    });
+}
 /**
  * Get a specific application by ID
  * @param {string} companyId - The company ID
@@ -1427,12 +1527,14 @@ async sendNotificationToStudent(studentUid, notificationData) {
             "notifications"
         );
 
+        await auth.authStateReady();
         const notification = {
             status: notificationData.title || "New Message",
             message: notificationData.message,
             timestamp: serverTimestamp(), // Use server timestamp for consistency with your other methods
             type: notificationData.type || "general",
             read: false,
+            senderId : auth.currentUser.uid,
             ...notificationData
         };
 

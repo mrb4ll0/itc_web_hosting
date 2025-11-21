@@ -1,20 +1,21 @@
-
 // Import everything from your Firebase config
-import { 
-  auth, 
-  db, 
-  collection, 
-  query, 
-  orderBy, 
+import {
+  auth,
+  db,
+  collection,
+  query,
+  orderBy,
   onSnapshot,
-  onAuthStateChanged 
+  onAuthStateChanged,
 } from "../js/config/firebaseInit.js";
 
 // Import your local modules
 import { CompanyCloud } from "../js/fireabase/CompanyCloud.js";
 import { safeConvertToTimestamp } from "./general/generalmethods.js";
 import { Student } from "./model/Student.js";
-
+import { StudentCloudDB } from "./fireabase/StudentCloud.js";
+var companyCloud = new CompanyCloud();
+var studentCloudDB = new StudentCloudDB();
 
 class NotificationManager {
   constructor() {
@@ -23,27 +24,28 @@ class NotificationManager {
     this.unsubscribe = null;
     this.currentTab = "all";
     this.selectedNotification = null;
+     this.isLoadingNotifications = true;
     this.init();
   }
 
   async init() {
     try {
       //console.log('Starting auth initialization...');
-      
+
       // Use authStateReady to wait for auth initialization
       await auth.authStateReady();
-      //console.log('Auth state ready, current user:', auth.currentUser);
-      
+      this.currentStudent = await studentCloudDB.getStudentById(auth.currentUser.uid);
+
       if (auth.currentUser) {
         this.currentStudentUid = auth.currentUser.uid;
         //console.log('User authenticated:', this.currentStudentUid);
-        
+
         // Set up header profile
         this.setupHeaderProfile();
-        
+
         // Set up event listeners
         this.setupEventListeners();
-        
+
         // Start listening to notifications
         this.startNotificationsStream();
       } else {
@@ -56,27 +58,26 @@ class NotificationManager {
               //console.log('User authenticated via listener:', this.currentStudentUid);
               resolve();
             } else {
-              reject(new Error('User not authenticated after waiting'));
+              reject(new Error("User not authenticated after waiting"));
             }
           });
-          
+
           // Timeout after 5 seconds
           setTimeout(() => {
             unsubscribe();
-            reject(new Error('Auth state change timeout'));
+            reject(new Error("Auth state change timeout"));
           }, 5000);
         });
-        
+
         // Set up header profile
         this.setupHeaderProfile();
-        
+
         // Set up event listeners
         this.setupEventListeners();
-        
+
         // Start listening to notifications
         this.startNotificationsStream();
       }
-      
     } catch (error) {
       console.error("Error initializing notification manager:", error);
       this.showError(
@@ -89,23 +90,23 @@ class NotificationManager {
   redirectToLogin() {
     // Use a relative path that works with your project structure
     const loginPaths = [
-      '../login.html',
-      '../../login.html',
-      '/login.html',
-      'login.html',
-      '../index.html',
-      '../../index.html',
-      '/index.html',
-      'index.html'
+      "../login.html",
+      "../../login.html",
+      "/login.html",
+      "login.html",
+      "../index.html",
+      "../../index.html",
+      "/index.html",
+      "index.html",
     ];
-    
+
     // Try to find the correct login page
     let found = false;
     for (const path of loginPaths) {
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = path;
       // Check if this might be the correct path (basic check)
-      if (!path.includes('undefined') && path.length > 0) {
+      if (!path.includes("undefined") && path.length > 0) {
         //console.log('Attempting redirect to:', path);
         setTimeout(() => {
           window.location.href = path;
@@ -114,11 +115,11 @@ class NotificationManager {
         break;
       }
     }
-    
+
     if (!found) {
       // Last resort - go back to home
       setTimeout(() => {
-        window.location.href = '/';
+        window.location.href = "/";
       }, 2000);
     }
   }
@@ -127,8 +128,10 @@ class NotificationManager {
     const profileElement = document.getElementById("header-profile");
     const user = auth.currentUser;
 
-    if (user?.photoURL) {
-      profileElement.style.backgroundImage = `url('${user.photoURL}')`;
+      const image = this.currentStudent.imageUrl;
+      //console.log("image is "+image);
+    if (image) {
+      profileElement.style.backgroundImage = `url('${image}')`;
       profileElement.classList.remove("loading-skeleton");
     } else if (user?.displayName) {
       // Generate default avatar
@@ -163,7 +166,7 @@ class NotificationManager {
     const closeDialogBtn2 = document.getElementById("close-dialog-btn");
     const markReadBtn = document.getElementById("mark-read-btn");
     const dialog = document.getElementById("notification-dialog");
-    
+
     if (closeDialogBtn) {
       closeDialogBtn.addEventListener("click", () => this.closeDialog());
     }
@@ -213,7 +216,7 @@ class NotificationManager {
     }
 
     //console.log('Starting notifications stream for user:', this.currentStudentUid);
-    
+
     // Add error handling for the notifications stream
     try {
       this.unsubscribe = unifiedNotificationsStream(
@@ -221,6 +224,8 @@ class NotificationManager {
         (notifications) => {
           //console.log('Received notifications:', notifications.length);
           this.notifications = notifications;
+          this.isLoadingNotifications = false;
+          //console.log("isloadingNotifications is "+this.isLoadingNotifications );
           this.renderNotifications();
         }
       );
@@ -237,11 +242,18 @@ class NotificationManager {
     const loading = document.getElementById("loading-state");
     const empty = document.getElementById("empty-state");
 
+    if (this.isLoadingNotifications) {
+      if (loading) loading.classList.remove("hidden");
+      if (empty) empty.classList.add("hidden");
+      if (container) container.classList.add("hidden");
+      return;
+    }
+
     // Hide loading
     if (loading) loading.classList.add("hidden");
 
     if (!container) {
-      console.error('Notifications container not found');
+      console.error("Notifications container not found");
       return;
     }
 
@@ -325,9 +337,9 @@ class NotificationManager {
     const title = document.getElementById("dialog-notification-title");
     const timestamp = document.getElementById("dialog-timestamp");
     const body = document.getElementById("dialog-body");
-    
+
     if (!dialog || !icon || !title || !timestamp || !body) {
-      console.error('Dialog elements not found');
+      console.error("Dialog elements not found");
       return;
     }
 
@@ -403,7 +415,7 @@ class NotificationManager {
   }
 
   showError(message) {
-    console.error('Notification Error:', message);
+    console.error("Notification Error:", message);
     // Create a temporary error message
     const errorDiv = document.createElement("div");
     errorDiv.className =
@@ -429,12 +441,12 @@ class NotificationManager {
 // Unified notifications stream function
 function unifiedNotificationsStream(studentUid, callback) {
   if (!studentUid) {
-    console.error('No student UID provided for notifications stream');
+    console.error("No student UID provided for notifications stream");
     return () => {}; // Return empty cleanup function
   }
 
   //console.log('Setting up notifications stream for:', studentUid);
-  
+
   let privateUnsubscribe = null;
   let generalUnsubscribe = null;
 
@@ -467,19 +479,41 @@ function unifiedNotificationsStream(studentUid, callback) {
 
     privateUnsubscribe = onSnapshot(
       privateQuery,
-      (snapshot) => {
+      async (snapshot) => {
         //console.log('Private notifications updated:', snapshot.docs.length);
-        privateNotifications = snapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            title: data.status || "No Title",
-            body: data.message || "No Message",
-            timestamp: safeConvertToTimestamp(data.timestamp),
-            type: "private",
-            id: doc.id,
-            docRef: doc.ref,
-          };
-        });
+
+        // Use await with Promise.all to wait for all async operations
+        privateNotifications = await Promise.all(
+          snapshot.docs.map(async (doc) => {
+            const data = doc.data();
+            var company = null;
+            var compName = "";
+
+            if (data.senderId) {
+              try {
+                company = await companyCloud.getCompanyById(data.senderId);
+                // Fixed the company check - your original condition was incorrect
+                if (company && company.name && company.name !== "") {
+                  compName = company.name;
+                }
+              } catch (error) {
+                console.error("Error fetching company:", error);
+                compName = "Unknown Company";
+              }
+            }
+
+            return {
+              title: compName
+                ? `New Notification from ${compName}`
+                : "New Notification",
+              body: data.message || "No Message",
+              timestamp: safeConvertToTimestamp(data.timestamp),
+              type: "private",
+              id: doc.id,
+              docRef: doc.ref,
+            };
+          })
+        );
         updateAndNotify();
       },
       (error) => {
@@ -508,9 +542,8 @@ function unifiedNotificationsStream(studentUid, callback) {
         console.error("Error listening to general notifications:", error);
       }
     );
-
   } catch (error) {
-    console.error('Error setting up notifications stream:', error);
+    console.error("Error setting up notifications stream:", error);
   }
 
   // Return cleanup function
@@ -520,11 +553,9 @@ function unifiedNotificationsStream(studentUid, callback) {
     if (generalUnsubscribe) generalUnsubscribe();
   };
 }
-
 // Initialize the notification manager when DOM is loaded
 let notificationManager;
 document.addEventListener("DOMContentLoaded", () => {
-  //console.log('DOM loaded, initializing notification manager...');
   notificationManager = new NotificationManager();
 });
 
@@ -535,5 +566,3 @@ window.addEventListener("beforeunload", () => {
   }
 });
 
-// exporting if need arise
-window.notificationManager = notificationManager;

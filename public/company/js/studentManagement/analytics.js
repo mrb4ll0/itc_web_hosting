@@ -1,4 +1,8 @@
-import { removeNotification, showNotification, updateNotification } from "../../../js/general/generalmethods.js";
+import {
+  removeNotification,
+  showNotification,
+  updateNotification,
+} from "../../../js/general/generalmethods.js";
 
 export default class Analytics {
   constructor(tabManager) {
@@ -429,63 +433,68 @@ export default class Analytics {
   }
 
   renderApplicationsChart() {
-  const chart = this.applicationsChart;
-  if (!chart) return;
+    const chart = this.applicationsChart;
+    if (!chart) return;
 
-  const timeData = this.analyticsData.applicationsOverTime;
-  
-  // Convert to arrays and sort by date
-  const labels = Object.keys(timeData).sort((a, b) => new Date(a) - new Date(b));
-  const values = labels.map(label => timeData[label]);
+    const timeData = this.analyticsData.applicationsOverTime;
 
-  // --- No Data Case ---
-  const noData = labels.length === 0 || values.every(v => v === 0);
-  if (noData) {
-    chart.innerHTML = `
+    // Convert to arrays and sort by date
+    const labels = Object.keys(timeData).sort(
+      (a, b) => new Date(a) - new Date(b)
+    );
+    const values = labels.map((label) => timeData[label]);
+
+    // --- No Data Case ---
+    const noData = labels.length === 0 || values.every((v) => v === 0);
+    if (noData) {
+      chart.innerHTML = `
       <div class="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
         <div class="text-center">
           <span class="material-symbols-outlined text-4xl mb-2 opacity-50">bar_chart</span>
           <p>No data available for selected period</p>
         </div>
       </div>`;
-    return;
-  }
-
-  // --- Chart Dimensions ---
-  const maxValue = Math.max(...values, 1);
-  const width = 400;
-  const height = 200;
-  const chartHeight = 160;
-  const chartWidth = 380;
-  const margin = { top: 20, right: 20, bottom: 40, left: 40 };
-
-  // --- Bar Width ---
-  const innerWidth = chartWidth - margin.left - margin.right;
-  const barWidth = Math.max(6, Math.min(20, innerWidth / labels.length - 1)); // Smaller bars for more data points
-
-  // --- Label Interval (show fewer labels to avoid crowding) ---
-  const labelInterval = Math.max(1, Math.ceil(labels.length / 8)); // Reduced from 10 to 8
-
-  // --- Helpers ---
-  const formatLabel = (label, index) => {
-    const d = new Date(label);
-    
-    // For many data points, show only some labels to avoid crowding
-    if (index % labelInterval !== 0 && index !== labels.length - 1) {
-      return ''; // Return empty string for labels we want to skip
+      return;
     }
-    
-    // Show month and day for better context with future dates
-    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  };
 
-  const barItems = values
-    .map((value, i) => {
-      const barHeight = value > 0 ? (value / maxValue) * (chartHeight - margin.top - margin.bottom) : 0;
-      const x = margin.left + i * (barWidth + 1); // Reduced spacing
-      const y = chartHeight - barHeight - margin.bottom;
+    // --- Chart Dimensions ---
+    const maxValue = Math.max(...values, 1);
+    const width = 400;
+    const height = 200;
+    const chartHeight = 160;
+    const chartWidth = 380;
+    const margin = { top: 20, right: 20, bottom: 40, left: 40 };
 
-      return `
+    // --- Bar Width ---
+    const innerWidth = chartWidth - margin.left - margin.right;
+    const barWidth = Math.max(6, Math.min(20, innerWidth / labels.length - 1)); // Smaller bars for more data points
+
+    // --- Label Interval (show fewer labels to avoid crowding) ---
+    const labelInterval = Math.max(1, Math.ceil(labels.length / 8)); // Reduced from 10 to 8
+
+    // --- Helpers ---
+    const formatLabel = (label, index) => {
+      const d = new Date(label);
+
+      // For many data points, show only some labels to avoid crowding
+      if (index % labelInterval !== 0 && index !== labels.length - 1) {
+        return ""; // Return empty string for labels we want to skip
+      }
+
+      // Show month and day for better context with future dates
+      return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    };
+
+    const barItems = values
+      .map((value, i) => {
+        const barHeight =
+          value > 0
+            ? (value / maxValue) * (chartHeight - margin.top - margin.bottom)
+            : 0;
+        const x = margin.left + i * (barWidth + 1); // Reduced spacing
+        const y = chartHeight - barHeight - margin.bottom;
+
+        return `
         <g>
           <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}"
                 fill="#3b82f6"
@@ -494,42 +503,49 @@ export default class Analytics {
                 data-date="${labels[i]}">
           </rect>
 
-          ${value > 0 ? `
+          ${
+            value > 0
+              ? `
           <text x="${x + barWidth / 2}" y="${y - 5}"
                 text-anchor="middle"
                 class="text-[10px] fill-gray-700 dark:fill-gray-300 font-medium">
             ${value}
           </text>
-          ` : ''}
+          `
+              : ""
+          }
         </g>`;
-    })
-    .join("");
+      })
+      .join("");
 
-  const xLabels = labels
-    .map((label, i) => {
-      const formattedLabel = formatLabel(label, i);
-      if (!formattedLabel) return ""; // Skip empty labels
-      
-      const x = margin.left + i * (barWidth + 1) + barWidth / 2;
-      const y = chartHeight + 15;
+    const xLabels = labels
+      .map((label, i) => {
+        const formattedLabel = formatLabel(label, i);
+        if (!formattedLabel) return ""; // Skip empty labels
 
-      return `
+        const x = margin.left + i * (barWidth + 1) + barWidth / 2;
+        const y = chartHeight + 15;
+
+        return `
         <text x="${x}" y="${y}"
               text-anchor="middle"
               class="text-[10px] fill-gray-500 dark:fill-gray-400">
           ${formattedLabel}
         </text>`;
-    })
-    .join("");
+      })
+      .join("");
 
-  const yLabels = [];
-  // Create Y-axis labels based on actual data range
-  const ySteps = maxValue <= 5 ? maxValue : 5;
-  for (let i = 0; i <= ySteps; i++) {
-    const value = Math.round((i / ySteps) * maxValue);
-    const y = chartHeight - (i / ySteps) * (chartHeight - margin.top - margin.bottom) - margin.bottom;
+    const yLabels = [];
+    // Create Y-axis labels based on actual data range
+    const ySteps = maxValue <= 5 ? maxValue : 5;
+    for (let i = 0; i <= ySteps; i++) {
+      const value = Math.round((i / ySteps) * maxValue);
+      const y =
+        chartHeight -
+        (i / ySteps) * (chartHeight - margin.top - margin.bottom) -
+        margin.bottom;
 
-    yLabels.push(`
+      yLabels.push(`
       <g>
         <line x1="${margin.left - 5}" y1="${y}" 
               x2="${margin.left}" y2="${y}"
@@ -541,10 +557,10 @@ export default class Analytics {
         </text>
       </g>
     `);
-  }
+    }
 
-  // --- Final SVG Output ---
-  chart.innerHTML = `
+    // --- Final SVG Output ---
+    chart.innerHTML = `
     <svg viewBox="0 0 ${width} ${height}" class="w-full h-full" preserveAspectRatio="xMidYMid meet">
 
       <!-- Y-axis -->
@@ -558,56 +574,63 @@ export default class Analytics {
             stroke="#e5e7eb" class="dark:stroke-gray-600"></line>
 
       <!-- Grid lines -->
-      ${yLabels.map((_, i) => {
-        const y = chartHeight - (i / ySteps) * (chartHeight - margin.top - margin.bottom) - margin.bottom;
-        return `<line x1="${margin.left}" y1="${y}" x2="${chartWidth - margin.right}" y2="${y}" stroke="#f3f4f6" class="dark:stroke-gray-700" />`;
-      }).join('')}
+      ${yLabels
+        .map((_, i) => {
+          const y =
+            chartHeight -
+            (i / ySteps) * (chartHeight - margin.top - margin.bottom) -
+            margin.bottom;
+          return `<line x1="${margin.left}" y1="${y}" x2="${
+            chartWidth - margin.right
+          }" y2="${y}" stroke="#f3f4f6" class="dark:stroke-gray-700" />`;
+        })
+        .join("")}
 
       ${barItems}
       ${xLabels}
-      ${yLabels.join('')}
+      ${yLabels.join("")}
     </svg>`;
 
-  this.addChartInteractivity();
-}
+    this.addChartInteractivity();
+  }
 
-addChartInteractivity() {
-  const bars = this.applicationsChart.querySelectorAll("rect");
-  bars.forEach((bar) => {
-    bar.addEventListener("mouseenter", (e) => {
-      const value = e.target.getAttribute("data-value");
-      const date = e.target.getAttribute("data-date");
-      const formattedDate = new Date(date).toLocaleDateString("en-US", { 
-        weekday: 'short', 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
+  addChartInteractivity() {
+    const bars = this.applicationsChart.querySelectorAll("rect");
+    bars.forEach((bar) => {
+      bar.addEventListener("mouseenter", (e) => {
+        const value = e.target.getAttribute("data-value");
+        const date = e.target.getAttribute("data-date");
+        const formattedDate = new Date(date).toLocaleDateString("en-US", {
+          weekday: "short",
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+
+        // Simple tooltip
+        e.target.setAttribute("fill", "#1d4ed8"); // Darker blue on hover
+        console.log(`Applications: ${value} on ${formattedDate}`); // For debugging
       });
-      
-      // Simple tooltip
-      e.target.setAttribute('fill', '#1d4ed8'); // Darker blue on hover
-      console.log(`Applications: ${value} on ${formattedDate}`); // For debugging
-    });
 
-    bar.addEventListener("mouseleave", (e) => {
-      e.target.setAttribute('fill', '#3b82f6'); // Restore original color
+      bar.addEventListener("mouseleave", (e) => {
+        e.target.setAttribute("fill", "#3b82f6"); // Restore original color
+      });
     });
-  });
-}
-addChartInteractivity() {
-  // Add hover tooltips to bars
-  const bars = this.applicationsChart.querySelectorAll("rect");
-  bars.forEach((bar) => {
-    bar.addEventListener("mouseenter", (e) => {
-      const value = e.target.getAttribute("data-value");
-      // You could add a tooltip here if needed
-    });
+  }
+  addChartInteractivity() {
+    // Add hover tooltips to bars
+    const bars = this.applicationsChart.querySelectorAll("rect");
+    bars.forEach((bar) => {
+      bar.addEventListener("mouseenter", (e) => {
+        const value = e.target.getAttribute("data-value");
+        // You could add a tooltip here if needed
+      });
 
-    bar.addEventListener("mouseleave", () => {
-      // Remove tooltip if added
+      bar.addEventListener("mouseleave", () => {
+        // Remove tooltip if added
+      });
     });
-  });
-}
+  }
   renderStatusChart() {
     if (!this.statusChart) return;
 
@@ -966,14 +989,27 @@ addChartInteractivity() {
       document.head.appendChild(styles);
     }
   }
-  renderCourseChart() {
+  /**
+   * Renders a bar chart showing the top courses by number of applications
+   * with acceptance rate information
+   */
+  /**
+ * Renders a bar chart showing the top courses by number of applications
+ * with acceptance rate information
+ */
+renderCourseChart() {
+    // Check if chart container element exists
     if (!this.courseChart) return;
 
-    const courseData = this.analyticsData.applicationsByCourse;
-    const courses = Object.keys(courseData).slice(0, 5); // Top 5 courses
+    // Get course data from analytics
+    const courseApplicationsData = this.analyticsData.applicationsByCourse;
+    
+    // Extract top 5 courses with most applications
+    const topCourses = Object.keys(courseApplicationsData).slice(0, 5);
 
-    if (courses.length === 0) {
-      this.courseChart.innerHTML = `
+    // Display message if no course data available
+    if (topCourses.length === 0) {
+        this.courseChart.innerHTML = `
             <div class="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
                 <div class="text-center">
                     <span class="material-symbols-outlined text-4xl mb-2 opacity-50">bar_chart</span>
@@ -981,172 +1017,200 @@ addChartInteractivity() {
                 </div>
             </div>
         `;
-      return;
+        return;
     }
 
-    const maxApplications = Math.max(
-      ...courses.map((course) => courseData[course].count),
-      1
+    // Calculate maximum number of applications for scaling
+    const maxApplicationCount = Math.max(
+        ...topCourses.map((courseName) => courseApplicationsData[courseName].count),
+        1 // Ensure at least 1 to avoid division by zero
     );
 
-    const chartHeight = 120;
-    const chartWidth = 350;
-    const margin = { top: 30, right: 20, bottom: 60, left: 40 };
-    const availableWidth = chartWidth - margin.left - margin.right;
-    const barWidth = Math.min(40, availableWidth / courses.length - 10);
+    // Improved chart dimensions and layout
+    const chartHeight = 200; // Increased height for better visibility
+    const chartWidth = 400;  // Increased width
+    const chartMargins = { top: 40, right: 30, bottom: 80, left: 60 }; // Better margins
+    const plotAreaWidth = chartWidth - chartMargins.left - chartMargins.right;
+    const barWidth = Math.min(50, plotAreaWidth / topCourses.length - 15); // Wider bars
 
+    // Generate SVG chart content
     this.courseChart.innerHTML = `
-        <svg viewBox="0 0 400 200" class="w-full h-full" preserveAspectRatio="xMidYMid meet">
-            <!-- Y-axis line -->
-            <line x1="${margin.left}" y1="${margin.top}" x2="${
-      margin.left
-    }" y2="${chartHeight}" 
-                  stroke="#e5e7eb" class="dark:stroke-gray-600"/>
+        <svg viewBox="0 0 ${chartWidth} ${chartHeight + 40}" class="w-full h-full" preserveAspectRatio="xMidYMid meet">
             
-            <!-- X-axis line -->
-            <line x1="${margin.left}" y1="${chartHeight}" x2="${
-      chartWidth - margin.right
-    }" y2="${chartHeight}" 
-                  stroke="#e5e7eb" class="dark:stroke-gray-600"/>
+            <!-- Chart background -->
+            <rect x="0" y="0" width="${chartWidth}" height="${chartHeight + 40}" 
+                  fill="transparent" />
             
-            <!-- Chart title -->
-            <text x="${chartWidth / 2}" y="15" text-anchor="middle" 
-                  class="text-sm font-medium fill-gray-700 dark:fill-gray-300">
+            <!-- Chart title with better styling -->
+            <text x="${chartWidth / 2}" y="25" text-anchor="middle" 
+                  class="text-sm font-semibold fill-gray-800 dark:fill-gray-200">
                 Top Courses by Applications
             </text>
             
-            <!-- Bars -->
-            ${courses
-              .map((course, index) => {
-                const applications = courseData[course].count;
-                const acceptanceRate =
-                  courseData[course].accepted > 0
-                    ? (courseData[course].accepted / applications) * 100
-                    : 0;
+            <!-- Vertical Y-axis line -->
+            <line x1="${chartMargins.left}" y1="${chartMargins.top}" 
+                  x2="${chartMargins.left}" y2="${chartHeight}" 
+                  stroke="#d1d5db" stroke-width="1.5" class="dark:stroke-gray-600"/>
+            
+            <!-- Horizontal X-axis line -->
+            <line x1="${chartMargins.left}" y1="${chartHeight}" 
+                  x2="${chartWidth - chartMargins.right}" y2="${chartHeight}" 
+                  stroke="#d1d5db" stroke-width="1.5" class="dark:stroke-gray-600"/>
+            
+            <!-- Generate bars for each course -->
+            ${topCourses
+                .map((courseName, courseIndex) => {
+                    const courseInfo = courseApplicationsData[courseName];
+                    const applicationCount = courseInfo.count;
+                    const acceptedCount = courseInfo.accepted;
+                    
+                    // Calculate acceptance rate percentage
+                    const acceptanceRatePercentage = acceptedCount > 0
+                        ? (acceptedCount / applicationCount) * 100
+                        : 0;
 
-                const barHeight =
-                  (applications / maxApplications) *
-                  (chartHeight - margin.top - margin.bottom);
-                const x = margin.left + index * (barWidth + 15);
-                const y = chartHeight - barHeight - margin.bottom;
+                    // Calculate bar dimensions based on application count
+                    const maxBarHeight = chartHeight - chartMargins.top - chartMargins.bottom - 20;
+                    const barHeight = (applicationCount / maxApplicationCount) * maxBarHeight;
+                    
+                    // Calculate bar position
+                    const barSpacing = plotAreaWidth / topCourses.length;
+                    const barXPosition = chartMargins.left + (courseIndex * barSpacing) + (barSpacing - barWidth) / 2;
+                    const barYPosition = chartHeight - barHeight - chartMargins.bottom;
 
-                // Truncate course name for display
-                const displayName =
-                  course.length > 12 ? course.substring(0, 12) + "..." : course;
+                    // Shorten long course names for display with better truncation
+                    const displayCourseName = courseName.length > 15 
+                        ? courseName.substring(0, 15) + "..." 
+                        : courseName;
 
-                return `
-                        <g class="cursor-pointer hover:opacity-80 transition-opacity">
-                            <!-- Bar -->
-                            <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" 
-                                  fill="#8b5cf6" class="opacity-80" 
-                                  data-course="${course}" data-applications="${applications}" 
-                                  data-acceptance="${acceptanceRate.toFixed(
-                                    1
-                                  )}%"/>
+                    // Color based on acceptance rate (green for high acceptance)
+                    const barColor = acceptanceRatePercentage >= 50 ? "#10b981" : 
+                                   acceptanceRatePercentage >= 25 ? "#8b5cf6" : "#ef4444";
+
+                    return `
+                        <g class="cursor-pointer hover:opacity-80 transition-opacity" 
+                           data-course="${courseName}">
                             
-                            <!-- Application count on bar -->
-                            <text x="${x + barWidth / 2}" y="${y - 8}" 
-                                  text-anchor="middle" class="text-xs font-medium fill-gray-700 dark:fill-gray-300">
-                                ${applications}
+                            <!-- Main bar representing application count -->
+                            <rect x="${barXPosition}" y="${barYPosition}" 
+                                  width="${barWidth}" height="${barHeight}" 
+                                  fill="${barColor}" class="opacity-90 rounded-t-sm" 
+                                  rx="3" ry="3"
+                                  data-course="${courseName}" 
+                                  data-applications="${applicationCount}" 
+                                  data-acceptance="${acceptanceRatePercentage.toFixed(1)}%"/>
+                            
+                            <!-- Display application count above bar -->
+                            <text x="${barXPosition + barWidth / 2}" y="${barYPosition - 10}" 
+                                  text-anchor="middle" 
+                                  class="text-xs font-semibold fill-gray-700 dark:fill-gray-300">
+                                ${applicationCount}
                             </text>
                             
-                            <!-- Acceptance rate below bar -->
-                            <text x="${x + barWidth / 2}" y="${
-                  y + barHeight + 15
-                }" 
-                                  text-anchor="middle" class="text-xs fill-green-600 dark:fill-green-400 font-medium">
-                                ${acceptanceRate.toFixed(0)}%
+                            <!-- Display acceptance rate below bar -->
+                            <text x="${barXPosition + barWidth / 2}" y="${barYPosition + barHeight + 25}" 
+                                  text-anchor="middle" 
+                                  class="text-xs font-medium fill-green-600 dark:fill-green-400">
+                                ${acceptanceRatePercentage.toFixed(0)}% accepted
                             </text>
                             
-                            <!-- Course name label -->
-                            <text x="${x + barWidth / 2}" y="${
-                  chartHeight + 25
-                }" 
-                                  text-anchor="middle" class="text-xs fill-gray-500 dark:fill-gray-400">
-                                ${displayName}
+                            <!-- Display course name at bottom -->
+                            <text x="${barXPosition + barWidth / 2}" y="${chartHeight + 15}" 
+                                  text-anchor="middle" 
+                                  class="text-xs fill-gray-600 dark:fill-gray-400 font-medium">
+                                ${displayCourseName}
                             </text>
                             
-                            <!-- Full course name tooltip (hidden) -->
-                            <title>${course}: ${applications} applications, ${acceptanceRate.toFixed(
-                  1
-                )}% acceptance rate</title>
+                            <!-- Tooltip with full course information (shown on hover) -->
+                            <title>
+                                ${courseName}
+                                Applications: ${applicationCount}
+                                Accepted: ${acceptedCount}
+                                Acceptance Rate: ${acceptanceRatePercentage.toFixed(1)}%
+                            </title>
                         </g>
                     `;
-              })
-              .join("")}
+                })
+                .join("")}
             
-            <!-- Y-axis labels -->
+            <!-- Y-axis scale labels -->
             ${[0, 0.25, 0.5, 0.75, 1]
-              .map((ratio) => {
-                const value = Math.round(maxApplications * ratio);
-                const y =
-                  chartHeight -
-                  ratio * (chartHeight - margin.top - margin.bottom) -
-                  margin.bottom;
+                .map((scalePosition) => {
+                    const scaleValue = Math.round(maxApplicationCount * scalePosition);
+                    const labelYPosition = chartHeight - 
+                                         scalePosition * (chartHeight - chartMargins.top - chartMargins.bottom - 20) - 
+                                         chartMargins.bottom;
 
-                return `
+                    return `
                         <g>
-                            <line x1="${margin.left - 5}" y1="${y}" x2="${
-                  margin.left
-                }" y2="${y}" 
-                                  stroke="#e5e7eb" class="dark:stroke-gray-600"/>
-                            <text x="${margin.left - 8}" y="${y + 3}" 
-                                  text-anchor="end" class="text-xs fill-gray-500 dark:fill-gray-400">
-                                ${value}
+                            <!-- Tick mark -->
+                            <line x1="${chartMargins.left - 5}" y1="${labelYPosition}" 
+                                  x2="${chartMargins.left}" y2="${labelYPosition}" 
+                                  stroke="#9ca3af" stroke-width="1" class="dark:stroke-gray-500"/>
+                            
+                            <!-- Grid line -->
+                            <line x1="${chartMargins.left}" y1="${labelYPosition}" 
+                                  x2="${chartWidth - chartMargins.right}" y2="${labelYPosition}" 
+                                  stroke="#f3f4f6" stroke-width="1" class="dark:stroke-gray-700"/>
+                            
+                            <!-- Scale value -->
+                            <text x="${chartMargins.left - 10}" y="${labelYPosition + 4}" 
+                                  text-anchor="end" 
+                                  class="text-xs fill-gray-500 dark:fill-gray-400 font-medium">
+                                ${scaleValue}
                             </text>
                         </g>
                     `;
-              })
-              .join("")}
+                })
+                .join("")}
             
-            <!-- Y-axis label -->
-            <text x="${margin.left - 25}" y="${
-      chartHeight / 2
-    }" text-anchor="middle" 
-                  transform="rotate(-90 ${margin.left - 25} ${
-      chartHeight / 2
-    })" 
-                  class="text-xs fill-gray-500 dark:fill-gray-400">
-                Applications
+            <!-- Y-axis title (rotated) -->
+            <text x="${chartMargins.left - 35}" y="${chartHeight / 2}" text-anchor="middle" 
+                  transform="rotate(-90 ${chartMargins.left - 35} ${chartHeight / 2})" 
+                  class="text-xs fill-gray-600 dark:fill-gray-400 font-semibold">
+                Number of Applications
+            </text>
+            
+            <!-- X-axis title -->
+            <text x="${chartWidth / 2}" y="${chartHeight + 45}" text-anchor="middle" 
+                  class="text-xs fill-gray-600 dark:fill-gray-400 font-semibold">
+                Courses
             </text>
         </svg>
     `;
 
-    // Add interactivity
+    // Add interactive features like tooltips and click handlers
     this.addCourseChartInteractivity();
-  }
+}
 
-  addCourseChartInteractivity() {
-    const bars = this.courseChart.querySelectorAll("rect");
-
-    bars.forEach((bar) => {
-      bar.addEventListener("mouseenter", (e) => {
-        const course = e.target.getAttribute("data-course");
-        const applications = e.target.getAttribute("data-applications");
-        const acceptance = e.target.getAttribute("data-acceptance");
-
-        // Highlight the bar
-        e.target.style.opacity = "1";
-
-        // You could add a tooltip here if needed
-        console.log(
-          `Course: ${course}, Applications: ${applications}, Acceptance: ${acceptance}`
-        );
-      });
-
-      bar.addEventListener("mouseleave", (e) => {
-        // Reset opacity
-        e.target.style.opacity = "0.8";
-      });
-
-      bar.addEventListener("click", (e) => {
-        const course = e.target.getAttribute("data-course");
-        console.log(`Clicked on course: ${course}`);
-        // You could add functionality to filter by course or show details
-      });
+/**
+ * Adds interactivity to the course chart
+ */
+addCourseChartInteractivity() {
+    // Add click handlers to bars
+    const bars = this.courseChart.querySelectorAll('rect[data-course]');
+    bars.forEach(bar => {
+        bar.addEventListener('click', (event) => {
+            const course = event.target.getAttribute('data-course');
+            const applications = event.target.getAttribute('data-applications');
+            const acceptance = event.target.getAttribute('data-acceptance');
+            
+            console.log(`Course: ${course}, Applications: ${applications}, Acceptance: ${acceptance}`);
+            // You can add more interactive behavior here
+        });
     });
-  }
-
+    
+    // Add hover effects
+    bars.forEach(bar => {
+        bar.addEventListener('mouseenter', (event) => {
+            event.target.style.opacity = '0.7';
+        });
+        
+        bar.addEventListener('mouseleave', (event) => {
+            event.target.style.opacity = '0.9';
+        });
+    });
+}
   renderInstitutionChart() {
     if (!this.institutionChart) return;
 

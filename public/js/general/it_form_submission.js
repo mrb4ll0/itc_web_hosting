@@ -1,24 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  uploadBytes,
-  getDownloadURL,
-} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut,
-} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 import { ITCFirebaseLogic } from "../fireabase/ITCFirebaseLogic.js";
 import { Student } from "../model/Student.js";
-import { firebaseConfig } from "../config/firebaseInit.js";
+import { firebaseConfig, onAuthStateChanged } from "../config/firebaseInit.js";
 import { CompanyCloud } from "../fireabase/CompanyCloud.js";
 import { db, auth } from "../config/firebaseInit.js";
 import { StudentCloudDB } from "../fireabase/StudentCloud.js";
@@ -38,6 +20,7 @@ const companyCloud = new CompanyCloud();
 /** @type {import('../fireabase/StudentCloud.js').StudentCloudDB} */
 const studentCloudDB = new StudentCloudDB();
 const cloudStorage = new CloudStorage();
+const it_base_company_cloud = new ITBaseCompanyCloud();
 
 class ITFormSubmission {
   constructor() {
@@ -333,6 +316,13 @@ class ITFormSubmission {
       //console.log("Fetching internship with ID:", internshipId);
 
       const internship = await companyCloud.getInternshipById(internshipId);
+      const applications =
+        await it_base_company_cloud.getApplicationsForIndustrialTraining(
+          internship.company.id,
+          internship.id
+        );
+      //console.log("applications is "+JSON.stringify(applications));
+      this.applicationsCount = applications.length;
       //console.log("Raw internship data from Firestore:", internship);
 
       // Check if internship and files exist
@@ -965,7 +955,7 @@ class ITFormSubmission {
   async handleSubmit(event, it) {
     event.preventDefault();
     // Check profile completion
-     // Simulate upload process
+    // Simulate upload process
     const submitBtn = event.target;
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = "Uploading...";
@@ -1006,12 +996,12 @@ class ITFormSubmission {
       // Optionally, redirect to profile edit page or highlight missing fields
       this.highlightMissingFields(profileResult.missingFieldDetails);
       submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
+      submitBtn.disabled = false;
       return false; // Prevent form submission
     }
 
     // If profile is complete, proceed with the application
-    return await this.submitApplication(event, it,originalText);
+    return await this.submitApplication(event, it, originalText);
   }
 
   // Helper method to highlight missing fields in the UI
@@ -1068,12 +1058,49 @@ class ITFormSubmission {
     errorMessages.forEach((error) => error.remove());
   }
 
-  async submitApplication(event, it,originalText) {
+  async submitApplication(event, it, originalText) {
     const submitBtn = event.target;
 
     if (!validateDurationSection()) {
       alert("Please complete the IT duration section correctly");
+      submitBtn.innerHTML = originalText;
+      submitBtn.disabled = false;
       return false;
+    }
+        console.log("it is "+JSON.stringify(it));
+    let appStatus;
+    appStatus = it.rawInternship.status;
+
+    // Determine the greater number between internship.applicationsCount and this.applicationsCount
+    const currentApplicationsCount = Math.max(
+      it.rawInternship.applicationsCount || 0,
+      this.applicationsCount || 0
+    );
+
+    console.log("Using application count: " + currentApplicationsCount);
+
+    // Update application count (you might want to save this back to your database)
+    this.applicationsCount = currentApplicationsCount;
+
+    // Check if the new applications count equals or exceeds the intake capacity
+    if (it.rawInternship.intakeCapacity && currentApplicationsCount >= it.rawInternship.intakeCapacity) {
+      appStatus = "closed";
+      internship.status = "closed";
+      console.log(
+        `Application count (${currentApplicationsCount}) reached intake capacity (${it.rawInternship.intakeCapacity}). Status set to: ${appStatus}`
+      );
+    } else {
+      console.log(
+        `Application count (${currentApplicationsCount}) is below intake capacity (${it.rawInternship.intakeCapacity}). Current status: ${appStatus}`
+      );
+    }
+
+     console.log("app status is "+appStatus);
+    const isITClosed = appStatus == "closed";
+    if (isITClosed) {
+      alert(title + " from " + company + " is closed");
+      await it_base_company_cloud.updateInternshipStatus(compid, id);
+      return;
     }
 
     try {
@@ -1207,9 +1234,10 @@ class ITFormSubmission {
           this.studentData,
           this.currentInternship
         );
-        
 
-        console.log("application json is "+ JSON.stringify(application.toMap()));
+        console.log(
+          "application json is " + JSON.stringify(application.toMap())
+        );
 
         // Set the existing file URLs directly
         if (useExistingIdCard && hasExistingIdCard) {

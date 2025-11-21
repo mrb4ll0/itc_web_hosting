@@ -2498,40 +2498,65 @@ function hideLoadingDialog() {
     });
 }
 
-// Add this method to your class
 function safeConvertToTimestamp(timestamp) {
-    if (!timestamp) {
+    
+    if (timestamp && typeof timestamp === 'object') {
+        console.log('Timestamp keys:', Object.keys(timestamp));
+        console.log('Has seconds?', 'seconds' in timestamp);
+        console.log('Has nanoseconds?', 'nanoseconds' in timestamp);
+        console.log('Has toDate?', typeof timestamp.toDate === 'function');
+    }
+    
+    // Handle null case first
+    if (timestamp === null) {
+        console.warn('Timestamp is null, using current time');
         return new Date().getTime();
     }
     
     // If it's already a Date object
     if (timestamp instanceof Date) {
-        return timestamp.getTime();
+        const result = timestamp.getTime();
+        return result;
     }
     
-    // If it's a Firestore Timestamp (has toDate method)
+    // If it's a Firestore Timestamp (has toDate method) - THIS IS YOUR CASE
     if (timestamp && typeof timestamp.toDate === 'function') {
-        return timestamp.toDate().getTime();
+        const date = timestamp.toDate();
+        const result = date.getTime();
+        return result;
+    }
+    
+    // If it's a serialized Firestore timestamp object with seconds and nanoseconds
+    if (timestamp && typeof timestamp === 'object' && timestamp.seconds !== undefined) {
+        // Convert Firestore timestamp to milliseconds
+        const milliseconds = timestamp.seconds * 1000 + Math.floor(timestamp.nanoseconds / 1000000);
+        return milliseconds;
+    }
+    
+    // If it's a number that looks like a Firestore timestamp
+    if (typeof timestamp === 'number') {
+        // Check if it's in seconds format (Firestore) vs milliseconds (JavaScript)
+        if (timestamp > 100000000000 && timestamp < 100000000000000) {
+            // This is likely seconds since epoch, convert to milliseconds
+            return timestamp * 1000;
+        } else {
+            return timestamp;
+        }
     }
     
     // If it's a string that can be parsed as Date
     if (typeof timestamp === 'string') {
         const date = new Date(timestamp);
         if (!isNaN(date.getTime())) {
+            console.log('Converted from string:', date.getTime());
             return date.getTime();
         }
-    }
-    
-    // If it's already a number (milliseconds)
-    if (typeof timestamp === 'number') {
-        return timestamp;
     }
     
     // Fallback to current time
     console.warn('Invalid timestamp format, using current time:', timestamp);
     return new Date().getTime();
 }
-
 // Add this method to your class or as a global function
 function showNotification(message, type = 'info', duration = 5000) {
     // Create notification container if it doesn't exist
