@@ -946,27 +946,6 @@ export default class CurrentTraining {
 
     // Sample activities - replace with real data
     const activities = [
-      {
-        type: "progress",
-        trainee: "John Doe",
-        course: "Web Development",
-        progress: 25,
-        time: "2 hours ago",
-      },
-      {
-        type: "completed",
-        trainee: "Jane Smith",
-        course: "Data Science",
-        progress: 100,
-        time: "1 day ago",
-      },
-      {
-        type: "message",
-        trainee: "Mike Johnson",
-        course: "Mobile Development",
-        progress: 60,
-        time: "2 days ago",
-      },
     ];
 
     if (activities.length === 0) {

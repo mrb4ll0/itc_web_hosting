@@ -10,7 +10,10 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
     <link
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
       rel="stylesheet"
@@ -170,6 +173,25 @@
         pointer-events: none;
         opacity: 0.6;
       }
+      .loading-shimmer {
+        background: linear-gradient(
+          90deg,
+          #e0e0e0 25%,
+          #f0f0f0 37%,
+          #e0e0e0 63%
+        );
+        background-size: 400% 100%;
+        animation: shimmer 1.4s ease infinite;
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: 100% 0;
+        }
+        100% {
+          background-position: -100% 0;
+        }
+      }
     </style>
   </head>
 
@@ -194,10 +216,7 @@
             <div id="header-left" class="flex items-center gap-4">
               <div
                 id="company-logo"
-                class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
-                style="
-                  background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDijuGRsTnZ269l6uGWLgjGb6ah0cqlkii1VLUk2S8D8C8mBIObJaXK3ZEU7HuWOTnHadQLOLgfT5tTQVksa0O3d7b2R4X2LpqQ91t_tD83J9MdIAPTKaQwZAh1a-7eU2jhF1GghisDvScSnA-M9EDGVQ5tTtPcmC48tfvbjshTudgZCV6Vf0YPiIht3IQCwLj6PPEGQplmknWFoFRYQBqsHuTIG_XysTT3K-h3Mvxzvy_mxDy12A5wauyvaxvfLwugDJxN4Yt36w');
-                "
+                class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 loading-shimmer"
               ></div>
               <div id="company-info">
                 <h1

@@ -44,6 +44,15 @@ class TabManager {
       this.applications = await it_base_companycloud.getAllCompanyApplications(
         this.companyId
       );
+       await auth.authStateReady();
+      this.company = await it_base_companycloud.getCompany(auth.currentUser.uid);
+      
+      var comapanySubtitle = document.getElementById("company-subtitle");
+      var companyLogo = document.getElementById("company-logo");
+
+     comapanySubtitle.innerText = this.company.name;
+     companyLogo.style.backgroundImage = `url('${this.company.logoURL}')`;
+       
 
       // Process and categorize the applications
       await this.processApplicationsData();

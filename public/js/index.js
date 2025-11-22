@@ -4,8 +4,10 @@ import {
   signInWithPopup,
   onAuthStateChanged,
 } from "./config/firebaseInit.js";
+import { CompanyCloud } from "./fireabase/CompanyCloud.js";
 import { StudentCloudDB } from "./fireabase/StudentCloud.js";
 const studentCloudDB = new StudentCloudDB();
+const companyCloud = new CompanyCloud();
 
 document.getElementById("login").addEventListener("click", async (event) => {
   event.preventDefault(); // stop normal link navigation
@@ -47,8 +49,10 @@ function checkAuthState() {
 document.getElementById('company-loginbtn').addEventListener('click',async()=>
 {
     await auth.authStateReady();
-    if(auth.currentUser)
+    const company  = await companyCloud.getCompany(auth.currentUser.uid);
+    if(auth.currentUser && company)
     {
+
       window.location.href='company/company_dashboard.html';
     }
     else
