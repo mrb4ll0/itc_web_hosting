@@ -49,11 +49,20 @@ function checkAuthState() {
 document.getElementById('company-loginbtn').addEventListener('click',async()=>
 {
     await auth.authStateReady();
-    const company  = await companyCloud.getCompany(auth.currentUser.uid);
-    if(auth.currentUser && company)
+     
+    
+    if(auth.currentUser)
     {
-
-      window.location.href='company/company_dashboard.html';
+       const company  = await companyCloud.getCompany(auth.currentUser.uid);
+       if(company)
+       {
+         window.location.href='company/company_dashboard.html';
+       }
+       else
+       {
+        window.location.href='company/auth/company_login.html'; 
+       }
+      
     }
     else
     {

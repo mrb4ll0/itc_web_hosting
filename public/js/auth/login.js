@@ -162,6 +162,8 @@ class Login {
   async handleEmailLogin(event) {
     event.preventDefault();
 
+    this.loginBtn.textContent = "Logging....";
+
     const email = this.emailInput.value.trim();
     const password = this.passwordInput.value.trim();
 
@@ -191,6 +193,8 @@ class Login {
         return;
       }
       //alert(`Welcome ${email}!`);
+      this.showNotification("Welcome " + email, "success");
+      setTimeout(function () {}, 500);
       this.rememberUser(email);
       localStorage.setItem("student", JSON.stringify(student));
 
@@ -232,7 +236,7 @@ class Login {
     } finally {
       // Reset button state
       this.loginBtn.disabled = false;
-      this.loginBtn.textContent = "Sign in";
+      this.loginBtn.textContent = "Log in";
     }
   }
 
