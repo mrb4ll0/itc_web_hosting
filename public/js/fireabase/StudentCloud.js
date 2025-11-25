@@ -628,4 +628,36 @@ export class StudentCloudDB {
       itLetterSize: null,
     };
   }
+
+  /**
+ * Set selectedApplication for a student
+ * @param {string} studentId
+ * @param {Object} applicationData
+ * @returns {Promise<void>}
+ */
+async setSelectedApplication(studentId, applicationData) {
+  try {
+    if (!studentId) throw new Error("Student ID is required");
+    if (!applicationData) throw new Error("Application data is required");
+
+    const ref = doc(
+      this._firebaseFirestore,
+      "users",
+      "students",
+      "students",
+      studentId
+    );
+
+    await updateDoc(ref, {
+      selectedApplication: applicationData,
+      updatedAt: new Date(),
+    });
+
+    //console.log("selectedApplication updated for student:", studentId);
+  } catch (error) {
+    console.error("Error setting selectedApplication:", error);
+    throw error;
+  }
+}
+
 }

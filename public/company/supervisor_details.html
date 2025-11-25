@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Supervisor Management - IT Connect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
+    <script type="module" src="../company/js/general/supervisor_details.js"></script>
+  </head>
+  <body class="h-full bg-slate-50 dark:bg-slate-900">
+    <div class="min-h-full">
+      <!-- Header -->
+      <header
+        class="bg-white dark:bg-slate-800 shadow-sm border-b border-slate-200 dark:border-slate-700"
+      >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between items-center py-4">
+            <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">
+              Supervisor Management
+            </h1>
+            <div class="flex items-center space-x-4">
+              <span
+                id="userEmail"
+                class="text-sm text-slate-600 dark:text-slate-300"
+              ></span>
+              <button
+                id="backToDashboard"
+                class=" hidden px-4 py-2 text-sm bg-slate-500 hover:bg-slate-600 text-white rounded-lg transition-colors"
+              >
+                Back to Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Loading State -->
+        <div id="loadingSection" class="text-center py-12">
+          <div
+            class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"
+          ></div>
+          <p class="mt-4 text-slate-600 dark:text-slate-400">
+            Loading supervisor details...
+          </p>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent" class="hidden">
+          <!-- Supervisor Header -->
+          <div
+            class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-6"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-4">
+                <div
+                  id="supervisorAvatar"
+                  class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center"
+                >
+                  <span class="material-symbols-outlined text-white text-2xl"
+                    >person</span
+                  >
+                </div>
+                <div>
+                  <h2
+                    id="supervisorName"
+                    class="text-2xl font-bold text-slate-800 dark:text-slate-100"
+                  >
+                    Loading...
+                  </h2>
+                  <p
+                    id="supervisorEmail"
+                    class="text-slate-600 dark:text-slate-400"
+                  >
+                    Loading...
+                  </p>
+                  <div class="flex items-center space-x-4 mt-2">
+                    <span
+                      id="supervisorStatus"
+                      class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                    ></span>
+                    <span
+                      id="supervisorCompany"
+                      class="text-sm text-slate-500 dark:text-slate-500"
+                    ></span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex space-x-3">
+                <button
+                  id="activateSupervisorBtn"
+                  class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors hidden"
+                >
+                  Activate Account
+                </button>
+                <button
+                  id="deactivateSupervisorBtn"
+                  class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors hidden"
+                >
+                  Deactivate
+                </button>
+                <button
+                  id="refreshBtn"
+                  class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+                >
+                  Refresh
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div
+              class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6"
+            >
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <div
+                    class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center"
+                  >
+                    <span class="material-symbols-outlined text-white"
+                      >school</span
+                    >
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <h3
+                    class="text-sm font-medium text-slate-600 dark:text-slate-400"
+                  >
+                    Assigned Students
+                  </h3>
+                  <p
+                    id="assignedStudentsCount"
+                    class="text-2xl font-bold text-slate-900 dark:text-white"
+                  >
+                    0
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6"
+            >
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <div
+                    class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center"
+                  >
+                    <span class="material-symbols-outlined text-white"
+                      >assignment</span
+                    >
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <h3
+                    class="text-sm font-medium text-slate-600 dark:text-slate-400"
+                  >
+                    Active Applications
+                  </h3>
+                  <p
+                    id="activeApplicationsCount"
+                    class="text-2xl font-bold text-slate-900 dark:text-white"
+                  >
+                    0
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6"
+            >
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <div
+                    class="w-12 h-12 bg-amber-500 rounded-lg flex items-center justify-center"
+                  >
+                    <span class="material-symbols-outlined text-white"
+                      >pending</span
+                    >
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <h3
+                    class="text-sm font-medium text-slate-600 dark:text-slate-400"
+                  >
+                    Pending Reviews
+                  </h3>
+                  <p
+                    id="pendingReviewsCount"
+                    class="text-2xl font-bold text-slate-900 dark:text-white"
+                  >
+                    0
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6"
+            >
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <div
+                    class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center"
+                  >
+                    <span class="material-symbols-outlined text-white"
+                      >event_available</span
+                    >
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <h3
+                    class="text-sm font-medium text-slate-600 dark:text-slate-400"
+                  >
+                    Available Slots
+                  </h3>
+                  <p
+                    id="availableSlotsCount"
+                    class="text-2xl font-bold text-slate-900 dark:text-white"
+                  >
+                    0
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Assigned Students Section -->
+            <div
+              class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700"
+            >
+              <div
+                class="flex justify-between items-center p-6 border-b border-slate-200 dark:border-slate-700"
+              >
+                <h3
+                  class="text-lg font-bold text-slate-800 dark:text-slate-100"
+                >
+                  Assigned Students
+                </h3>
+                <button
+                  id="assignStudentsBtn"
+                  class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+                >
+                  Assign Students
+                </button>
+              </div>
+              <div class="p-6">
+                <div id="assignedStudentsList" class="space-y-3">
+                  <!-- Students will be loaded here -->
+                </div>
+                <div id="emptyAssignedStudents" class="text-center py-8">
+                  <span
+                    class="material-symbols-outlined text-6xl text-slate-400 mb-4"
+                    >school</span
+                  >
+                  <h3
+                    class="text-lg font-semibold text-slate-600 dark:text-slate-400 mb-2"
+                  >
+                    No Students Assigned
+                  </h3>
+                  <p class="text-slate-500 dark:text-slate-500">
+                    Assign students to this supervisor to get started.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Available Students Section -->
+            <div
+              class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700"
+            >
+              <div
+                class="flex justify-between items-center p-6 border-b border-slate-200 dark:border-slate-700"
+              >
+                <h3
+                  class="text-lg font-bold text-slate-800 dark:text-slate-100"
+                >
+                  Available Students
+                </h3>
+                <div class="flex space-x-2">
+                  <input
+                    id="searchStudents"
+                    type="text"
+                    placeholder="Search students..."
+                    class="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <div class="p-6">
+                <div id="availableStudentsList" class="space-y-3">
+                  <!-- Available students will be loaded here -->
+                </div>
+                <div id="emptyAvailableStudents" class="text-center py-8">
+                  <span
+                    class="material-symbols-outlined text-6xl text-slate-400 mb-4"
+                    >person_search</span
+                  >
+                  <h3
+                    class="text-lg font-semibold text-slate-600 dark:text-slate-400 mb-2"
+                  >
+                    No Students Available
+                  </h3>
+                  <p class="text-slate-500 dark:text-slate-500">
+                    All students are currently assigned to supervisors.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorSection" class="hidden text-center py-12">
+          <span class="material-symbols-outlined text-6xl text-red-500 mb-4"
+            >error</span
+          >
+          <h3
+            class="text-xl font-semibold text-slate-600 dark:text-slate-400 mb-2"
+          >
+            Failed to Load Supervisor
+          </h3>
+          <p
+            id="errorMessage"
+            class="text-slate-500 dark:text-slate-500 mb-6"
+          ></p>
+          <button
+            id="retryBtn"
+            class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <!-- Assign Students Modal -->
+    <div
+      id="assignStudentsModal"
+      class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+    >
+      <div
+        class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+      >
+        <div
+          class="flex justify-between items-center p-6 border-b border-slate-200 dark:border-slate-700"
+        >
+          <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100">
+            Assign Students to Supervisor
+          </h3>
+          <button
+            id="closeModalBtn"
+            class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="p-6">
+          <div class="mb-6">
+            <h4
+              class="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4"
+            >
+              Select Students to Assign
+            </h4>
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto"
+            >
+              <div id="modalAvailableStudents" class="space-y-2">
+                <!-- Available students for assignment will be loaded here -->
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-slate-700"
+          >
+            <span
+              id="selectedCount"
+              class="text-sm text-slate-600 dark:text-slate-400"
+              >0 students selected</span
+            >
+            <div class="flex space-x-3">
+              <button
+                id="cancelAssignBtn"
+                class="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                id="confirmAssignBtn"
+                class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+              >
+                Assign Selected Students
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { SupervisorManagementController } from "../company/js/general/supervisor_details.js";
+
+      document.addEventListener("DOMContentLoaded", () => {
+        // Get supervisor ID from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const supervisorId = urlParams.get("id");
+
+        if (!supervisorId) {
+          window.location.href = "supervisor_dashboard.html";
+          return;
+        }
+
+        const controller = new SupervisorManagementController(supervisorId);
+        controller.init();
+      });
+    </script>
+  </body>
+</html>

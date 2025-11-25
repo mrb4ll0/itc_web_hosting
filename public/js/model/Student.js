@@ -28,7 +28,8 @@ export class Student {
   updatedAt = null,
   studentIDCard = [], 
   studentITLetter = [],
-  major = ''
+  major = '',
+  selectedApplication = null
 }) {
   this.phoneNumber = phoneNumber;
   this.uid = uid;
@@ -55,6 +56,7 @@ export class Student {
   this.studentIDCard = studentIDCard; 
   this.studentITLetter = studentITLetter; 
   this.major = major; 
+  this.selectedApplication = selectedApplication
 }
 
   static fromFirestore(data) {
@@ -86,14 +88,14 @@ export class Student {
       portfolio: data.portfolio ?? {},
       createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
       updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
-      // ✅ BOTH AS ARRAYS
       studentIDCard: Array.isArray(data.studentIDCard)
         ? data.studentIDCard
         : [],
       studentITLetter: Array.isArray(data.studentITLetter)
         ? data.studentITLetter
         : [],
-        major: data.major?? ""
+        major: data.major?? "",
+        selectedApplication: data.selectedApplication
     });
   }
 
@@ -173,7 +175,8 @@ export class Student {
     updatedAt: convertTimestamp(data.updatedAt), // FIXED: This was becoming null
     studentIDCard: studentIDCard, // FIXED: Now properly handled as array
     studentITLetter: studentITLetter, // FIXED: Now properly handled as array
-    major: data.major ?? "" // FIXED: Now properly assigned to major field
+    major: data.major ?? "" ,// FIXED: Now properly assigned to major field
+    selectedApplication: data.selectedApplication
   });
 }
   toMap() {
@@ -211,7 +214,8 @@ export class Student {
       updatedAt: safeToISOString(this.updatedAt),
       studentIDCard: this.studentIDCard, 
       studentITLetter: this.studentITLetter, 
-      major: this.major
+      major: this.major,
+      selectedApplication: this.selectedApplication
     };
   }
 
@@ -257,7 +261,8 @@ export class Student {
     updatedAt,
     studentIDCard,
     studentITLetter,
-    major
+    major,
+    selectedApplication
   } = {}) {
     return new Student({
       phoneNumber: phoneNumber ?? this.phoneNumber,
@@ -284,7 +289,8 @@ export class Student {
       updatedAt: updatedAt ?? this.updatedAt,
       studentIDCard: studentIDCard ?? this.studentIDCard,
       studentITLetter: studentITLetter ?? this.studentITLetter,
-      major: major??this.major
+      major: major??this.major,
+      selectedApplication: selectedApplication?? this.selectedApplication
     });
   }
 

@@ -1472,21 +1472,14 @@ async getApplicationById(companyId, itId, applicationId) {
             const data = applicationDoc.data();
               data.student = await new StudentCloudDB().getStudentById(data.student.uid);
 
+              const studentApp =  StudentApplication.fromMap(data);
+
             //console.log(" Fetching industrial training data...");
             const industrialTraining = await this.getIndustrialTrainingById(companyId, itId);
             
+                industrialTraining.company = await this.getCompany(industrialTraining.company.id);            
+                studentApp.internship = industrialTraining;
             
-            const studentApp = new StudentApplication({
-                id: applicationDoc.id,
-                student: data.student,
-                internship: industrialTraining, // ← FIX THIS LINE
-                applicationStatus: data.applicationStatus || 'pending',
-                applicationDate: data.applicationDate?.toDate?.() || data.applicationDate,
-                applicationFiles: data.applicationFiles || {},
-                coverLetter: data.coverLetter || "",
-                resumeURL: data.resumeURL || "",
-                duration: data.duration
-            });
 
            
             
@@ -1667,6 +1660,50 @@ async updateCompanyApplicationDuration(durationObject, applicationId,itId,sid) {
         
     } catch (error) {
         console.error("Error updating application duration:", error);
+        throw error;
+    }
+}
+
+async getApplicationById(companyId, itId, applicationId) {
+    if (!companyId || !itId || !applicationId) {
+        throw new Error("Company ID, Industrial Training ID, and Application ID are required");
+    }
+
+    try {
+        // Construct the Firestore document path
+        const applicationRef = doc(
+            this.db,
+            this.usersCollection,
+            this.companiesSubcollection,
+            this.companiesSubcollection,
+            companyId,
+            this.itSubcollection,
+            itId,
+            this.applicationsSubcollection,
+            applicationId
+        );
+
+        // Get the application document
+        const applicationSnap = await getDoc(applicationRef);
+
+        if (!applicationSnap.exists()) {
+            throw new Error("Application not found");
+        }
+
+        // Get the application data
+        const applicationData = applicationSnap.data();
+        
+        // Convert to StudentApplication using fromMap
+        const studentApplication = StudentApplication.fromMap(
+            applicationData, 
+            itId, 
+            applicationId
+        );
+
+        return studentApplication;
+
+    } catch (error) {
+        console.error("Error getting application by ID:", error);
         throw error;
     }
 }

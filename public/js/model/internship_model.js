@@ -64,38 +64,78 @@ export class IndustrialTraining {
    */
   static fromMap(data, docId) {
     if (!data) return null;
+    const internshipData = data.rawInternship || data;
+    
+    // Helper function to safely convert dates
+    const safeConvertDate = (dateValue, fieldName = 'unknown') => {
+        if (!dateValue) {
+            return null;
+        }
+        
+        
+        // If it's a Firestore Timestamp
+        if (dateValue instanceof Timestamp) {
+            const date = dateValue.toDate();
+            return date;
+        }
+        
+        // If it's an object with seconds/nanoseconds (Firestore timestamp format)
+        if (typeof dateValue === 'object' && dateValue.seconds !== undefined) {
+            const date = new Date(dateValue.seconds * 1000 + (dateValue.nanoseconds || 0) / 1000000);
+            return date;
+        }
+        
+        // If it's a string that can be parsed as Date
+        if (typeof dateValue === 'string') {
+            try {
+                const date = new Date(dateValue);
+                if (!isNaN(date.getTime())) {
+                    return date;
+                } else {
+                    console.warn(`Invalid date string for ${fieldName}:`, dateValue);
+                }
+            } catch (error) {
+                console.warn(`Error parsing date string for ${fieldName}:`, error);
+            }
+        }
+        
+        console.warn(`Could not convert ${fieldName}:`, dateValue);
+        return null;
+    };
 
-    return new IndustrialTraining({
-      id: docId || null,
-      files: data.files || [],
-      company: Company.fromMap(data.company || {}),
-      title: data.title || "",
-      industry: data.industry || "",
-      duration: data.duration || "",
-      startDate: data.startDate instanceof Timestamp ? data.startDate.toDate() : data.startDate || null,
-      endDate: data.endDate instanceof Timestamp ? data.endDate.toDate() : data.endDate || null,
-      description: data.description || "",
-      applicationsCount: data.applicationsCount || 0,
-      status: data.status || "open",
-      stipend: data.stipend || null,
-      stipendAvailable: data.stipendAvailable || false,
-      eligibilityCriteria: data.eligibilityCriteria || "",
-      postedBy: data.postedBy || null,
-      postedAt: data.postedAt instanceof Timestamp ? data.postedAt.toDate() : data.postedAt || null,
-      createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt || null,
-      updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : data.updatedAt || null,
-      qualification: data.qualification || "Qualification Not specified",
-      
-      // New fields
-      department: data.department || "",
-      address: data.address || data.location || "", // Support both address and location for backward compatibility
-      aptitudeTestRequired: data.aptitudeTestRequired || data.aptitudeTest || false,
-      intakeCapacity: data.intakeCapacity || data.intake || 1,
-      contactPerson: data.contactPerson || "",
-      applications: data.applications || []
+    // Use internshipData (which is data.rawInternship) instead of data
+    const instance = new IndustrialTraining({
+        id: docId || internshipData.id || null,
+        files: internshipData.files || [],
+        company: Company.fromMap(internshipData.company || data.company || {}),
+        title: internshipData.title || data.name || "", // Use data.name as fallback
+        industry: internshipData.industry || "",
+        duration: internshipData.duration || "",
+        startDate: safeConvertDate(internshipData.startDate, 'startDate'),
+        endDate: safeConvertDate(internshipData.endDate, 'endDate'),
+        description: internshipData.description || "",
+        applicationsCount: internshipData.applicationsCount || 0,
+        status: internshipData.status || "open",
+        stipend: internshipData.stipend || null,
+        stipendAvailable: internshipData.stipendAvailable || false,
+        eligibilityCriteria: internshipData.eligibilityCriteria || "",
+        postedBy: internshipData.postedBy || null,
+        postedAt: safeConvertDate(internshipData.postedAt, 'postedAt'),
+        createdAt: safeConvertDate(internshipData.createdAt, 'createdAt'),
+        updatedAt: safeConvertDate(internshipData.updatedAt, 'updatedAt'),
+        qualification: internshipData.qualification || "Qualification Not specified",
+        
+        // New fields
+        department: internshipData.department || "",
+        address: internshipData.address || internshipData.location || "",
+        aptitudeTestRequired: internshipData.aptitudeTestRequired || false,
+        intakeCapacity: internshipData.intakeCapacity || 1,
+        contactPerson: internshipData.contactPerson || "",
+        applications: internshipData.applications || []
     });
-  }
 
+    return instance;
+}
   /**
    * Converts the instance to a Firestore-compatible plain object
    */
