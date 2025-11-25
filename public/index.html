@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>IT Connect - Landing Page</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#607AFB",
+              "background-light": "#f5f6f8",
+              "background-dark": "#0f1323",
+            },
+            fontFamily: {
+              display: "Inter",
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <script type="module" src="js/index.js"></script>
+  </head>
+  <body class="font-display text-gray-800 dark:text-gray-200 relative">
+    <div class="flex flex-col min-h-screen">
+      <header
+        class="bg-background-light dark:bg-background-dark/80 border-b border-gray-200 dark:border-gray-700/50 backdrop-blur-sm sticky top-0 z-20"
+      >
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-16">
+            <div class="flex items-center gap-4">
+              <div class="w-15 h-8 text-primary animate-bounce">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  class="size-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+                  />
+                </svg>
+              </div>
+              <h2 class="text-xl font-bold text-gray-900 dark:text-white">
+                IT Connect
+              </h2>
+            </div>
+            <nav class="hidden md:flex items-center gap-8">
+              <a
+                class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+                href="#about"
+                >About</a
+              >
+              <a
+                class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+                href="#partners"
+                >Partner Companies</a
+              >
+              <a
+                class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+                href="#contact"
+                >Contact</a
+              >
+            </nav>
+            <div class="flex items-center gap-4">
+              <a
+                id="login"
+                href="#"
+                class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+                >Login</a
+              >
+
+              <a
+                id="signup"
+                class="bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors"
+                href="auth/signup.html"
+                >Sign Up</a
+              >
+            </div>
+          </div>
+        </div>
+      </header>
+      <main class="flex-grow">
+        <section class="py-20 sm:py-24 lg:py-32 relative overflow-hidden">
+          <!-- Background image only for this section -->
+          <div
+            class="absolute inset-0 -z-10"
+            style="
+              background-image: url('images/background.jpg');
+              background-size: cover;
+              background-position: center;
+              background-repeat: no-repeat;
+              filter: blur(8px) brightness(0.7);
+            "
+          ></div>
+          <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1
+              class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight"
+            >
+              Find Your Perfect Industrial Training Placement
+            </h1>
+            <p class="mt-4 max-w-2xl mx-auto text-lg sm:text-xl text-white">
+              Connect with top companies for your industrial training. Your
+              journey to a successful career starts here.
+            </p>
+            <div
+              class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4"
+            >
+              <a
+                class="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-xl text-lg transition-transform transform hover:scale-105"
+                href="#"
+              >
+                <svg
+                  class="h-6 w-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  ></path>
+                </svg>
+                <span>Download Application</span>
+              </a>
+              <a id="company-loginbtn"
+                 href="#"
+                class="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-xl text-lg transition-colors"
+              >
+                <span>Company/Organization</span>
+              </a>
+            </div>
+          </div>
+        </section>
+        <section class="py-16 sm:py-20" id="webapp">
+          <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row items-center gap-12">
+              <div class="lg:w-1/2">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+                  Use Our Web Application
+                </h2>
+                <p class="mt-4 text-gray-600 dark:text-gray-400">
+                  Apply for industrial training, track your application status,
+                  and connect with companies directly from your browser. Our web
+                  app makes your IT placement search seamless.
+                </p>
+                <div class="mt-6 flex gap-4">
+                  <a
+                    class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105"
+                    href="auth/login.html"
+                    >Launch Web App</a
+                  >
+                  <a
+                    class="bg-transparent border border-primary text-primary hover:bg-primary hover:text-white font-bold py-3 px-6 rounded-lg transition-colors"
+                    href="learnmore.html"
+                    >Learn More</a
+                  >
+                </div>
+              </div>
+              <style>
+                .fade-img {
+                  opacity: 1;
+                  transition: opacity 0.7s;
+                }
+                .fade-img.hide {
+                  opacity: 0;
+                }
+              </style>
+              <div class="lg:w-1/2 flex justify-center items-center">
+                <img
+                  id="slideshow-image"
+                  alt="Web Application Screenshot"
+                  class="rounded-xl shadow-2xl w-full max-w-md fade-img"
+                  src="images/its1.jpg"
+                />
+              </div>
+              <script>
+                const images = [
+                  "images/its1.jpg",
+                  "images/its2.jpg",
+                  "images/its3.jpg",
+                  "images/its4.jpg",
+                  "images/its5.jpg",
+                  "images/its6.jpg",
+                  "images/its7.jpg",
+                  "images/its8.jpg",
+                  "images/its9.jpg",
+                  "images/its10.jpg",
+                ];
+                let current = 0;
+                const img = document.getElementById("slideshow-image");
+
+                setInterval(() => {
+                  // Fade out
+                  img.classList.add("hide");
+                  setTimeout(() => {
+                    // Change image after fade out
+                    current = (current + 1) % images.length;
+                    img.src = images[current];
+                    // Fade in
+                    img.classList.remove("hide");
+                  }, 700); // Match transition duration
+                }, 5000); // Change image every 5 seconds (slower)
+              </script>
+            </div>
+          </div>
+        </section>
+        <section class="py-16 sm:py-20" id="about">
+          <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+              <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+                About IT Connect
+              </h2>
+              <p
+                class="mt-4 max-w-3xl mx-auto text-gray-600 dark:text-gray-400"
+              >
+                IT Connect is a dedicated portal designed to bridge the gap
+                between students seeking industrial training and companies
+                looking for fresh talent. Our platform simplifies the process of
+                finding and securing valuable IT placements.
+              </p>
+            </div>
+          </div>
+        </section>
+        <section class="py-16 sm:py-20" id="partners">
+          <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+              <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+                For Our Partner Companies
+              </h2>
+              <p
+                class="mt-4 max-w-2xl mx-auto text-gray-600 dark:text-gray-400"
+              >
+                Showcase your company to a pool of talented and motivated
+                students. Register with us to be featured.
+              </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div
+                class="bg-background-light dark:bg-background-dark p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700/50"
+              >
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+                  Company Registration
+                </h3>
+                <p class="mt-2 text-gray-600 dark:text-gray-400">
+                  Register your company to connect with aspiring students for
+                  industrial training.
+                </p>
+              </div>
+              <div
+                class="bg-background-light dark:bg-background-dark p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700/50"
+              >
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+                  Access to Talent
+                </h3>
+                <p class="mt-2 text-gray-600 dark:text-gray-400">
+                  Find the best candidates for your industrial training
+                  programs.
+                </p>
+              </div>
+              <div
+                class="bg-background-light dark:bg-background-dark p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700/50"
+              >
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+                  Post Opportunities
+                </h3>
+                <p class="mt-2 text-gray-600 dark:text-gray-400">
+                  Easily post and manage your industrial training openings on
+                  our platform.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="py-16 sm:py-20" id="contact">
+          <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+              <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+                Contact Us
+              </h2>
+              <p
+                class="mt-4 max-w-2xl mx-auto text-gray-600 dark:text-gray-400"
+              >
+                Have questions? Whether you are a student or a company, we're
+                here to help. Reach out to us.
+              </p>
+            </div>
+            <div class="max-w-xl mx-auto">
+              <form class="space-y-6">
+                <div>
+                  <label class="sr-only" for="name">Name</label>
+                  <input
+                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-background-light dark:bg-background-dark focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                    id="name"
+                    name="name"
+                    placeholder="Your Name"
+                    type="text"
+                  />
+                </div>
+                <div>
+                  <label class="sr-only" for="email">Email</label>
+                  <input
+                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-background-light dark:bg-background-dark focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                    id="email"
+                    name="email"
+                    placeholder="Your Email"
+                    type="email"
+                  />
+                </div>
+                <div>
+                  <label class="sr-only" for="message">Message</label>
+                  <textarea
+                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-background-light dark:bg-background-dark focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                    id="message"
+                    name="message"
+                    placeholder="Your Message"
+                    rows="4"
+                  ></textarea>
+                </div>
+                <div>
+                  <button
+                    class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105"
+                    type="submit"
+                  >
+                    Send Message
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+      </main>
+      <footer
+        class="bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-gray-700/50"
+      >
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div class="flex flex-col md:flex-row justify-between items-center">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+              © 2025 IT Connect. All rights reserved.
+            </p>
+            <div class="flex gap-4 mt-4 md:mt-0">
+              <a
+                class="text-gray-600 dark:text-gray-400 hover:text-primary"
+                href="#"
+                ><svg
+                  class="feather feather-twitter"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"
+                  ></path></svg
+              ></a>
+              <a
+                class="text-gray-600 dark:text-gray-400 hover:text-primary"
+                href="#"
+                ><svg
+                  class="feather feather-linkedin"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"
+                  ></path>
+                  <rect height="12" width="4" x="2" y="9"></rect>
+                  <circle cx="4" cy="4" r="2"></circle></svg
+              ></a>
+              <a
+                class="text-gray-600 dark:text-gray-400 hover:text-primary"
+                href="https://web.facebook.com/itconnect.496553"
+                ><svg
+                  class="feather feather-facebook"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
+                  ></path></svg
+              ></a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

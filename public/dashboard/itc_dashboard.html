@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>IT Connect Student Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#607afb",
+              "background-light": "#f5f6f8",
+              "background-dark": "#0f1323",
+              "foreground-light": "#111827",
+              "foreground-dark": "#e5e7eb",
+              "subtle-light": "#6b7280",
+              "subtle-dark": "#9ca3af",
+              "border-light": "#e5e7eb",
+              "border-dark": "#374151",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "0.75rem",
+              xl: "1rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <script type="module" src="../js/dashboard/ITCDashBoard.js"></script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+      /* Mobile menu styles */
+      .mobile-menu {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+      }
+      .mobile-menu.open {
+        transform: translateX(0);
+      }
+      @media (min-width: 1024px) {
+        .mobile-menu {
+          transform: translateX(0);
+        }
+      }
+      /* Notification Ticker Styles */
+      #notificationTicker {
+        animation: ticker-scroll 30s linear infinite;
+      }
+
+      .ticker-item {
+        display: inline-flex;
+        align-items: center;
+        padding: 0 1rem;
+      }
+
+      /* Pause animation on hover */
+      #notificationTicker:hover {
+        animation-play-state: paused;
+      }
+
+      /* Ticker scroll animation */
+      @keyframes ticker-scroll {
+        0% {
+          transform: translateX(100%);
+        }
+        100% {
+          transform: translateX(-100%);
+        }
+      }
+
+      /* Ensure smooth scrolling */
+      #notificationTicker {
+        will-change: transform;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-foreground-light dark:text-foreground-dark"
+  >
+    <!-- Mobile Menu Button -->
+    <button
+      id="mobileMenuButton"
+      class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-background-dark rounded-lg shadow-lg border border-border-light dark:border-border-dark"
+    >
+      <svg
+        class="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16M4 18h16"
+        ></path>
+      </svg>
+    </button>
+
+    <div class="flex h-screen">
+      <!-- Sidebar -->
+      <aside
+        id="sidebar"
+        class="mobile-menu w-64 lg:w-64 flex-shrink-0 bg-white dark:bg-background-dark border-r border-border-light dark:border-border-dark flex flex-col p-4 lg:p-6 fixed lg:relative h-full z-40"
+      >
+        <div class="flex items-center gap-3 mb-8">
+          <div
+            id="student_profile_image"
+            class="w-10 h-10 rounded-full bg-cover bg-center"
+            style="background-image: url('../images/Avatar.jpg')"
+          ></div>
+          <span id="studentName" class="font-bold text-lg truncate"
+            >Loading...</span
+          >
+        </div>
+
+        <!-- Close button for mobile -->
+        <button
+          id="closeSidebar"
+          class="lg:hidden self-end mb-4 p-2 bg-background-light dark:bg-border-dark rounded-lg text-subtle-light dark:text-subtle-dark"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
+          </svg>
+        </button>
+
+        <nav class="flex flex-col gap-2 flex-1">
+          <a
+            id="dashboardLink"
+            class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary dark:bg-primary/20"
+            href="itc_dashboard.html"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="currentColor"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+            >
+              <path d="M10 20v-6h4v6h5v-8h3L12 3L2 12h3v8h5z"></path>
+            </svg>
+            <span class="font-semibold">Dashboard</span>
+          </a>
+          <a
+            id="applicationsLink"
+            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-subtle-light dark:text-subtle-dark hover:text-primary dark:hover:text-primary"
+            href="applications.html"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+            >
+              <path d="M20 12V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v5"></path>
+              <path d="M22 13a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7"></path>
+              <path d="M12 12h.01"></path>
+            </svg>
+            <span class="font-semibold">Applications</span>
+          </a>
+          <a
+            id="companiesLink"
+            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-subtle-light dark:text-subtle-dark hover:text-primary dark:hover:text-primary"
+            href="featured_companies.html"
+          >
+            <svg
+              class="w-6 h-6 icon"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="3" width="14" height="18" rx="1.2" ry="1.2" />
+              <path d="M7 7h6M7 11h6M7 15h6M7 19h6" />
+              <rect x="18" y="8" width="3" height="3" rx="0.8" ry="0.8" />
+              <path d="M18 3v5" />
+            </svg>
+            <span class="font-semibold">Companies</span>
+          </a>
+          <a
+            id="opportunitiesLink"
+            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-subtle-light dark:text-subtle-dark hover:text-primary dark:hover:text-primary"
+            href="opportunities.html"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+            </svg>
+            <span class="font-semibold">IT Opportunities</span>
+          </a>
+          <a
+            id="profileLink"
+            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-subtle-light dark:text-subtle-dark hover:text-primary dark:hover:text-primary"
+            href="student_profile.html"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span class="font-semibold">Profile</span>
+          </a>
+          <a
+            id="notificationsLink"
+            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-subtle-light dark:text-subtle-dark hover:text-primary dark:hover:text-primary"
+            href="notifications.html"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+            >
+              <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="font-semibold">Notifications</span>
+          </a>
+
+          <a
+            id="activitiesLink"
+            class=" hidden  items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-subtle-light dark:text-subtle-dark hover:text-primary dark:hover:text-primary"
+            href="#"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+            >
+              <path
+                d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"
+              ></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <span class="font-semibold">Activities</span>
+          </a>
+        </nav>
+
+        <div class="mt-auto">
+          <a
+            id="settingsLink"
+            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 text-subtle-light dark:text-subtle-dark hover:text-primary dark:hover:text-primary"
+            href="settings.html"
+            onclick="event.preventDefault(); alert('Settings features will be available in the next update!');"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+              ></path>
+            </svg>
+            <span class="font-semibold">Settings</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 overflow-y-auto p-4 lg:p-8 xl:p-12 lg:ml-0">
+        <div class="max-w-7xl mx-auto">
+          <!-- Header -->
+          <header
+            class="mb-6 lg:mb-12 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          >
+            <div class="order-2 sm:order-1">
+              <h1 class="text-2xl lg:text-4xl font-bold tracking-tight">
+                Dashboard
+              </h1>
+              <p
+                id="welcomeMessage"
+                class="mt-1 lg:mt-2 text-base lg:text-lg text-subtle-light dark:text-subtle-dark"
+              >
+                Loading...
+              </p>
+            </div>
+
+            <div
+              class="flex items-center gap-2 order-1 sm:order-2 self-end sm:self-auto"
+            >
+              <button
+                id="homeButton"
+                onclick="window.location.href='../index.html'"
+                class="flex items-center gap-2 px-3 lg:px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg shadow-sm transition text-sm lg:text-base"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  class="w-4 h-4 lg:w-5 lg:h-5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M3 9.75L12 3l9 6.75v9A2.25 2.25 0 0118.75 21h-13.5A2.25 2.25 0 013 18.75v-9z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 21V12h6v9"
+                  />
+                </svg>
+                <span class="hidden sm:inline">Home</span>
+              </button>
+
+              <button
+                id="logoutBtn"
+                class="flex items-center gap-2 px-3 lg:px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg shadow-sm transition text-sm lg:text-base"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  class="w-4 h-4 lg:w-5 lg:h-5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"
+                  />
+                </svg>
+                <span class="hidden sm:inline">Logout</span>
+              </button>
+            </div>
+          </header>
+
+          <!-- Notification Ticker -->
+          <div class="mb-6 lg:mb-8">
+            <div
+              class="bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700 rounded-lg p-3 shadow-lg"
+            >
+              <div class="flex items-center">
+                <!-- Notification Icon -->
+                <div class="flex-shrink-0 mr-3">
+                  <svg
+                    class="w-5 h-5 text-white"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.93 6 11v5l-2 2v1h16v-1l-2-2z"
+                    />
+                  </svg>
+                </div>
+
+                <!-- Ticker Container -->
+                <div class="flex-1 overflow-hidden">
+                  <div
+                    id="notificationTicker"
+                    class="flex space-x-8 whitespace-nowrap"
+                  >
+                    <!-- Loading message - will be replaced by real notifications -->
+                    <div
+                      class="ticker-item flex items-center text-white text-sm font-medium"
+                    >
+                      <span class="mr-2">⏳</span>
+                      Loading notifications...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Content Grid -->
+          <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
+            <!-- Left Column - Application Status & Applied Companies -->
+            <div class="xl:col-span-2 space-y-6 lg:space-y-8">
+              <!-- Application Status Section -->
+              <section
+                id="applicationStatusSection"
+                class="bg-white dark:bg-background-dark p-4 lg:p-6 rounded-lg border border-border-light dark:border-border-dark"
+              >
+                <h2 class="text-lg lg:text-xl font-bold mb-4">
+                  Application Status
+                </h2>
+                <div class="space-y-3">
+                  <div
+                    class="flex justify-between items-center text-sm font-medium"
+                  >
+                    <p>Application Progress</p>
+                    <p class="text-subtle-light dark:text-subtle-dark">
+                      3 out of 4 steps completed
+                    </p>
+                  </div>
+                  <div
+                    class="w-full bg-background-light dark:bg-border-dark rounded-full h-2.5"
+                  >
+                    <div
+                      class="bg-primary h-2.5 rounded-full"
+                      style="width: 75%"
+                    ></div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- Applied Companies Section -->
+              <!-- Applied Companies Section -->
+              <section id="appliedCompaniesSection">
+                <h2 class="text-lg lg:text-xl font-bold mb-4">
+                  Applied Companies
+                </h2>
+                <div
+                  class="bg-white dark:bg-background-dark rounded-lg border border-border-light dark:border-border-dark"
+                >
+                  <!-- Table container with fixed height and scrolling -->
+                  <div class="h-96 overflow-y-auto">
+                    <table class="min-w-full border-collapse">
+                      <thead
+                        class="bg-background-light dark:bg-border-dark/20 sticky top-0 z-10"
+                      >
+                        <tr>
+                          <th
+                            class="px-4 lg:px-6 py-3 text-left text-xs font-bold uppercase tracking-wider bg-background-light dark:bg-border-dark/20"
+                            scope="col"
+                          >
+                            Company
+                          </th>
+                          <th
+                            class="px-4 lg:px-6 py-3 text-left text-xs font-bold uppercase tracking-wider bg-background-light dark:bg-border-dark/20"
+                            scope="col"
+                          >
+                            Role
+                          </th>
+                          <th
+                            class="px-4 lg:px-6 py-3 text-left text-xs font-bold uppercase tracking-wider bg-background-light dark:bg-border-dark/20"
+                            scope="col"
+                          >
+                            Status
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody
+                        id="applicationsTableBody"
+                        class="divide-y divide-border-light dark:divide-border-dark"
+                      >
+                        <tr id="loaderRow">
+                          <td colspan="3" class="text-center py-8">
+                            <div
+                              class="flex justify-center items-center space-x-3"
+                            >
+                              <div
+                                class="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500 border-solid"
+                              ></div>
+                              <span
+                                class="text-gray-500 dark:text-gray-300 text-sm"
+                              >
+                                Loading applications...
+                              </span>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- Right Column - Quick Actions & Recommended Companies -->
+            <div class="xl:col-span-1 space-y-6 lg:space-y-8">
+              <!-- Quick Actions Section -->
+              <section id="quickActionsSection">
+                <h2 class="text-lg lg:text-xl font-bold mb-4">Quick Actions</h2>
+                <div class="space-y-3">
+                  <button
+                    id="browseOpportunitiesButton"
+                    class="w-full flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary hover:opacity-90"
+                    onclick="window.location.href='opportunities.html'"
+                  >
+                    Browse Opportunities
+                  </button>
+                  <button
+                    id="updateProfileButton"
+                    class="w-full flex items-center justify-center px-4 py-3 border border-border-light dark:border-border-dark text-base font-medium rounded-lg bg-background-light dark:bg-border-dark/30 hover:bg-border-light dark:hover:bg-border-dark/50"
+                    onclick="window.location.href='student_profile.html'"
+                  >
+                    Update Profile
+                  </button>
+                </div>
+              </section>
+
+              <!-- Recommended Companies Section -->
+              <section id="recommendedCompaniesSection">
+                <h2 class="text-lg lg:text-xl font-bold mb-4">
+                  Recommended Companies
+                </h2>
+                <div
+                  class="space-y-4 h-64 lg:h-96 overflow-y-auto"
+                  id="recommendedcompany"
+                >
+                  <div class="flex justify-center items-center space-x-3 py-8">
+                    <div
+                      class="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500 border-solid"
+                    ></div>
+                    <span class="text-gray-500 dark:text-gray-300 text-sm">
+                      Loading Companies...
+                    </span>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div
+      id="mobileOverlay"
+      class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30 hidden"
+    ></div>
+
+    <script>
+      // Mobile menu functionality
+      document.addEventListener("DOMContentLoaded", function () {
+        const mobileMenuButton = document.getElementById("mobileMenuButton");
+        const closeSidebar = document.getElementById("closeSidebar");
+        const sidebar = document.getElementById("sidebar");
+        const mobileOverlay = document.getElementById("mobileOverlay");
+        const mainContent = document.querySelector("main");
+
+        function openSidebar() {
+          sidebar.classList.add("open");
+          mobileOverlay.classList.remove("hidden");
+          document.body.style.overflow = "hidden";
+        }
+
+        function closeSidebarMenu() {
+          sidebar.classList.remove("open");
+          mobileOverlay.classList.add("hidden");
+          document.body.style.overflow = "";
+        }
+
+        function toggleSidebar() {
+          if (sidebar.classList.contains("open")) {
+            closeSidebarMenu();
+          } else {
+            openSidebar();
+          }
+        }
+
+        if (mobileMenuButton) {
+          mobileMenuButton.addEventListener("click", toggleSidebar);
+        }
+
+        if (closeSidebar) {
+          closeSidebar.addEventListener("click", closeSidebarMenu);
+        }
+
+        if (mobileOverlay) {
+          mobileOverlay.addEventListener("click", closeSidebarMenu);
+        }
+
+        // Close sidebar when clicking on nav links on mobile
+        const navLinks = document.querySelectorAll("nav a");
+        navLinks.forEach((link) => {
+          link.addEventListener("click", () => {
+            if (window.innerWidth < 1024) {
+              closeSidebarMenu();
+            }
+          });
+        });
+
+        // Close sidebar on window resize if it becomes desktop
+        window.addEventListener("resize", function () {
+          if (window.innerWidth >= 1024) {
+            closeSidebarMenu();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

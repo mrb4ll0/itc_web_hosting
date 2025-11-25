@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Industrial Training View - IT Connect Portal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#062ff9",
+              "background-light": "#f5f6f8",
+              "background-dark": "#0f1323",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+    </style>
+  </head>
+  <body class="bg-background-light dark:bg-background-dark font-display">
+    <div
+      id="app-container"
+      class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden"
+    >
+      <div
+        id="layout-container"
+        class="layout-container flex h-full grow flex-col"
+      >
+        <header
+          id="main-header"
+          class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-gray-200 dark:border-b-gray-700 bg-white dark:bg-background-dark px-6 md:px-10 lg:px-20 py-3"
+        >
+          <div
+            id="header-left"
+            class="flex items-center gap-4 text-gray-900 dark:text-white"
+          >
+            <div id="logo" class="size-6">
+              <div class="w-15 h-8 text-primary animate-bounce">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  class="size-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+                  />
+                </svg>
+              </div>
+            </div>
+            <h2
+              id="site-title"
+              class="text-lg font-bold leading-tight tracking-[-0.015em]"
+            >
+              IT Connect Portal
+            </h2>
+          </div>
+          <div
+            id="header-right"
+            class="hidden md:flex flex-1 justify-end gap-8"
+          >
+            <div
+              id="user-avatar"
+              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+              data-alt="User avatar image"
+              style="
+                background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBz5eFto7TNcYmgb0yInOLCksTWIGagH6g6sixauqzOWNKPJNT3HHjwZ2OU6XKFcWcXy8lFZu7gpY393CPR_kXImpBWsonraYg4pfPGqQiO1SpkBZXn5Zza3MqiBTb-SIdK17fWdq5qVhxfnzYHjahohvnQiFtoqU6XMRuBfTAg0fpfn16oTcyp36ELEnyKq2bMcA0ROT7PmlvtjfcRb22IhBpyGvNmvaWFfzW4Bz1taqBhLzVYIdNw81h2ND8vQGZPXWq1jUKxFg');
+              "
+            ></div>
+          </div>
+        </header>
+        <main
+          id="main-content"
+          class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+        >
+          <div id="content-container" class="flex flex-col gap-6">
+            <div id="breadcrumb" class="flex flex-wrap gap-2 text-sm">
+              <a
+                id="breadcrumb-dashboard"
+                class="text-gray-500 dark:text-gray-400 font-medium leading-normal"
+                href="#"
+                >Dashboard</a
+              >
+              <span
+                id="breadcrumb-separator-1"
+                class="text-gray-500 dark:text-gray-400 font-medium leading-normal"
+                >/</span
+              >
+              <a
+                id="breadcrumb-industrial-training"
+                class="text-gray-500 dark:text-gray-400 font-medium leading-normal"
+                href="#"
+                >Industrial Training</a
+              >
+              <span
+                id="breadcrumb-separator-2"
+                class="text-gray-500 dark:text-gray-400 font-medium leading-normal"
+                >/</span
+              >
+              <span
+                id="breadcrumb-current"
+                class="text-gray-800 dark:text-gray-100 font-medium leading-normal"
+              ></span>
+            </div>
+            <div
+              id="header-section"
+              class="flex flex-col md:flex-row flex-wrap justify-between items-start gap-4"
+            >
+              <div id="title-section" class="flex min-w-72 flex-col gap-2">
+                <div id="title-container" class="flex items-center gap-3">
+                  <p
+                    id="training-title"
+                    class="text-gray-900 dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]"
+                  ></p>
+                  <span
+                    id="status-badge"
+                    class="inline-flex items-center rounded-full bg-green-100 dark:bg-green-900/40 px-3 py-1 text-xs font-medium text-green-700 dark:text-green-300"
+                  ></span>
+                </div>
+                <p
+                  id="company-name"
+                  class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal"
+                ></p>
+              </div>
+              <div id="action-buttons" class="flex gap-3">
+                <button
+                  id="edit-button"
+                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em]"
+                >
+                  <span class="truncate">Edit Training</span>
+                </button>
+                <button
+                  id="close-button"
+                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-200 text-sm font-bold leading-normal tracking-[0.015em]"
+                >
+                  <span class="truncate">Close Posting</span>
+                </button>
+              </div>
+            </div>
+            <div
+              id="main-grid"
+              class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4"
+            >
+              <div id="sidebar" class="lg:col-span-1 flex flex-col gap-6">
+                <div
+                  id="at-glance-card"
+                  class="bg-white dark:bg-gray-800/50 p-6 rounded-xl border border-gray-200 dark:border-gray-700"
+                >
+                  <h3
+                    id="at-glance-title"
+                    class="text-lg font-bold leading-tight tracking-[-0.015em] text-gray-900 dark:text-white pb-4"
+                  >
+                    At a Glance
+                  </h3>
+                  <div id="at-glance-content" class="space-y-4">
+                    <div id="department-info" class="flex items-start gap-4">
+                      <span
+                        id="department-icon"
+                        class="material-symbols-outlined text-gray-500 dark:text-gray-400 mt-1"
+                        >business_center</span
+                      >
+                      <div id="department-details">
+                        <p
+                          id="department-label"
+                          class="text-sm text-gray-500 dark:text-gray-400"
+                        >
+                          Department
+                        </p>
+                        <p
+                          id="department-value"
+                          class="font-medium text-gray-800 dark:text-gray-200"
+                        >
+                          Engineering
+                        </p>
+                      </div>
+                    </div>
+                    <div id="location-info" class="flex items-start gap-4">
+                      <span
+                        id="location-icon"
+                        class="material-symbols-outlined text-gray-500 dark:text-gray-400 mt-1"
+                        >location_on</span
+                      >
+                      <div id="location-details">
+                        <p
+                          id="location-label"
+                          class="text-sm text-gray-500 dark:text-gray-400"
+                        >
+                          Location
+                        </p>
+                        <p
+                          id="location-value"
+                          class="font-medium text-gray-800 dark:text-gray-200"
+                        >
+                          San Francisco, CA (Remote optional)
+                        </p>
+                      </div>
+                    </div>
+                    <div id="stipend-info" class="flex items-start gap-4">
+                      <span
+                        id="stipend-icon"
+                        class="material-symbols-outlined text-gray-500 dark:text-gray-400 mt-1"
+                        >payments</span
+                      >
+                      <div id="stipend-details">
+                        <p
+                          id="stipend-label"
+                          class="text-sm text-gray-500 dark:text-gray-400"
+                        >
+                          Stipend
+                        </p>
+                        <p
+                          id="stipend-value"
+                          class="font-medium text-gray-800 dark:text-gray-200"
+                        >
+                          $3,000 / month
+                        </p>
+                      </div>
+                    </div>
+                    <div id="aptitude-info" class="flex items-start gap-4">
+                      <span
+                        id="aptitude-icon"
+                        class="material-symbols-outlined text-gray-500 dark:text-gray-400 mt-1"
+                        >quiz</span
+                      >
+                      <div id="aptitude-details">
+                        <p
+                          id="aptitude-label"
+                          class="text-sm text-gray-500 dark:text-gray-400"
+                        >
+                          Aptitude Test Required
+                        </p>
+                        <p
+                          id="aptitude-value"
+                          class="font-medium text-gray-800 dark:text-gray-200"
+                        >
+                          Yes
+                        </p>
+                      </div>
+                    </div>
+                    <div id="dates-info" class="flex items-start gap-4">
+                      <span
+                        id="dates-icon"
+                        class="material-symbols-outlined text-gray-500 dark:text-gray-400 mt-1"
+                        >calendar_today</span
+                      >
+                      <div id="dates-details">
+                        <p
+                          id="dates-label"
+                          class="text-sm text-gray-500 dark:text-gray-400"
+                        >
+                          Dates
+                        </p>
+                        <p
+                          id="dates-value"
+                          class="font-medium text-gray-800 dark:text-gray-200"
+                        >
+                          Jun 1, 2024 - Aug 31, 2024
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  id="applications-card"
+                  class="bg-white dark:bg-gray-800/50 p-6 rounded-xl border border-gray-200 dark:border-gray-700"
+                >
+                  <h3
+                    id="applications-title"
+                    class="text-lg font-bold leading-tight tracking-[-0.015em] text-gray-900 dark:text-white pb-4"
+                  >
+                    Applications Overview
+                  </h3>
+                  <div id="applications-content">
+                    <div
+                      id="positions-filled"
+                      class="flex justify-between items-center mb-2"
+                    >
+                      <p
+                        id="positions-label"
+                        class="text-sm font-medium text-gray-600 dark:text-gray-300"
+                      >
+                        Positions Filled
+                      </p>
+                      <p
+                        id="positions-value"
+                        class="text-sm font-bold text-gray-800 dark:text-gray-100"
+                      >
+                        2 / 5
+                      </p>
+                    </div>
+                    <div
+                      id="progress-bar-container"
+                      class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5"
+                    >
+                      <div
+                        id="progress-bar"
+                        class="bg-primary h-2.5 rounded-full"
+                        style="width: 40%"
+                      ></div>
+                    </div>
+                    <p
+                      id="applications-count"
+                      class="text-xs text-gray-500 dark:text-gray-400 mt-2"
+                    >
+                      12 total applications received.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div id="content-area" class="lg:col-span-2">
+                <div
+                  id="details-card"
+                  class="bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700"
+                >
+                  <!-- Tab Navigation -->
+                  <div
+                    id="tab-navigation"
+                    class="border-b border-gray-200 dark:border-gray-700"
+                  >
+                    <nav
+                      id="tabs"
+                      aria-label="Tabs"
+                      class="-mb-px flex gap-6 px-6"
+                    >
+                      <a
+                        id="details-tab"
+                        aria-current="page"
+                        class="shrink-0 border-b-2 border-primary px-1 py-4 text-sm font-medium text-primary"
+                        >Details</a
+                      >
+                      <a
+                        id="applications-tab"
+                        class="shrink-0 border-b-2 border-transparent px-1 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200"
+                        href="#"
+                        >Applications
+                        <span
+                          id="applications-badge"
+                          class="ml-1 rounded-full bg-primary/20 text-primary px-2 py-0.5 text-xs"
+                          >12</span
+                        ></a
+                      >
+                      <a
+                        id="analytics-tab"
+                        class="shrink-0 border-b-2 border-transparent px-1 py-4 text-sm font-medium text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200"
+                        href="#"
+                        >Analytics</a
+                      >
+                    </nav>
+                  </div>
+
+                  <!-- Details Tab Content -->
+                  <div
+                    id="tab-content"
+                    data-tab-content
+                    class="p-6 text-gray-600 dark:text-gray-300 space-y-6"
+                  >
+                    <div id="description-section">
+                      <h4
+                        id="description-title"
+                        class="text-base font-bold text-gray-800 dark:text-gray-100 mb-2"
+                      >
+                        Description
+                      </h4>
+                      <p
+                        id="description-content"
+                        class="text-sm leading-relaxed"
+                      ></p>
+                    </div>
+                    <div id="responsibilities-section">
+                      <div
+                        id="compact-responsibilities"
+                        class="max-w-2xl mx-auto"
+                      >
+                        <div class="text-center mb-4">
+                          <h4
+                            id="compact-responsibilities-title"
+                            class="text-base font-semibold text-gray-800 dark:text-gray-100 inline-flex items-center gap-2"
+                          >
+                            <span
+                              class="material-symbols-outlined text-purple-500 text-lg"
+                              >checklist</span
+                            >
+                            Key Responsibilities
+                            <span
+                              class="text-xs font-normal text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full"
+                            >
+                              Auto-generated
+                            </span>
+                          </h4>
+                        </div>
+
+                        <div
+                          id="compact-responsibilities-list"
+                          class="bg-white dark:bg-gray-800 rounded-lg p-4 border dark:border-gray-700"
+                        >
+                          <ul class="space-y-2 text-sm">
+                            <li class="text-gray-700 dark:text-gray-300">
+                              • Collaborate with teams to design and implement
+                              features
+                            </li>
+                            <li class="text-gray-700 dark:text-gray-300">
+                              • Write clean, maintainable code following
+                              standards
+                            </li>
+                            <li class="text-gray-700 dark:text-gray-300">
+                              • Participate in code reviews and quality
+                              assurance
+                            </li>
+                            <li class="text-gray-700 dark:text-gray-300">
+                              • Troubleshoot and debug existing systems
+                            </li>
+                            <li class="text-gray-700 dark:text-gray-300">
+                              • Document work and contribute to team knowledge
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="outcomes-section">
+                      <div
+                        id="industrial-training-outcomes-generic"
+                        class="outcomes-container max-w-3xl mx-auto"
+                      >
+                        <!-- Header -->
+                        <div
+                          id="industrial-generic-header"
+                          class="text-center mb-6"
+                        >
+                          <h3
+                            id="industrial-generic-title"
+                            class="text-lg font-semibold text-gray-900 dark:text-white mb-2"
+                          >
+                            Industrial Training Program Outcomes
+                          </h3>
+                          <div
+                            id="industrial-generic-badge"
+                            class="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full text-xs"
+                          >
+                            <span
+                              id="industrial-generic-icon"
+                              class="material-symbols-outlined text-xs"
+                              >business_center</span
+                            >
+                            <span id="industrial-generic-badge-text"
+                              >Standard outcomes for all industrial training
+                              students</span
+                            >
+                          </div>
+                        </div>
+
+                        <!-- Unified Outcomes List -->
+                        <div
+                          id="industrial-generic-card"
+                          class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6"
+                        >
+                          <ul
+                            id="industrial-generic-list"
+                            class="grid gap-3 text-sm text-gray-700 dark:text-gray-300"
+                          >
+                            <li
+                              id="industrial-generic-outcome-1"
+                              class="flex items-start gap-3"
+                            >
+                              <span
+                                id="industrial-generic-check-1"
+                                class="material-symbols-outlined text-green-500 text-sm mt-0.5"
+                                >check_circle</span
+                              >
+                              <span id="industrial-generic-text-1"
+                                >Bridge the gap between academic learning and
+                                professional practice</span
+                              >
+                            </li>
+                            <li
+                              id="industrial-generic-outcome-2"
+                              class="flex items-start gap-3"
+                            >
+                              <span
+                                id="industrial-generic-check-2"
+                                class="material-symbols-outlined text-green-500 text-sm mt-0.5"
+                                >check_circle</span
+                              >
+                              <span id="industrial-generic-text-2"
+                                >Develop technical competencies and practical
+                                skills in your field</span
+                              >
+                            </li>
+                            <li
+                              id="industrial-generic-outcome-3"
+                              class="flex items-start gap-3"
+                            >
+                              <span
+                                id="industrial-generic-check-3"
+                                class="material-symbols-outlined text-green-500 text-sm mt-0.5"
+                                >check_circle</span
+                              >
+                              <span id="industrial-generic-text-3"
+                                >Enhance problem-solving and critical thinking
+                                abilities in real work situations</span
+                              >
+                            </li>
+                            <li
+                              id="industrial-generic-outcome-4"
+                              class="flex items-start gap-3"
+                            >
+                              <span
+                                id="industrial-generic-check-4"
+                                class="material-symbols-outlined text-green-500 text-sm mt-0.5"
+                                >check_circle</span
+                              >
+                              <span id="industrial-generic-text-4"
+                                >Cultivate professional communication and
+                                interpersonal skills</span
+                              >
+                            </li>
+                            <li
+                              id="industrial-generic-outcome-5"
+                              class="flex items-start gap-3"
+                            >
+                              <span
+                                id="industrial-generic-check-5"
+                                class="material-symbols-outlined text-green-500 text-sm mt-0.5"
+                                >check_circle</span
+                              >
+                              <span id="industrial-generic-text-5"
+                                >Understand workplace ethics, safety standards,
+                                and professional conduct</span
+                              >
+                            </li>
+                            <li
+                              id="industrial-generic-outcome-6"
+                              class="flex items-start gap-3"
+                            >
+                              <span
+                                id="industrial-generic-check-6"
+                                class="material-symbols-outlined text-green-500 text-sm mt-0.5"
+                                >check_circle</span
+                              >
+                              <span id="industrial-generic-text-6"
+                                >Gain exposure to industry tools, technologies,
+                                and current practices</span
+                              >
+                            </li>
+                          </ul>
+                        </div>
+
+                        <!-- Footer -->
+                        <div
+                          id="industrial-generic-footer"
+                          class="text-center mt-4"
+                        >
+                          <p
+                            id="industrial-generic-footer-text"
+                            class="text-xs text-gray-500 dark:text-gray-400"
+                          >
+                            These learning outcomes are automatically generated
+                            and apply to all Industrial Training placements.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="skills-section">
+                      <h4
+                        id="skills-title"
+                        class="text-base font-bold text-gray-800 dark:text-gray-100 mb-2"
+                      >
+                        Required Skills &amp; Qualifications
+                      </h4>
+                      <div
+                        id="skills-container"
+                        class="flex flex-wrap gap-2"
+                      ></div>
+                    </div>
+                  </div>
+
+                  <!-- Applications Tab Content -->
+                  <div
+                    id="applications-tab-content"
+                    data-tab-content
+                    class="hidden"
+                  >
+                    <div
+                      class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+                    >
+                      <!-- Applications Header -->
+                      <div
+                        class="px-6 py-4 border-b border-gray-200 dark:border-gray-700"
+                      >
+                        <h3
+                          class="text-lg font-semibold text-gray-900 dark:text-white"
+                        >
+                          Student Applications
+                        </h3>
+                        <p
+                          class="text-sm text-gray-600 dark:text-gray-400 mt-1"
+                        >
+                          Manage and review all applications for this industrial
+                          training opportunity.
+                        </p>
+                      </div>
+
+                      <!-- Applications Overview Cards -->
+                      <div
+                        class="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 border-b border-gray-200 dark:border-gray-700"
+                      >
+                        <div
+                          class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4"
+                        >
+                          <div class="flex items-center gap-3">
+                            <span
+                              class="material-symbols-outlined text-blue-600 dark:text-blue-400"
+                              >groups</span
+                            >
+                            <div>
+                              <p
+                                class="text-2xl font-bold text-blue-900 dark:text-blue-100"
+                                id="total-applications"
+                              >
+                                0
+                              </p>
+                              <p
+                                class="text-sm text-blue-700 dark:text-blue-300"
+                              >
+                                Total Applications
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4"
+                        >
+                          <div class="flex items-center gap-3">
+                            <span
+                              class="material-symbols-outlined text-yellow-600 dark:text-yellow-400"
+                              >schedule</span
+                            >
+                            <div>
+                              <p
+                                class="text-2xl font-bold text-yellow-900 dark:text-yellow-100"
+                                id="pending-applications"
+                              >
+                                0
+                              </p>
+                              <p
+                                class="text-sm text-yellow-700 dark:text-yellow-300"
+                              >
+                                Pending Review
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4"
+                        >
+                          <div class="flex items-center gap-3">
+                            <span
+                              class="material-symbols-outlined text-green-600 dark:text-green-400"
+                              >check_circle</span
+                            >
+                            <div>
+                              <p
+                                class="text-2xl font-bold text-green-900 dark:text-green-100"
+                                id="accepted-applications"
+                              >
+                                0
+                              </p>
+                              <p
+                                class="text-sm text-green-700 dark:text-green-300"
+                              >
+                                Accepted
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4"
+                        >
+                          <div class="flex items-center gap-3">
+                            <span
+                              class="material-symbols-outlined text-red-600 dark:text-red-400"
+                              >cancel</span
+                            >
+                            <div>
+                              <p
+                                class="text-2xl font-bold text-red-900 dark:text-red-100"
+                                id="rejected-applications"
+                              >
+                                0
+                              </p>
+                              <p class="text-sm text-red-700 dark:text-red-300">
+                                Rejected
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Applications Table -->
+                      <div class="overflow-x-auto">
+                        <table class="w-full">
+                          <thead class="bg-gray-50 dark:bg-gray-700">
+                            <tr>
+                              <th
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                              >
+                                Student
+                              </th>
+                              <th
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                              >
+                                Course
+                              </th>
+                              <th
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                              >
+                                Institution
+                              </th>
+                              <th
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                              >
+                                Status
+                              </th>
+                              <th
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                              >
+                                Applied Date
+                              </th>
+                              <th
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                              >
+                                Actions
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody
+                            id="applications-table-body"
+                            class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
+                          >
+                            <!-- Applications will be populated here -->
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Analytics Tab Content -->
+                  <div id="analytics-content" data-tab-content class="hidden">
+                    <div
+                      class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6"
+                    >
+                      <div class="text-center py-8">
+                        <span
+                          class="material-symbols-outlined text-4xl text-gray-400 dark:text-gray-600 mb-4"
+                          >analytics</span
+                        >
+                        <h3
+                          class="text-lg font-semibold text-gray-900 dark:text-white mb-2"
+                        >
+                          Analytics Coming Soon
+                        </h3>
+                        <p class="text-gray-500 dark:text-gray-400">
+                          Detailed analytics and insights will be available here
+                          soon.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+    <script type="module" src="js/general/it_post_view.js"></script>
+  </body>
+</html>

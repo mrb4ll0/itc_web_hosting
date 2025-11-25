@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Student Profile - IT Connect</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#005A9C",
+              "background-light": "#F0F2F5",
+              "background-dark": "#0f1323",
+              accent: "#FF6B6B",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+      .loading-skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+      }
+      @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-[#111218] dark:text-white"
+  >
+    <div
+      class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden"
+    >
+      <div class="layout-container flex h-full grow flex-col">
+        <header
+          class="bg-white dark:bg-background-dark/80 backdrop-blur-sm sticky top-0 z-10"
+        >
+          <div class="px-4 md:px-10 lg:px-20 mx-auto">
+            <div
+              class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f1f5] dark:border-b-gray-700 h-16"
+            >
+              <div
+                class="flex items-center gap-4 text-[#111218] dark:text-white"
+              >
+                <div class="size-6 text-primary">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    class="size-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+                    />
+                  </svg>
+                </div>
+                <h2
+                  class="text-[#111218] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]"
+                >
+                  IT Connect
+                </h2>
+              </div>
+              <div class="hidden md:flex flex-1 justify-end gap-8">
+                <div class="flex items-center gap-9">
+                  
+                </div>
+                <button
+                 onclick="window.location.href='notifications.html'"
+                  class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#f0f1f5] dark:bg-gray-700 text-[#111218] dark:text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5"
+                >
+                  <span
+                    class="material-symbols-outlined text-[#111218] dark:text-white"
+                    style="font-size: 20px"
+                    >notifications</span
+                  >
+                </button>
+                <div id="header-profile-image"
+                  class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 loading-skeleton"
+                  data-alt="User profile picture"
+                ></div>
+              </div>
+              <button
+                class="md:hidden flex items-center justify-center rounded-lg h-10 w-10 bg-[#f0f1f5] dark:bg-gray-700 text-[#111218] dark:text-white"
+              >
+                <span class="material-symbols-outlined">menu</span>
+              </button>
+            </div>
+          </div>
+        </header>
+        <main
+          class="flex-1 px-4 md:px-10 lg:px-20 py-8 mx-auto w-full max-w-7xl"
+        >
+          <div class="layout-content-container flex flex-col w-full">
+            <!-- Loading State -->
+            <div id="loading-state" class="flex p-4 @container bg-white dark:bg-gray-800 rounded-xl shadow-sm">
+              <div class="flex w-full flex-col gap-4 @[520px]:flex-row @[520px]:justify-between @[520px]:items-center">
+                <div class="flex items-center gap-4">
+                  <div class="bg-gray-300 dark:bg-gray-700 rounded-full min-h-24 w-24 md:min-h-32 md:w-32 loading-skeleton"></div>
+                  <div class="flex flex-col justify-center gap-2">
+                    <div class="h-6 bg-gray-300 dark:bg-gray-700 rounded loading-skeleton w-32"></div>
+                    <div class="h-4 bg-gray-300 dark:bg-gray-700 rounded loading-skeleton w-24"></div>
+                  </div>
+                </div>
+                <div class="flex w-full max-w-[480px] gap-3 @[480px]:w-auto">
+                  <div class="h-10 bg-gray-300 dark:bg-gray-700 rounded-lg loading-skeleton flex-1 @[480px]:flex-auto"></div>
+                  <div class="h-10 bg-gray-300 dark:bg-gray-700 rounded-lg loading-skeleton flex-1 @[480px]:flex-auto"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Profile Content (initially hidden) -->
+            <div id="profile-content" class="hidden">
+              <div
+                class="flex p-4 @container bg-white dark:bg-gray-800 rounded-xl shadow-sm"
+              >
+                <div
+                  class="flex w-full flex-col gap-4 @[520px]:flex-row @[520px]:justify-between @[520px]:items-center"
+                >
+                  <div class="flex items-center gap-4">
+                    <div id="student-profile-image"
+                      class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-24 w-24 md:min-h-32 md:w-32"
+                      data-alt="User profile picture"
+                    ></div>
+                    <div class="flex flex-col justify-center">
+                      <p id="student-name"
+                        class="text-[#111218] dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em]"
+                      ></p>
+                      <p id="student-matric"
+                        class="text-[#5f668c] dark:text-gray-400 text-base font-normal leading-normal"
+                      ></p>
+                    </div>
+                  </div>
+                  <div class="flex w-full max-w-[480px] gap-3 @[480px]:w-auto">
+                    <button 
+                        onclick="window.location.href='student_profile_edit.html'"
+                      class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-gray-200 dark:bg-gray-700 text-[#111218] dark:text-white text-sm font-bold leading-normal tracking-[0.015em] flex-1 @[480px]:flex-auto"
+                    >
+                      <span class="truncate">Edit Profile</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
+                <div class="pb-3">
+                  <div
+                    class="flex border-b border-[#dbdde6] dark:border-gray-700 px-4 gap-8"
+                  >
+                    <button
+                      id="personal-info-tab"
+                      class="tab-button flex flex-col items-center justify-center border-b-[3px] border-b-primary text-primary pb-[13px] pt-4 cursor-pointer"
+                      data-tab="personal-info"
+                    >
+                      <p
+                        class="text-sm font-bold leading-normal tracking-[0.015em]"
+                      >
+                        Personal Information
+                      </p>
+                    </button>
+                    <button
+                      id="documents-tab"
+                      class="tab-button flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#5f668c] dark:text-gray-400 pb-[13px] pt-4 cursor-pointer"
+                      data-tab="documents"
+                    >
+                      <p 
+                        class="text-sm font-bold leading-normal tracking-[0.015em]"
+                      >
+                        Documents
+                      </p>
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Personal Information Tab Content -->
+                <div id="personal-info-content" class="tab-content active">
+                  <div class="p-4 md:p-6">
+                    <section>
+                      <h2
+                        class="text-[#111218] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5"
+                      >
+                        Personal Information
+                      </h2>
+                      <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                        <div
+                          class="flex flex-col gap-1 border-t border-solid border-t-[#dbdde6] dark:border-t-gray-700 py-4 pr-2"
+                        >
+                          <p
+                            class="text-[#5f668c] dark:text-gray-400 text-sm font-normal leading-normal"
+                          >
+                            Full Name
+                          </p>
+                          <p id="personal-full-name"
+                            class="text-[#111218] dark:text-white text-sm font-normal leading-normal"
+                          ></p>
+                        </div>
+                        <div
+                          class="flex flex-col gap-1 border-t border-solid border-t-[#dbdde6] dark:border-t-gray-700 py-4 md:pl-2"
+                        >
+                          <p
+                            class="text-[#5f668c] dark:text-gray-400 text-sm font-normal leading-normal"
+                          >
+                            Email Address
+                          </p>
+                          <p id="personal-email"
+                            class="text-[#111218] dark:text-white text-sm font-normal leading-normal"
+                          ></p>
+                        </div>
+                        <div
+                          class="flex flex-col gap-1 border-t border-solid border-t-[#dbdde6] dark:border-t-gray-700 py-4 pr-2"
+                        >
+                          <p
+                            class="text-[#5f668c] dark:text-gray-400 text-sm font-normal leading-normal"
+                          >
+                            Major
+                          </p>
+                          <p id="major"
+                            class="text-[#111218] dark:text-white text-sm font-normal leading-normal"
+                          ></p>
+                        </div>
+
+                        <div
+                          class="flex flex-col gap-1 border-t border-solid border-t-[#dbdde6] dark:border-t-gray-700 py-4 pr-2"
+                        >
+                          <p
+                            class="text-[#5f668c] dark:text-gray-400 text-sm font-normal leading-normal"
+                          >
+                            Insitution
+                          </p>
+                          <p id="institution"
+                            class="text-[#111218] dark:text-white text-sm font-normal leading-normal"
+                          ></p>
+                        </div>
+
+                        <div
+                          class="flex flex-col gap-1 border-t border-solid border-t-[#dbdde6] dark:border-t-gray-700 py-4 md:pl-2"
+                        >
+                          <p
+                            class="text-[#5f668c] dark:text-gray-400 text-sm font-normal leading-normal"
+                          >
+                            Phone Number
+                          </p>
+                          <p id="personal-phone"
+                            class="text-[#111218] dark:text-white text-sm font-normal leading-normal"
+                          ></p>
+                        </div>
+                      </div>
+                    </section>
+                    <section class="mt-6">
+                      <h2
+                        class="text-[#111218] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5"
+                      >
+                        Academic Information
+                      </h2>
+                      <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                        <div
+                          class="flex flex-col gap-1 border-t border-solid border-t-[#dbdde6] dark:border-t-gray-700 py-4 pr-2"
+                        >
+                          <p
+                            class="text-[#5f668c] dark:text-gray-400 text-sm font-normal leading-normal"
+                          >
+                            School/Faculty
+                          </p>
+                          <p id="academic-school"
+                            class="text-[#111218] dark:text-white text-sm font-normal leading-normal"
+                          ></p>
+                        </div>
+                        <div
+                          class="flex flex-col gap-1 border-t border-solid border-t-[#dbdde6] dark:border-t-gray-700 py-4 md:pl-2"
+                        >
+                          <p
+                            class="text-[#5f668c] dark:text-gray-400 text-sm font-normal leading-normal"
+                          >
+                            Department
+                          </p>
+                          <p id="academic-department"
+                            class="text-[#111218] dark:text-white text-sm font-normal leading-normal"
+                          ></p>
+                        </div>
+                        <div
+                          class="flex flex-col gap-1 border-t border-solid border-t-[#dbdde6] dark:border-t-gray-700 py-4 pr-2"
+                        >
+                          <p
+                            class="text-[#5f668c] dark:text-gray-400 text-sm font-normal leading-normal"
+                          >
+                            Course of Study
+                          </p>
+                          <p id="academic-course"
+                            class="text-[#111218] dark:text-white text-sm font-normal leading-normal"
+                          ></p>
+                        </div>
+                        <div
+                          class="flex flex-col gap-1 border-t border-solid border-t-[#dbdde6] dark:border-t-gray-700 py-4 md:pl-2"
+                        >
+                          <p
+                            class="text-[#5f668c] dark:text-gray-400 text-sm font-normal leading-normal"
+                          >
+                            Level
+                          </p>
+                          <p id="academic-level"
+                            class="text-[#111218] dark:text-white text-sm font-normal leading-normal"
+                          ></p>
+                        </div>
+                        <div
+                          class="flex flex-col gap-1 border-t border-solid border-t-[#dbdde6] dark:border-t-gray-700 py-4 pr-2"
+                        >
+                          <p
+                            class="text-[#5f668c] dark:text-gray-400 text-sm font-normal leading-normal"
+                          >
+                            Matriculation Number
+                          </p>
+                          <p id="academic-matric"
+                            class="text-[#111218] dark:text-white text-sm font-normal leading-normal"
+                          ></p>
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </div>
+
+                <!-- Documents Tab Content -->
+                <div id="documents-content" class="tab-content">
+                  <div class="p-4 md:p-6">
+                    <section>
+                      <h2
+                        class="text-[#111218] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5"
+                      >
+                        My Documents
+                      </h2>
+                      <div class="p-4">
+                        <!-- Student ID Card Section -->
+                        <div class="mb-8">
+                          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Student ID Card</h3>
+                          <div id="student-id-section" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                              <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-primary text-2xl">description</span>
+                                <div>
+                                  <p class="font-medium text-gray-900 dark:text-white" id="student-id-file-name">No Student ID uploaded yet</p>
+                                  <p class="text-sm text-gray-500 dark:text-gray-400" id="student-id-file-size">-</p>
+                                </div>
+                              </div>
+                              <div class="flex gap-2">
+                                <button id="upload-student-id-btn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors text-sm">
+                                  Upload ID Card
+                                </button>
+                                <button id="view-student-id-btn" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors text-sm hidden">
+                                  View
+                                </button>
+                                <button id="download-student-id-btn" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors text-sm hidden">
+                                  Download
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Student IT letter Section -->
+                        <div class="mb-8">
+                          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Student IT Letter</h3>
+                          <div id="student-it-letter-section" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                              <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-primary text-2xl">description</span>
+                                <div>
+                                  <p class="font-medium text-gray-900 dark:text-white" id="student-it-letter-file-name">No Student IT letter uploaded yet</p>
+                                  <p class="text-sm text-gray-500 dark:text-gray-400" id="student-it-letter-file-size">-</p>
+                                </div>
+                              </div>
+                              <div class="flex gap-2">
+                                <button id="upload-student-it-letter-btn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors text-sm">
+                                  Upload IT Letter
+                                </button>
+                                <button id="view-student-it-letter-btn" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors text-sm hidden">
+                                  View
+                                </button>
+                                <button id="download-student-it-letter-btn" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors text-sm hidden">
+                                  Download
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+
+                        <!-- Portfolio Section -->
+                        <div>
+                          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Portfolio</h3>
+                          <div id="portfolio-section" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <p class="text-gray-600 dark:text-gray-300 mb-4" id="portfolio-description">No portfolio description added.</p>
+                            <button id="edit-portfolio-btn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors text-sm">
+                              Edit Portfolio
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Error State -->
+            <div id="error-state" class="hidden text-center py-12">
+              <div class="max-w-md mx-auto">
+                <svg class="w-16 h-16 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Error Loading Profile</h3>
+                <p id="error-message" class="text-gray-500 dark:text-gray-400 mb-4"></p>
+                <button id="retry-btn" 
+                        class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors">
+                  Try Again
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+        <footer class="bg-white dark:bg-gray-800 mt-12">
+          <div
+            class="px-4 md:px-10 lg:px-20 mx-auto py-6 border-t border-solid border-t-[#f0f1f5] dark:border-t-gray-700"
+          >
+            <div
+              class="flex flex-col md:flex-row justify-between items-center text-sm text-[#5f668c] dark:text-gray-400 gap-4"
+            >
+              <p>© 2025 IT Connect. All rights reserved.</p>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Add your JavaScript imports here -->
+    <script type="module" src="../js/student_profile.js"></script>
+  </body>
+</html>

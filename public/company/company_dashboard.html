@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Company Dashboard - IT Connect</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .loading-spinner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Ensure smooth transitions */
+      [data-stat-value] {
+        transition: opacity 0.3s ease;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      /* Add to your existing styles */
+      #logout-button:focus {
+        outline: 2px solid #005a9c;
+        outline-offset: 2px;
+      }
+
+      #logout-button:active {
+        transform: scale(0.95);
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#005A9C",
+              "background-light": "#F0F2F5",
+              "background-dark": "#0f1323",
+              accent: "#00C49A",
+            },
+            fontFamily: {
+              display: ["Inter"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+
+      /* Mobile menu animation */
+      .mobile-menu {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+      }
+
+      .mobile-menu.open {
+        transform: translateX(0);
+      }
+
+      /* Ensure the mobile menu has proper z-index and background */
+      @media (max-width: 1023px) {
+        .mobile-menu {
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 100vh;
+          z-index: 40;
+          background: white;
+        }
+
+        .mobile-menu.open {
+          box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-background-light dark:bg-background-dark font-display">
+    <div id="dashboard-container" class="relative flex min-h-screen w-full">
+      <!-- Mobile Menu Button -->
+      <button
+        id="mobile-menu-button"
+        class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-slate-900 rounded-lg shadow-lg"
+      >
+        <span id="mobile-menu-icon" class="material-symbols-outlined"
+          >menu</span
+        >
+      </button>
+
+      <!-- SideNavBar -->
+      <div
+        id="sidebar"
+        class="flex flex-col bg-white dark:bg-slate-900 w-64 p-4 border-r border-slate-200 dark:border-slate-700 fixed h-full mobile-menu lg:translate-x-0 z-40"
+      >
+        <div id="sidebar-header" class="flex items-center gap-3 mb-8">
+          <div
+            id="company-logo"
+            class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+            data-alt="IT Connect Logo"
+            style=""
+          ></div>
+          <div id="sidebar-company-info" class="flex flex-col">
+            <h1
+              id="sidebar-company-name"
+              class="text-slate-800 dark:text-white text-base font-bold leading-normal"
+            >
+              IT Connect
+            </h1>
+            <p
+              id="sidebar-welcome-text"
+              class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal"
+            >
+              Loading.....
+            </p>
+          </div>
+        </div>
+        <div id="sidebar-nav" class="flex flex-col gap-2 flex-grow">
+          <a
+            id="nav-dashboard"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 dark:bg-primary/20"
+            href="#"
+          >
+            <span
+              id="dashboard-icon"
+              class="material-symbols-outlined text-primary dark:text-primary"
+              >dashboard</span
+            >
+            <p
+              id="dashboard-text"
+              class="text-primary dark:text-primary text-sm font-medium leading-normal"
+            >
+              Dashboard
+            </p>
+          </a>
+          <a
+            id="nav-postings"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            href="post.html"
+          >
+            <span
+              id="postings-icon"
+              class="material-symbols-outlined text-slate-600 dark:text-slate-300"
+              >work</span
+            >
+            <p
+              id="postings-text"
+              class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal"
+            >
+              My Postings
+            </p>
+          </a>
+          <a
+            id="nav-applications"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            href="company_application.html"
+          >
+            <span
+              id="applications-icon"
+              class="material-symbols-outlined text-slate-600 dark:text-slate-300"
+              >description</span
+            >
+            <p
+              id="applications-text"
+              class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal"
+            >
+              Applications
+            </p>
+          </a>
+          <a
+            id="nav-profile"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            href="maincompany_profile.html"
+          >
+            <span
+              id="profile-icon-sidebar"
+              class="material-symbols-outlined text-slate-600 dark:text-slate-300"
+              >business_center</span
+            >
+            <p
+              id="profile-text"
+              class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal"
+            >
+              Company Profile
+            </p>
+          </a>
+
+          <a
+            id="nav-students"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            href="student_management.html"
+          >
+            <span
+              id="students-icon-sidebar"
+              class="material-symbols-outlined text-slate-600 dark:text-slate-300"
+              >school</span
+            >
+            <p
+              id="students-text"
+              class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal"
+            >
+              Student Management
+            </p>
+          </a>
+
+          <a
+            id="nav-supervisors"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            href="supervisor_management.html"
+          >
+            <span
+              id="supervisors-icon-sidebar"
+              class="material-symbols-outlined text-slate-600 dark:text-slate-300"
+              >supervisor_account</span
+            >
+            <p
+              id="supervisors-text"
+              class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal"
+            >
+              Supervisor Management
+            </p>
+          </a>
+        </div>
+        <!-- Close button for mobile -->
+        <button
+          id="close-sidebar"
+          class="lg:hidden mt-4 p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-300"
+        >
+          Close Menu
+        </button>
+      </div>
+
+      <!-- Main Content -->
+      <div id="main-content" class="flex-1 lg:ml-64 w-full">
+        <!-- TopNavBar -->
+        <header
+          id="top-navbar"
+          class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-700 px-4 sm:px-6 lg:px-10 py-3 bg-white dark:bg-slate-900 sticky top-0 z-30"
+        >
+          <h2
+            id="welcome-message"
+            class="text-slate-800 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] order-2 sm:order-1"
+          ></h2>
+          <div
+            id="top-nav-right"
+            class="flex flex-1 justify-end gap-4 items-center order-1 sm:order-2 w-full sm:w-auto"
+          >
+            <!-- Search - Hidden on mobile, visible on sm and up -->
+            <label
+              id="search-container"
+              class="hidden sm:flex flex-col min-w-40 !h-10 max-w-64"
+            >
+              <div
+                id="search-wrapper"
+                class="flex w-full flex-1 items-stretch rounded-lg h-full"
+              >
+                <div
+                  id="search-icon-container"
+                  class="text-slate-500 dark:text-slate-400 flex border-none bg-slate-100 dark:bg-slate-800 items-center justify-center pl-4 rounded-l-lg border-r-0"
+                >
+                  <span id="search-icon" class="material-symbols-outlined"
+                    >search</span
+                  >
+                </div>
+                <input
+                  id="search-input"
+                  class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-800 dark:text-white focus:outline-0 focus:ring-0 border-none bg-slate-100 dark:bg-slate-800 focus:border-none h-full placeholder:text-slate-500 dark:placeholder:text-slate-400 px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                  placeholder="Search..."
+                  value=""
+                />
+              </div>
+            </label>
+            <div id="action-buttons" class="flex gap-2">
+              <div id="logout-container" class="relative group">
+                <button
+                  id="logout-button"
+                  class="flex items-center gap-2 p-2 rounded-lg text-text-secondary dark:text-gray-300 hover:bg-secondary dark:hover:bg-gray-800 hover:text-primary dark:hover:text-white transition-colors duration-200"
+                  aria-label="Logout"
+                >
+                  <span
+                    id="logout-icon"
+                    class="material-symbols-outlined text-lg"
+                    >logout</span
+                  >
+                  <span
+                    id="logout-text"
+                    class="text-sm font-medium hidden sm:block"
+                    >Logout</span
+                  >
+                </button>
+
+                <!-- Tooltip for mobile -->
+                <div
+                  id="logout-tooltip"
+                  class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap sm:hidden"
+                >
+                  Logout
+                </div>
+              </div>
+
+              <button
+                id="notifications-button"
+                class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5 hover:bg-slate-200 dark:hover:bg-slate-700"
+                onclick="window.location.href='company_notification.html'"
+              >
+                <span id="notifications-icon" class="material-symbols-outlined"
+                  >notifications</span
+                >
+              </button>
+              <button
+                id="profile-button"
+                class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5 hover:bg-slate-200 dark:hover:bg-slate-700"
+              >
+                <span id="profile-icon-top" class="material-symbols-outlined"
+                  >person</span
+                >
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <main id="main-dashboard" class="p-4 sm:p-6 lg:p-8 xl:p-10">
+          <!-- Stats -->
+          <div
+            id="stats-container"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8"
+          >
+            <!-- Total Postings Card -->
+            <div
+              id="total-postings-card"
+              class="flex flex-col gap-2 rounded-xl p-4 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+            >
+              <p
+                id="total-postings-label"
+                class="text-slate-600 dark:text-slate-300 text-sm sm:text-base font-medium leading-normal"
+              >
+                Total Postings
+              </p>
+              <div
+                id="total-postings-value-container"
+                class="flex items-center justify-center h-12"
+              >
+                <div
+                  id="total-postings-spinner"
+                  class="loading-spinner"
+                  data-stat="totalPostings"
+                >
+                  <div
+                    id="total-postings-spinner-inner"
+                    class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"
+                  ></div>
+                </div>
+                <p
+                  id="total-postings-value"
+                  class="text-slate-800 dark:text-white tracking-light text-2xl sm:text-3xl font-bold leading-tight hidden"
+                  data-stat-value="totalPostings"
+                >
+                  12
+                </p>
+              </div>
+            </div>
+
+            <!-- Active Postings Card -->
+            <div
+              id="active-postings-card"
+              class="flex flex-col gap-2 rounded-xl p-4 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+            >
+              <p
+                id="active-postings-label"
+                class="text-slate-600 dark:text-slate-300 text-sm sm:text-base font-medium leading-normal"
+              >
+                Active Postings
+              </p>
+              <div
+                id="active-postings-value-container"
+                class="flex items-center justify-center h-12"
+              >
+                <div
+                  id="active-postings-spinner"
+                  class="loading-spinner"
+                  data-stat="activePostings"
+                >
+                  <div
+                    id="active-postings-spinner-inner"
+                    class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"
+                  ></div>
+                </div>
+                <p
+                  id="active-postings-value"
+                  class="text-slate-800 dark:text-white tracking-light text-2xl sm:text-3xl font-bold leading-tight hidden"
+                  data-stat-value="activePostings"
+                >
+                  5
+                </p>
+              </div>
+            </div>
+
+            <!-- New Applications Card -->
+            <div
+              id="new-applications-card"
+              class="flex flex-col gap-2 rounded-xl p-4 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+            >
+              <p
+                id="new-applications-label"
+                class="text-slate-600 dark:text-slate-300 text-sm sm:text-base font-medium leading-normal"
+              >
+                New Applications
+              </p>
+              <div
+                id="new-applications-value-container"
+                class="flex items-center justify-center h-12"
+              >
+                <div
+                  id="new-applications-spinner"
+                  class="loading-spinner"
+                  data-stat="newApplications"
+                >
+                  <div
+                    id="new-applications-spinner-inner"
+                    class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"
+                  ></div>
+                </div>
+                <p
+                  id="new-applications-value"
+                  class="text-slate-800 dark:text-white tracking-light text-2xl sm:text-3xl font-bold leading-tight hidden"
+                  data-stat-value="newApplications"
+                >
+                  25
+                </p>
+              </div>
+            </div>
+
+            <!-- Hired Students Card -->
+            <div
+              id="hired-students-card"
+              class="flex flex-col gap-2 rounded-xl p-4 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700"
+            >
+              <p
+                id="hired-students-label"
+                class="text-slate-600 dark:text-slate-300 text-sm sm:text-base font-medium leading-normal"
+              >
+                Accepted Students
+              </p>
+              <div
+                id="hired-students-value-container"
+                class="flex items-center justify-center h-12"
+              >
+                <div
+                  id="hired-students-spinner"
+                  class="loading-spinner"
+                  data-stat="hiredStudents"
+                >
+                  <div
+                    id="hired-students-spinner-inner"
+                    class="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"
+                  ></div>
+                </div>
+                <p
+                  id="hired-students-value"
+                  class="text-accent tracking-light text-2xl sm:text-3xl font-bold leading-tight hidden"
+                  data-stat-value="hiredStudents"
+                >
+                  3
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div
+            id="dashboard-content"
+            class="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8"
+          >
+            <!-- Applications Section -->
+            <div id="applications-section" class="xl:col-span-2">
+              <h2
+                id="applications-title"
+                class="text-slate-800 dark:text-white text-lg sm:text-[22px] font-bold leading-tight tracking-[-0.015em] pb-4"
+              >
+                New Student Applications
+              </h2>
+
+              <!-- Desktop Table View - Show on lg screens and up -->
+              <div id="applications-table-container" class="hidden lg:block">
+                <div
+                  class="h-[300px] lg:h-[300px] overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
+                >
+                  <div class="overflow-x-auto">
+                    <table id="applications-table" class="w-full">
+                      <thead
+                        class="sticky top-0 bg-slate-50 dark:bg-slate-800 z-10"
+                      >
+                        <tr>
+                          <th
+                            class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+                          >
+                            Student Name
+                          </th>
+                          <th
+                            class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+                          >
+                            Applied For
+                          </th>
+                          <th
+                            class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+                          >
+                            Date Applied
+                          </th>
+                          <th
+                            class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+                          >
+                            Status
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody
+                        id="applications-table-body"
+                        class="divide-y divide-slate-200 dark:divide-slate-700"
+                      ></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mobile List View - Show on screens smaller than lg -->
+              <div id="applications-list-container" class="block lg:hidden">
+                <div
+                  class="max-h-96 overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4"
+                >
+                  <div id="applications-list-body" class="space-y-4">
+                    <!-- Applications list will be populated here -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sidebar Content -->
+            <div
+              id="dashboard-sidebar"
+              class="xl:col-span-1 space-y-6 lg:space-y-8"
+            >
+              <!-- Quick Actions -->
+              <div id="quick-actions-section">
+                <h2
+                  id="quick-actions-title"
+                  class="text-slate-800 dark:text-white text-lg sm:text-[22px] font-bold leading-tight tracking-[-0.015em] pb-4"
+                >
+                  Quick Actions
+                </h2>
+                <div id="quick-actions-buttons" class="space-y-4">
+                  <button
+                    id="post-opportunity-button"
+                    onclick="window.location.href='new_industrial_training.html'"
+                    class="w-full flex items-center justify-center gap-2 h-12 px-4 sm:px-6 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors text-sm sm:text-base"
+                  >
+                    <span
+                      id="post-opportunity-icon"
+                      class="material-symbols-outlined"
+                      >add_circle</span
+                    >
+                    Post a New Opportunity
+                  </button>
+                  <button
+                    id="edit-profile-button"
+                    class="w-full flex items-center justify-center gap-2 h-12 px-4 sm:px-6 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-white rounded-lg font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors text-sm sm:text-base"
+                  >
+                    <span
+                      id="edit-profile-icon"
+                      class="material-symbols-outlined"
+                      >edit</span
+                    >
+                    Edit Company Profile
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      // Mobile menu functionality
+      function setupMobileMenu() {
+        const mobileMenuButton = document.getElementById("mobile-menu-button");
+        const closeSidebar = document.getElementById("close-sidebar");
+        const sidebar = document.getElementById("sidebar");
+        const mainContent = document.getElementById("main-dashboard");
+
+        function toggleSidebar() {
+          ////console.log("Toggle sidebar clicked"); // Debug log
+          sidebar.classList.toggle("open");
+
+          // Add backdrop when menu is open on mobile
+          if (window.innerWidth < 1024) {
+            if (sidebar.classList.contains("open")) {
+              this.createBackdrop();
+            } else {
+              this.removeBackdrop();
+            }
+          }
+        }
+
+        function closeSidebarMenu() {
+          ////console.log("Close sidebar clicked"); // Debug log
+          sidebar.classList.remove("open");
+          this.removeBackdrop();
+        }
+
+        // Bind the functions to the class instance
+        const boundToggleSidebar = toggleSidebar.bind(this);
+        const boundCloseSidebarMenu = closeSidebarMenu.bind(this);
+
+        if (mobileMenuButton) {
+          mobileMenuButton.addEventListener("click", boundToggleSidebar);
+        }
+
+        if (closeSidebar) {
+          closeSidebar.addEventListener("click", boundCloseSidebarMenu);
+        }
+
+        // Close sidebar when clicking on main content on mobile
+        if (mainContent) {
+          mainContent.addEventListener("click", function () {
+            if (
+              window.innerWidth < 1024 &&
+              sidebar.classList.contains("open")
+            ) {
+              boundCloseSidebarMenu();
+            }
+          });
+        }
+
+        // Close sidebar on window resize if it becomes desktop
+        window.addEventListener(
+          "resize",
+          function () {
+            if (window.innerWidth >= 1024) {
+              sidebar.classList.remove("open");
+              this.removeBackdrop();
+            }
+          }.bind(this)
+        );
+      }
+
+      // Helper method to create backdrop
+      function createBackdrop() {
+        // Remove existing backdrop if any
+        this.removeBackdrop();
+
+        const backdrop = document.createElement("div");
+        backdrop.id = "mobile-menu-backdrop";
+        backdrop.className =
+          "fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden";
+        backdrop.addEventListener("click", () => {
+          this.closeMobileMenu();
+        });
+
+        document.body.appendChild(backdrop);
+        document.body.style.overflow = "hidden"; // Prevent scrolling when menu is open
+      }
+
+      // Helper method to remove backdrop
+      function removeBackdrop() {
+        const backdrop = document.getElementById("mobile-menu-backdrop");
+        if (backdrop) {
+          backdrop.remove();
+        }
+        document.body.style.overflow = ""; // Restore scrolling
+      }
+
+      // Method to close mobile menu
+      function closeMobileMenu() {
+        const sidebar = document.getElementById("sidebar");
+        if (sidebar) {
+          sidebar.classList.remove("open");
+        }
+        this.removeBackdrop();
+      }
+    </script>
+    <script type="module" src="js/general/company_dashboard.js"></script>
+  </body>
+</html>

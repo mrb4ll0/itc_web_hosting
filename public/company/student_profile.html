@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+  <head id="head-section">
+    <meta charset="utf-8" id="meta-charset" />
+    <meta
+      content="width=device-width, initial-scale=1.0"
+      name="viewport"
+      id="meta-viewport"
+    />
+    <title id="page-title">Student Application Details</title>
+    <script
+      src="https://cdn.tailwindcss.com?plugins=forms,container-queries"
+      id="tailwind-script"
+    ></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+      id="material-icons-font"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap"
+      rel="stylesheet"
+      id="inter-font"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#005792",
+              "background-light": "#f0f2f5",
+              "background-dark": "#0f1323",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style id="material-icons-style">
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+    </style>
+  </head>
+  <body
+    id="body-main"
+    class="bg-background-light dark:bg-background-dark font-display"
+  >
+    <div
+      id="app-container"
+      class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden"
+    >
+      <div
+        id="layout-container"
+        class="layout-container flex h-full grow flex-col"
+      >
+        <header
+          id="main-header"
+          class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-gray-200 dark:border-b-gray-700 px-10 py-3 bg-white dark:bg-background-dark"
+        >
+          <div
+            id="header-left"
+            class="flex items-center gap-4 text-gray-900 dark:text-white"
+          >
+            <div id="logo-icon" class="size-6 text-primary">
+              <div class="w-15 h-8 text-primary animate-bounce">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  class="size-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+                  />
+                </svg>
+              </div>
+            </div>
+            <h2
+              id="site-title"
+              class="text-lg font-bold leading-tight tracking-[-0.015em]"
+            >
+              IT Connect
+            </h2>
+          </div>
+          <div id="header-right" class="flex flex-1 justify-end gap-8">
+            <div id="navigation-menu" class="flex items-center gap-6">
+              <!-- Dashboard Button -->
+              <button
+                id="dashboard-button"
+                class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
+                onclick="window.location.href='../company/company_dashboard.html'"
+              >
+                <span class="material-symbols-outlined text-base"
+                  >dashboard</span
+                >
+                <span>Dashboard</span>
+              </button>
+
+              <div
+                id="user-avatar"
+                class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                data-alt="User profile picture"
+                style="
+                  background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDaXd2Iih7pHUMoHAHEVZuNF9DHymQ8zkCUsVlP9mgtUBO9eTRpLbzd_NoIBA5YyZHxI3nv4IJCUT--qpXMjIp2-AcnCid8gFXb5u7sbKndOm7LPnsJ9VZS61Qdikar5jlHjlNJGKXjN2CpP4rghaVkpGewby1jkAYiix_Pcw51rXb-OAqZtIRK2s47iNoz2pfze6hx5MenDlv3BoOIRFJ5K7DMA3ZlnIiIsbIP83HBezeFLXVFO7aEQMM6OAodygNP3J5BO-Hc9w');
+                "
+              ></div>
+            </div>
+          </div>
+        </header>
+        <main id="main-content" class="flex-1 px-4 sm:px-6 lg:px-8 py-8">
+          <div id="content-container" class="max-w-7xl mx-auto">
+            <div
+              id="page-header"
+              class="flex flex-wrap justify-between items-center gap-4 mb-8"
+            >
+              <div id="title-section" class="flex min-w-72 flex-col gap-2">
+                <p
+                  id="applicant-name-title"
+                  class="text-3xl lg:text-4xl font-black leading-tight tracking-[-0.033em] text-gray-900 dark:text-white"
+                ></p>
+                <p
+                  id="submission-date"
+                  class="text-base font-normal leading-normal text-gray-500 dark:text-gray-400"
+                ></p>
+              </div>
+            </div>
+            <div
+              id="application-card"
+              class="bg-white dark:bg-gray-800/50 rounded-xl shadow-sm p-6 lg:p-8"
+            >
+              <div id="card-content" class="flex flex-col lg:flex-row gap-8">
+                <!-- Left Column -->
+                <div id="left-column" class="flex-1">
+                  <div
+                    id="profile-section"
+                    class="flex flex-col sm:flex-row items-start gap-6 mb-8"
+                  >
+                    <div
+                      id="applicant-avatar"
+                      class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32"
+                      data-alt="Applicant profile picture"
+                    ></div>
+                    <div
+                      id="applicant-info"
+                      class="flex flex-col justify-center pt-2"
+                    >
+                      <p
+                        id="applicant-full-name"
+                        class="text-2xl font-bold leading-tight tracking-[-0.015em] text-gray-900 dark:text-white"
+                      >
+                        Loading...
+                      </p>
+                      <p
+                        id="applicant-education"
+                        class="text-base font-normal leading-normal text-gray-600 dark:text-gray-400"
+                      >
+                        Loading education information...
+                      </p>
+                      <p
+                        id="applicant-graduation"
+                        class="text-base font-normal leading-normal text-gray-600 dark:text-gray-400"
+                      >
+                        Loading graduation details...
+                      </p>
+
+                      <div
+                        id="status-badges"
+                        class="flex items-center gap-2 mt-4"
+                      >
+                        <span
+                          id="status-new"
+                          class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-md text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800/30 dark:text-green-500"
+                          >New</span
+                        >
+                        <span
+                          id="status-under-review"
+                          class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-md text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800/30 dark:text-yellow-500"
+                          >Under Review</span
+                        >
+                        <span
+                          id="status-rejected"
+                          class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-md text-xs font-medium bg-red-100 text-red-800 dark:bg-red-800/30 dark:text-red-500"
+                          >Status: Rejected</span
+                        >
+                        <span
+                          id="status-accepted"
+                          class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-md text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800/30 dark:text-green-500"
+                        >
+                          Status: Accepted</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="information-sections" class="space-y-8">
+                    <!-- Applicant Information Section (existing) -->
+                    <div id="applicant-information-section">
+                      <h2
+                        id="applicant-info-title"
+                        class="text-xl font-bold leading-tight tracking-[-0.015em] px-0 pb-3 pt-2 text-gray-900 dark:text-white"
+                      >
+                        Applicant Information
+                      </h2>
+                      <div
+                        id="applicant-info-content"
+                        class="border-t border-gray-200 dark:border-gray-700"
+                      >
+                        <dl
+                          id="applicant-info-grid"
+                          class="grid grid-cols-1 sm:grid-cols-2"
+                        >
+                          <div id="full-name-field" class="px-0 py-4 sm:pr-4">
+                            <dt
+                              id="full-name-label"
+                              class="text-sm font-medium text-gray-500 dark:text-gray-400"
+                            >
+                              Full Name
+                            </dt>
+                            <dd
+                              id="full-name-value"
+                              class="mt-1 text-sm text-gray-900 dark:text-gray-200"
+                            >
+                              Loading...
+                            </dd>
+                          </div>
+                          <div
+                            id="university-field"
+                            class="px-0 py-4 sm:pl-4 border-t border-gray-200 dark:border-gray-700 sm:border-t-0"
+                          >
+                            <dt
+                              id="university-label"
+                              class="text-sm font-medium text-gray-500 dark:text-gray-400"
+                            >
+                              University
+                            </dt>
+                            <dd
+                              id="university-value"
+                              class="mt-1 text-sm text-gray-900 dark:text-gray-200"
+                            >
+                              Loading...
+                            </dd>
+                          </div>
+                          <div
+                            id="major-field"
+                            class="px-0 py-4 sm:pr-4 border-t border-gray-200 dark:border-gray-700"
+                          >
+                            <dt
+                              id="major-label"
+                              class="text-sm font-medium text-gray-500 dark:text-gray-400"
+                            >
+                              Major
+                            </dt>
+                            <dd
+                              id="major-value"
+                              class="mt-1 text-sm text-gray-900 dark:text-gray-200"
+                            >
+                              Loading...
+                            </dd>
+                          </div>
+                          <div
+                            id="gpa-field"
+                            class="px-0 py-4 sm:pl-4 border-t border-gray-200 dark:border-gray-700"
+                          >
+                            <dt
+                              id="gpa-label"
+                              class="text-sm font-medium text-gray-500 dark:text-gray-400"
+                            >
+                              Matic Number
+                            </dt>
+                            <dd
+                              id="gpa-value"
+                              class="mt-1 text-sm text-gray-900 dark:text-gray-200"
+                            >
+                              Loading...
+                            </dd>
+                          </div>
+                        </dl>
+                      </div>
+                    </div>
+
+                    <!-- Contact Information Section (existing) -->
+                    <div id="contact-information-section">
+                      <h2
+                        id="contact-info-title"
+                        class="text-xl font-bold leading-tight tracking-[-0.015em] px-0 pb-3 pt-2 text-gray-900 dark:text-white"
+                      >
+                        Contact Information
+                      </h2>
+                      <div
+                        id="contact-info-content"
+                        class="border-t border-gray-200 dark:border-gray-700"
+                      >
+                        <dl
+                          id="contact-info-grid"
+                          class="grid grid-cols-1 sm:grid-cols-2"
+                        >
+                          <div id="email-field" class="px-0 py-4 sm:pr-4">
+                            <dt
+                              id="email-label"
+                              class="text-sm font-medium text-gray-500 dark:text-gray-400"
+                            >
+                              Email Address
+                            </dt>
+                            <dd
+                              id="email-value"
+                              class="mt-1 text-sm text-gray-900 dark:text-gray-200"
+                            >
+                              Loading...
+                            </dd>
+                          </div>
+                          <div
+                            id="phone-field"
+                            class="px-0 py-4 sm:pl-4 border-t border-gray-200 dark:border-gray-700 sm:border-t-0"
+                          >
+                            <dt
+                              id="phone-label"
+                              class="text-sm font-medium text-gray-500 dark:text-gray-400"
+                            >
+                              Phone Number
+                            </dt>
+                            <dd
+                              id="phone-value"
+                              class="mt-1 text-sm text-gray-900 dark:text-gray-200"
+                            >
+                              Loading...
+                            </dd>
+                          </div>
+                        </dl>
+                      </div>
+                    </div>
+
+                    <!-- NEW: Internship Information Section -->
+                    <div id="internship-information-section">
+                      <h2
+                        id="internship-info-title"
+                        class="text-xl font-bold leading-tight tracking-[-0.015em] px-0 pb-3 pt-2 text-gray-900 dark:text-white"
+                      >
+                        Internship Information
+                      </h2>
+                      <div
+                        id="internship-info-content"
+                        class="border-t border-gray-200 dark:border-gray-700"
+                      >
+                        <dl
+                          id="internship-info-grid"
+                          class="grid grid-cols-1 sm:grid-cols-2"
+                        >
+                          <div
+                            id="internship-title-field"
+                            class="px-0 py-4 sm:pr-4"
+                          >
+                            <dt
+                              id="internship-title-label"
+                              class="text-sm font-medium text-gray-500 dark:text-gray-400"
+                            >
+                              Position Title
+                            </dt>
+                            <dd
+                              id="internship-title-value"
+                              class="mt-1 text-sm text-gray-900 dark:text-gray-200"
+                            >
+                              Loading...
+                            </dd>
+                          </div>
+                          <div
+                            id="internship-company-field"
+                            class="px-0 py-4 sm:pl-4 border-t border-gray-200 dark:border-gray-700 sm:border-t-0"
+                          >
+                            <dt
+                              id="internship-company-label"
+                              class="text-sm font-medium text-gray-500 dark:text-gray-400"
+                            >
+                              Company
+                            </dt>
+                            <dd
+                              id="internship-company-value"
+                              class="mt-1 text-sm text-gray-900 dark:text-gray-200"
+                            >
+                              Loading...
+                            </dd>
+                          </div>
+                          <div
+                            id="internship-department-field"
+                            class="px-0 py-4 sm:pr-4 border-t border-gray-200 dark:border-gray-700"
+                          >
+                            <dt
+                              id="internship-department-label"
+                              class="text-sm font-medium text-gray-500 dark:text-gray-400"
+                            >
+                              Department
+                            </dt>
+                            <dd
+                              id="internship-department-value"
+                              class="mt-1 text-sm text-gray-900 dark:text-gray-200"
+                            >
+                              Loading...
+                            </dd>
+                          </div>
+                          <div
+                            id="internship-location-field"
+                            class="px-0 py-4 sm:pl-4 border-t border-gray-200 dark:border-gray-700"
+                          >
+                            <dt
+                              id="internship-location-label"
+                              class="text-sm font-medium text-gray-500 dark:text-gray-400"
+                            >
+                              Location
+                            </dt>
+                            <dd
+                              id="internship-location-value"
+                              class="mt-1 text-sm text-gray-900 dark:text-gray-200"
+                            >
+                              Loading...
+                            </dd>
+                          </div>
+
+                          <div
+                            id="internship-start-date-field"
+                            class="px-0 py-4 sm:pr-4 border-t border-gray-200 dark:border-gray-700"
+                          >
+                            <dt
+                              id="internship-start-date-label"
+                              class="text-sm font-medium text-gray-500 dark:text-gray-400"
+                            >
+                              Start Date
+                            </dt>
+                            <dd
+                              id="internship-start-date-value"
+                              class="mt-1 text-sm text-gray-900 dark:text-gray-200"
+                            >
+                              Loading...
+                            </dd>
+                          </div>
+                          <div
+                            id="internship-end-date-field"
+                            class="px-0 py-4 sm:pl-4 border-t border-gray-200 dark:border-gray-700"
+                          >
+                            <dt
+                              id="internship-end-date-label"
+                              class="text-sm font-medium text-gray-500 dark:text-gray-400"
+                            >
+                              End Date
+                            </dt>
+                            <dd
+                              id="internship-end-date-value"
+                              class="mt-1 text-sm text-gray-900 dark:text-gray-200"
+                            >
+                              Loading...
+                            </dd>
+                          </div>
+                        </dl>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Right Column -->
+                <div
+                  id="right-column"
+                  class="w-full lg:w-1/3 xl:w-1/4 space-y-6 lg:border-l lg:pl-8 lg:border-gray-200 dark:lg:border-gray-700"
+                >
+                  <h2
+                    id="documents-title"
+                    class="text-xl font-bold leading-tight tracking-[-0.015em] text-gray-900 dark:text-white"
+                  >
+                    Documents
+                  </h2>
+                  <div id="documents-list" class="space-y-4">
+                    <div
+                      id="id-card-document"
+                      class="p-4 rounded-lg bg-background-light dark:bg-gray-900/50"
+                    >
+                      <h3
+                        id="id-card-title"
+                        class="font-semibold text-gray-800 dark:text-gray-200"
+                      >
+                        Identification Card
+                      </h3>
+                      <div id="id-card-actions" class="flex gap-2 mt-2">
+                        <button
+                          id="view-id-card"
+                          class="flex items-center gap-2 w-full justify-center rounded-md h-9 px-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                        >
+                          <span class="material-symbols-outlined text-base"
+                            >visibility</span
+                          >
+                          <span id="view-id-card-text" class="truncate"
+                            >View</span
+                          >
+                        </button>
+                        <button
+                          id="download-id-card"
+                          class="flex items-center gap-2 w-full justify-center rounded-md h-9 px-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                        >
+                          <span class="material-symbols-outlined text-base"
+                            >download</span
+                          >
+                          <span id="download-id-card-text" class="truncate"
+                            >Download</span
+                          >
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      id="application-letter-document"
+                      class="p-4 rounded-lg bg-background-light dark:bg-gray-900/50"
+                    >
+                      <h3
+                        id="application-letter-title"
+                        class="font-semibold text-gray-800 dark:text-gray-200"
+                      >
+                        Application Letter
+                      </h3>
+                      <div
+                        id="application-letter-actions"
+                        class="flex gap-2 mt-2"
+                      >
+                        <button
+                          id="view-application-letter"
+                          class="flex items-center gap-2 w-full justify-center rounded-md h-9 px-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                        >
+                          <span class="material-symbols-outlined text-base"
+                            >visibility</span
+                          >
+                          <span
+                            id="view-application-letter-text"
+                            class="truncate"
+                            >View</span
+                          >
+                        </button>
+                        <button
+                          id="download-application-letter"
+                          class="flex items-center gap-2 w-full justify-center rounded-md h-9 px-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                        >
+                          <span class="material-symbols-outlined text-base"
+                            >download</span
+                          >
+                          <span
+                            id="download-application-letter-text"
+                            class="truncate"
+                            >Download</span
+                          >
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Add this after the transcript-document section -->
+                    <div
+                      id="application-forms-document"
+                      class="p-4 rounded-lg bg-background-light dark:bg-gray-900/50"
+                    >
+                      <h3
+                        id="application-forms-title"
+                        class="font-semibold text-gray-800 dark:text-gray-200"
+                      >
+                        Application Forms
+                      </h3>
+                      <div
+                        id="application-forms-actions"
+                        class="flex gap-2 mt-2"
+                      >
+                        <button
+                          id="view-application-forms"
+                          class="flex items-center gap-2 w-full justify-center rounded-md h-9 px-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                        >
+                          <span class="material-symbols-outlined text-base"
+                            >visibility</span
+                          >
+                          <span
+                            id="view-application-forms-text"
+                            class="truncate"
+                            >View</span
+                          >
+                        </button>
+                        <button
+                          id="download-application-forms"
+                          class="flex items-center gap-2 w-full justify-center rounded-md h-9 px-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                        >
+                          <span class="material-symbols-outlined text-base"
+                            >download</span
+                          >
+                          <span
+                            id="download-application-forms-text"
+                            class="truncate"
+                            >Download</span
+                          >
+                        </button>
+                      </div>
+                    </div>
+
+                    <div
+                      id="transcript-document"
+                      class="p-4 rounded-lg bg-background-light dark:bg-gray-900/50"
+                    >
+                      <h3
+                        id="transcript-title"
+                        class="font-semibold text-gray-800 dark:text-gray-200"
+                      >
+                        Filled Form
+                      </h3>
+                      <div id="transcript-actions" class="flex gap-2 mt-2">
+                        <button
+                          id="view-transcript"
+                          class="flex items-center gap-2 w-full justify-center rounded-md h-9 px-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                        >
+                          <span class="material-symbols-outlined text-base"
+                            >visibility</span
+                          >
+                          <span id="view-transcript-text" class="truncate"
+                            >View</span
+                          >
+                        </button>
+                        <button
+                          id="download-transcript"
+                          class="flex items-center gap-2 w-full justify-center rounded-md h-9 px-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                        >
+                          <span class="material-symbols-outlined text-base"
+                            >download</span
+                          >
+                          <span id="download-transcript-text" class="truncate"
+                            >Download</span
+                          >
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    id="actions-section"
+                    class="pt-6 border-t border-gray-200 dark:border-gray-700 space-y-3"
+                  >
+                    <h3
+                      id="actions-title"
+                      class="text-lg font-bold text-gray-900 dark:text-white"
+                    >
+                      Actions
+                    </h3>
+                    <button
+                      id="accept-application-button"
+                      class="w-full flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-colors"
+                    >
+                      <span id="accept-application-text" class="truncate"
+                        >Accept Application</span
+                      >
+                    </button>
+                    <button
+                      id="reject-application-button"
+                      class="w-full flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                    >
+                      <span id="reject-application-text" class="truncate"
+                        >Reject Application</span
+                      >
+                    </button>
+                    <button
+                      id="schedule-interview-button"
+                      class="w-full flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 border border-primary text-primary text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/10 transition-colors"
+                    >
+                      <span id="schedule-interview-text" class="truncate"
+                        >Message
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+        <footer
+          id="main-footer"
+          class="bg-white dark:bg-background-dark border-t border-gray-200 dark:border-gray-700 mt-auto"
+        >
+          <div
+            id="footer-content"
+            class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500 dark:text-gray-400"
+          >
+            <p id="copyright-text">© 2025 IT Connect. All rights reserved.</p>
+          </div>
+        </footer>
+      </div>
+    </div>
+    <script type="module" src="../company/general/student_profile.js"></script>
+  </body>
+</html>

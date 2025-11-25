@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>IT Connect - Student Signup</title>
+    <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect" />
+    <link
+      as="style"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter:wght@300;400;500;600;700;800;900"
+      onload="this.rel='stylesheet'"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#607afb",
+              "primary-light": "#7c94fc",
+              "primary-dark": "#4a63e9",
+              secondary: "#8b5cf6",
+              "background-light": "#f8fafc",
+              "background-dark": "#0f1323",
+              "card-light": "#ffffff",
+              "card-dark": "#1e293b",
+              "foreground-light": "#111827",
+              "foreground-dark": "#f9fafb",
+              "subtle-light": "#6b7280",
+              "subtle-dark": "#9ca3af",
+              "border-light": "#e2e8f0",
+              "border-dark": "#334155",
+              success: "#10b981",
+              error: "#ef4444",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "0.75rem",
+              xl: "1rem",
+              full: "9999px",
+            },
+            boxShadow: {
+              soft: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
+              medium:
+                "0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025)",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      .gradient-text {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .floating-label {
+        transform: translateY(-50%);
+        transition: all 0.2s ease-out;
+      }
+      .input-field:focus + .floating-label,
+      .input-field:not(:placeholder-shown) + .floating-label {
+        top: 0;
+        font-size: 0.75rem;
+        color: #607afb;
+      }
+      .input-field:focus {
+        box-shadow: 0 0 0 3px rgba(96, 122, 251, 0.1);
+      }
+      .password-toggle {
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      .progress-bar {
+        height: 4px;
+        border-radius: 2px;
+        transition: width 0.3s ease;
+      }
+      .step-indicator {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      .step-indicator.active {
+        background-color: #607afb;
+        color: white;
+      }
+      .step-indicator.completed {
+        background-color: #10b981;
+        color: white;
+      }
+      .step-line {
+        height: 2px;
+        flex-grow: 1;
+        transition: background-color 0.3s ease;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark font-display text-foreground-light dark:text-foreground-dark"
+  >
+    <div class="flex flex-col min-h-screen">
+      <header
+        class="bg-card-light dark:bg-card-dark/80 backdrop-blur-sm sticky top-0 z-10 border-b border-border-light dark:border-border-dark shadow-soft"
+      >
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-16">
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                  stroke="currentColor"
+                  class="size-5 text-primary"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+                  />
+                </svg>
+              </div>
+              <h1 class="text-xl font-bold tracking-tight">IT Connect</h1>
+            </div>
+            <nav class="hidden md:flex items-center gap-8">
+              <a
+                class="text-sm font-medium text-subtle-light dark:text-subtle-dark hover:text-primary dark:hover:text-primary transition-colors"
+                href="../index.html"
+                >Home</a
+              >
+              <a
+                class="text-sm font-medium text-subtle-light dark:text-subtle-dark hover:text-primary dark:hover:text-primary transition-colors"
+                href="../index.html#about"
+                >About</a
+              >
+              <a
+                class="text-sm font-medium text-subtle-light dark:text-subtle-dark hover:text-primary dark:hover:text-primary transition-colors"
+                href="../index.html#contact"
+                >Contact</a
+              >
+            </nav>
+            <div class="flex items-center gap-4">
+              <a
+                class="px-4 py-2 text-sm font-semibold bg-primary/10 text-primary rounded-lg hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30 transition-colors"
+                href="login.html"
+              >
+                Login
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main
+        class="flex-grow flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8"
+      >
+        <div class="w-full max-w-2xl">
+          <div
+            class="bg-card-light dark:bg-card-dark rounded-xl shadow-medium p-8 md:p-10"
+          >
+            <!-- Progress Steps -->
+            <div class="mb-10">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                  <div class="step-indicator completed">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <div class="step-line bg-success"></div>
+                  <div class="step-indicator active">2</div>
+                  <div
+                    class="step-line bg-border-light dark:bg-border-dark"
+                  ></div>
+                  <div class="step-indicator">3</div>
+                </div>
+              </div>
+              <div
+                class="flex justify-between text-xs font-medium text-subtle-light dark:text-subtle-dark"
+              >
+                <span>Account</span>
+                <span>Education</span>
+                <span>Complete</span>
+              </div>
+            </div>
+
+            <div class="text-center mb-8">
+              <h2
+                class="text-3xl font-bold text-foreground-light dark:text-foreground-dark mb-2"
+              >
+                Create Your Student Account
+              </h2>
+              <p
+                class="text-subtle-light dark:text-subtle-dark max-w-md mx-auto"
+              >
+                Join IT Connect to discover opportunities, connect with peers,
+                and advance your IT career.
+              </p>
+            </div>
+
+            <form id="signup-form" class="space-y-6" method="POST">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Personal Information -->
+                <div class="md:col-span-2">
+                  <h3
+                    class="text-lg font-semibold text-foreground-light dark:text-foreground-dark mb-4 pb-2 border-b border-border-light dark:border-border-dark"
+                  >
+                    Personal Information
+                  </h3>
+                </div>
+
+                <div class="relative">
+                  <input
+                    class="input-field appearance-none relative block w-full px-4 py-3 border border-border-light dark:border-border-dark placeholder-transparent rounded-lg text-foreground-light dark:text-foreground-dark bg-card-light dark:bg-card-dark focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    id="full-name"
+                    name="full-name"
+                    placeholder="Full Name"
+                    required=""
+                    type="text"
+                  />
+                  <label
+                    class="floating-label absolute left-4 top-3 bg-card-light dark:bg-card-dark px-1 text-subtle-light dark:text-subtle-dark pointer-events-none transition-all"
+                    for="full-name"
+                  >
+                    Full Name
+                  </label>
+                </div>
+
+                <div class="relative">
+                  <input
+                    autocomplete="email"
+                    class="input-field appearance-none relative block w-full px-4 py-3 border border-border-light dark:border-border-dark placeholder-transparent rounded-lg text-foreground-light dark:text-foreground-dark bg-card-light dark:bg-card-dark focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    id="email-address"
+                    name="email"
+                    placeholder="Email address"
+                    required=""
+                    type="email"
+                  />
+                  <label
+                    class="floating-label absolute left-4 top-3 bg-card-light dark:bg-card-dark px-1 text-subtle-light dark:text-subtle-dark pointer-events-none transition-all"
+                    for="email-address"
+                  >
+                    Email Address
+                  </label>
+                </div>
+
+                <div class="relative">
+                  <input
+                    autocomplete="tel"
+                    class="input-field appearance-none relative block w-full px-4 py-3 border border-border-light dark:border-border-dark placeholder-transparent rounded-lg text-foreground-light dark:text-foreground-dark bg-card-light dark:bg-card-dark focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    id="phone-number"
+                    name="phone-number"
+                    placeholder="Phone Number"
+                    required=""
+                    type="tel"
+                  />
+                  <label
+                    class="floating-label absolute left-4 top-3 bg-card-light dark:bg-card-dark px-1 text-subtle-light dark:text-subtle-dark pointer-events-none transition-all"
+                    for="phone-number"
+                  >
+                    Phone Number
+                  </label>
+                </div>
+
+                <!-- Education Information -->
+                <div class="md:col-span-2 mt-4">
+                  <h3
+                    class="text-lg font-semibold text-foreground-light dark:text-foreground-dark mb-4 pb-2 border-b border-border-light dark:border-border-dark"
+                  >
+                    Education Information
+                  </h3>
+                </div>
+
+                <div class="relative">
+                  <select
+                    class="input-field appearance-none relative block w-full px-4 py-3 border border-border-light dark:border-border-dark rounded-lg text-foreground-light dark:text-foreground-dark bg-card-light dark:bg-card-dark focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    id="school"
+                    name="school"
+                  >
+                    <option value="" disabled selected>
+                      Select your school
+                    </option>
+                    <option>University of Lagos</option>
+                    <option>Covenant University</option>
+                    <option>Obafemi Awolowo University</option>
+                    <option>University of Ibadan</option>
+                    <option>University of Nigeria, Nsukka</option>
+                    <option>Ahmadu Bello University</option>
+                    <option>Federal University of Technology, Akure</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+
+                <div class="relative">
+                  <input
+                    class="input-field appearance-none relative block w-full px-4 py-3 border border-border-light dark:border-border-dark placeholder-transparent rounded-lg text-foreground-light dark:text-foreground-dark bg-card-light dark:bg-card-dark focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    id="matric-number"
+                    name="matric-number"
+                    placeholder="Matriculation Number"
+                    required=""
+                    type="text"
+                  />
+                  <label
+                    class="floating-label absolute left-4 top-3 bg-card-light dark:bg-card-dark px-1 text-subtle-light dark:text-subtle-dark pointer-events-none transition-all"
+                    for="matric-number"
+                  >
+                    Matriculation Number
+                  </label>
+                </div>
+
+                <div class="relative">
+                  <select
+                    class="input-field appearance-none relative block w-full px-4 py-3 border border-border-light dark:border-border-dark rounded-lg text-foreground-light dark:text-foreground-dark bg-card-light dark:bg-card-dark focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    id="academic-level"
+                    name="academic-level"
+                  >
+                    <option value="" disabled selected>Academic Level</option>
+                    <option>100 Level</option>
+                    <option>200 Level</option>
+                    <option>300 Level</option>
+                    <option>400 Level</option>
+                    <option>500 Level</option>
+                    <option>Postgraduate</option>
+                  </select>
+                </div>
+
+                <div class="relative">
+                  <input
+                    class="input-field appearance-none relative block w-full px-4 py-3 border border-border-light dark:border-border-dark placeholder-transparent rounded-lg text-foreground-light dark:text-foreground-dark bg-card-light dark:bg-card-dark focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    id="course-of-study"
+                    name="course-of-study"
+                    placeholder="Course of Study"
+                    required=""
+                    type="text"
+                  />
+                  <label
+                    class="floating-label absolute left-4 top-3 bg-card-light dark:bg-card-dark px-1 text-subtle-light dark:text-subtle-dark pointer-events-none transition-all"
+                    for="course-of-study"
+                  >
+                    Course of Study
+                  </label>
+                </div>
+
+                <!-- Password Section -->
+                <div class="md:col-span-2 mt-4">
+                  <h3
+                    class="text-lg font-semibold text-foreground-light dark:text-foreground-dark mb-4 pb-2 border-b border-border-light dark:border-border-dark"
+                  >
+                    Account Security
+                  </h3>
+                </div>
+
+                <div class="relative">
+                  <input
+                    autocomplete="new-password"
+                    class="input-field appearance-none relative block w-full px-4 py-3 border border-border-light dark:border-border-dark placeholder-transparent rounded-lg text-foreground-light dark:text-foreground-dark bg-card-light dark:bg-card-dark focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    id="password"
+                    name="password"
+                    placeholder="Password"
+                    required=""
+                    type="password"
+                  />
+                  <label
+                    class="floating-label absolute left-4 top-3 bg-card-light dark:bg-card-dark px-1 text-subtle-light dark:text-subtle-dark pointer-events-none transition-all"
+                    for="password"
+                  >
+                    Password
+                  </label>
+                  <button
+                    type="button"
+                    class="password-toggle absolute right-3 text-subtle-light dark:text-subtle-dark hover:text-foreground-light dark:hover:text-foreground-dark"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="relative">
+                  <input
+                    autocomplete="new-password"
+                    class="input-field appearance-none relative block w-full px-4 py-3 border border-border-light dark:border-border-dark placeholder-transparent rounded-lg text-foreground-light dark:text-foreground-dark bg-card-light dark:bg-card-dark focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    id="confirm-password"
+                    name="confirm-password"
+                    placeholder="Confirm Password"
+                    required=""
+                    type="password"
+                  />
+                  <label
+                    class="floating-label absolute left-4 top-3 bg-card-light dark:bg-card-dark px-1 text-subtle-light dark:text-subtle-dark pointer-events-none transition-all"
+                    for="confirm-password"
+                  >
+                    Confirm Password
+                  </label>
+                  <button
+                    type="button"
+                    class="password-toggle absolute right-3 text-subtle-light dark:text-subtle-dark hover:text-foreground-light dark:hover:text-foreground-dark"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- Password Strength Indicator -->
+                <div class="md:col-span-2">
+                  <div class="flex items-center justify-between mb-1">
+                    <span
+                      class="text-xs text-subtle-light dark:text-subtle-dark"
+                      >Password strength</span
+                    >
+                    <span
+                      id="password-strength-text"
+                      class="text-xs font-medium"
+                      >Weak</span
+                    >
+                  </div>
+                  <div
+                    class="w-full bg-border-light dark:bg-border-dark rounded-full h-2"
+                  >
+                    <div
+                      id="password-strength-bar"
+                      class="progress-bar bg-error rounded-full"
+                      style="width: 20%"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Terms and Conditions -->
+              <div class="flex items-start">
+                <div class="flex items-center h-5">
+                  <input
+                    id="terms"
+                    name="terms"
+                    type="checkbox"
+                    class="focus:ring-primary h-4 w-4 text-primary border-border-light dark:border-border-dark rounded"
+                    required
+                  />
+                </div>
+                <div class="ml-3 text-sm">
+                  <label
+                    for="terms"
+                    class="text-subtle-light dark:text-subtle-dark"
+                  >
+                    I agree to the
+                    <a
+                      href="#"
+                      class="font-medium text-primary hover:text-primary-dark"
+                      >Terms and Conditions</a
+                    >
+                    and
+                    <a
+                      href="#"
+                      class="font-medium text-primary hover:text-primary-dark"
+                      >Privacy Policy</a
+                    >
+                  </label>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div>
+                <button
+                  id="signup-btn"
+                  class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-card-light dark:focus:ring-offset-card-dark transition-colors shadow-md hover:shadow-lg"
+                  type="submit"
+                >
+                  <span
+                    class="absolute left-0 inset-y-0 flex items-center pl-3"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 text-white/70 group-hover:text-white"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                  Create Account
+                </button>
+              </div>
+            </form>
+
+            <!-- Divider -->
+            <div class="relative my-8">
+              <div class="absolute inset-0 flex items-center">
+                <div
+                  class="w-full border-t border-border-light dark:border-border-dark"
+                ></div>
+              </div>
+              <div class="relative flex justify-center text-sm">
+                <span
+                  class="px-3 bg-card-light dark:bg-card-dark text-subtle-light dark:text-subtle-dark"
+                >
+                  Or sign up with
+                </span>
+              </div>
+            </div>
+
+            <!-- Social Signup -->
+            <div>
+              <button
+                 id="googlebtn"
+                class="w-full inline-flex items-center justify-center py-3 px-4 border border-border-light dark:border-border-dark rounded-lg shadow-sm bg-card-light dark:bg-card-dark text-sm font-medium text-foreground-light dark:text-foreground-dark hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-card-light dark:focus:ring-offset-card-dark transition-colors"
+              >
+                <svg
+                  class="h-5 w-5 mr-3"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    fill="#4285F4"
+                  ></path>
+                  <path
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    fill="#34A853"
+                  ></path>
+                  <path
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+                    fill="#FBBC05"
+                  ></path>
+                  <path
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                    fill="#EA4335"
+                  ></path>
+                  <path d="M1 1h22v22H1z" fill="none"></path>
+                </svg>
+                Continue with Google
+              </button>
+            </div>
+
+            <!-- Login Link -->
+            <p
+              class="mt-6 text-center text-sm text-subtle-light dark:text-subtle-dark"
+            >
+              Already have an account?
+              <a
+                class="font-semibold text-primary hover:text-primary-dark transition-colors"
+                href="login.html"
+                >Sign in</a
+              >
+            </p>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="../js/auth/signup.js"></script>
+  </body>
+</html>
