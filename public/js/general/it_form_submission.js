@@ -35,7 +35,7 @@ class ITFormSubmission {
     this.showLoadingDialog();
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        //console.log(" User is signed in:", user.uid);
+        ////console.log(" User is signed in:", user.uid);
         this.loadStudentImage(user.uid);
       } else {
         console.warn("No user signed in");
@@ -262,7 +262,7 @@ class ITFormSubmission {
   async loadStudentImage(userId) {
     const student = await itc_firebase_logic.getStudent(userId);
     if (student) {
-      //console.log("Loaded student data:", student.imageUrl);
+      ////console.log("Loaded student data:", student.imageUrl);
       this.top_right_image.style.backgroundImage = `url(${
         student.imageUrl || "../images/default-profile.png"
       })`;
@@ -277,7 +277,7 @@ class ITFormSubmission {
   }
 
   async init() {
-    //console.log("DocumentUploadManager initialized");
+    ////console.log("DocumentUploadManager initialized");
     await this.checkInternships();
     this.setupEventListeners();
     this.setupDragAndDrop();
@@ -285,21 +285,21 @@ class ITFormSubmission {
 
   async checkInternships() {
     try {
-      //console.log("Checking for internships...");
+      ////console.log("Checking for internships...");
       const internships = await this.fetchInternships();
 
       if (internships && internships.length > 0) {
-        //console.log("Internships found:", internships);
+        ////console.log("Internships found:", internships);
         this.currentInternship = internships[0];
         this.studentData = await itc_firebase_logic.getStudent(
           auth.currentUser.uid
         );
-        //console.log("Student data:", this.studentData.toMap());
+        ////console.log("Student data:", this.studentData.toMap());
         await this.setupNewOrExistingFile();
         this.showUploadWidget();
         this.displayInternshipInfo();
       } else {
-        //console.log("No internships found");
+        ////console.log("No internships found");
         await this.setupNewOrExistingFile();
         this.hideUploadWidget();
         this.showNoInternshipsMessage();
@@ -313,7 +313,7 @@ class ITFormSubmission {
   async fetchInternships() {
     try {
       const internshipId = this.getInternshipIdFromURL();
-      //console.log("Fetching internship with ID:", internshipId);
+      ////console.log("Fetching internship with ID:", internshipId);
 
       const internship = await companyCloud.getInternshipById(internshipId);
       const applications =
@@ -321,9 +321,9 @@ class ITFormSubmission {
           internship.company.id,
           internship.id
         );
-      //console.log("applications is "+JSON.stringify(applications));
+      ////console.log("applications is "+JSON.stringify(applications));
       this.applicationsCount = applications.length;
-      //console.log("Raw internship data from Firestore:", internship);
+      ////console.log("Raw internship data from Firestore:", internship);
 
       // Check if internship and files exist
       if (!internship) {
@@ -331,15 +331,15 @@ class ITFormSubmission {
         return [];
       }
 
-      //console.log("Internship files:", internship.files);
-      //console.log("Files length:", internship.files?.length);
-      //console.log("Files type:", typeof internship.files);
+      ////console.log("Internship files:", internship.files);
+      ////console.log("Files length:", internship.files?.length);
+      ////console.log("Files type:", typeof internship.files);
 
       let hasForm;
       let formUrl;
 
       const company = await companyCloud.getCompany(internship.company.id);
-      //console.log("form is " + JSON.stringify(company));
+      ////console.log("form is " + JSON.stringify(company));
       if (company.forms.length != 0) {
         hasForm =
           company.forms &&
@@ -353,12 +353,12 @@ class ITFormSubmission {
           internship.files.length > 0;
         formUrl = hasForm ? internship.files[0] : null;
       }
-      //console.log("hasForm " + hasForm);
+      ////console.log("hasForm " + hasForm);
 
-      //console.log("formUrl " + formUrl);
+      ////console.log("formUrl " + formUrl);
 
-      //console.log("Has form:", hasForm);
-      //console.log("Form URL:", formUrl);
+      ////console.log("Has form:", hasForm);
+      ////console.log("Form URL:", formUrl);
 
       return [
         {
@@ -395,7 +395,7 @@ class ITFormSubmission {
   displayInternshipInfo() {
     if (!this.currentInternship) return;
 
-    //console.log("Displaying internship info:", this.currentInternship);
+    ////console.log("Displaying internship info:", this.currentInternship);
 
     const title = document.getElementById("page-title");
     const subtitle = document.getElementById("page-subtitle");
@@ -403,7 +403,7 @@ class ITFormSubmission {
       "application-forms-section"
     );
     const formExist = isFormExist(this.currentInternship);
-    //console.log("form exist " + formExist);
+    ////console.log("form exist " + formExist);
     if (!formExist) {
       attachFileSection.classList.add("hidden");
     }
@@ -457,9 +457,9 @@ class ITFormSubmission {
     const downloadBtn = document.getElementById("download-form-btn");
     if (downloadBtn) {
       downloadBtn.addEventListener("click", () => this.printForm());
-      //console.log("Download button event listener added");
+      ////console.log("Download button event listener added");
     } else {
-      //console.log("No download button to add event listener to");
+      ////console.log("No download button to add event listener to");
     }
   }
 
@@ -573,7 +573,7 @@ class ITFormSubmission {
   }
 
   setupEventListeners() {
-    //console.log("Setting up event listeners...");
+    ////console.log("Setting up event listeners...");
 
     // ID Card upload
     const idCardInput = document.getElementById("id-card-upload");
@@ -615,11 +615,11 @@ class ITFormSubmission {
       cancelBtn.addEventListener("click", () => this.handleCancel());
     }
 
-    //console.log("Event listeners setup complete");
+    ////console.log("Event listeners setup complete");
   }
 
   setupDragAndDrop() {
-    //console.log("Setting up drag and drop...");
+    ////console.log("Setting up drag and drop...");
 
     const dropZones = [
       document.getElementById("id-card-upload-area"),
@@ -663,7 +663,7 @@ class ITFormSubmission {
     if (!files.length) return;
 
     const file = files[0];
-    //console.log(`File selected for ${fileType}:`, file.name);
+    ////console.log(`File selected for ${fileType}:`, file.name);
 
     // Validate file
     if (!this.validateFile(file, fileType)) {
@@ -1067,7 +1067,7 @@ class ITFormSubmission {
       submitBtn.disabled = false;
       return false;
     }
-        console.log("it is "+JSON.stringify(it));
+        //console.log("it is "+JSON.stringify(it));
     let appStatus;
     appStatus = it.rawInternship.status;
 
@@ -1077,7 +1077,7 @@ class ITFormSubmission {
       this.applicationsCount || 0
     );
 
-    console.log("Using application count: " + currentApplicationsCount);
+    //console.log("Using application count: " + currentApplicationsCount);
 
     // Update application count (you might want to save this back to your database)
     this.applicationsCount = currentApplicationsCount;
@@ -1086,16 +1086,16 @@ class ITFormSubmission {
     if (it.rawInternship.intakeCapacity && currentApplicationsCount >= it.rawInternship.intakeCapacity) {
       appStatus = "closed";
       internship.status = "closed";
-      console.log(
+      //console.log(
         `Application count (${currentApplicationsCount}) reached intake capacity (${it.rawInternship.intakeCapacity}). Status set to: ${appStatus}`
       );
     } else {
-      console.log(
+      //console.log(
         `Application count (${currentApplicationsCount}) is below intake capacity (${it.rawInternship.intakeCapacity}). Current status: ${appStatus}`
       );
     }
 
-     console.log("app status is "+appStatus);
+     //console.log("app status is "+appStatus);
     const isITClosed = appStatus == "closed";
     if (isITClosed) {
       alert(title + " from " + company + " is closed");
@@ -1196,7 +1196,7 @@ class ITFormSubmission {
         (hasForm && this.uploadedFiles.applicationForms.length > 0);
 
       if (hasNewFilesToUpload) {
-        // console.log(' Uploading new documents...');
+        // //console.log(' Uploading new documents...');
         const uploadResult = await this.uploadDocuments(
           useExistingIdCard,
           useExistingTrainingLetter
@@ -1228,14 +1228,14 @@ class ITFormSubmission {
 
         application = uploadResult.app;
       } else {
-        //console.log('Using existing files only - no upload needed');
+        ////console.log('Using existing files only - no upload needed');
         // Create application directly using existing files
         application = StudentApplication.createNewApplication(
           this.studentData,
           this.currentInternship
         );
 
-        console.log(
+        //console.log(
           "application json is " + JSON.stringify(application.toMap())
         );
 
@@ -1263,7 +1263,7 @@ class ITFormSubmission {
       // Submit application to Firestore
       const durationData = getDurationData();
       application.setDuration(durationData.duration);
-      console.log("Duration set to " + JSON.stringify(durationData.duration));
+      //console.log("Duration set to " + JSON.stringify(durationData.duration));
       const appid = await it_base_companycloud.submitITApplication(
         this.currentInternship.company.id,
         this.currentInternship.id,
@@ -1302,15 +1302,15 @@ class ITFormSubmission {
     await auth.authStateReady();
 
     try {
-      //console.log("🔄 Starting document upload process...");
-      //console.log("uplaoded file " + JSON.stringify(this.uploadedFiles));
-      //console.log("studentData  " + JSON.stringify(this.studentData));
+      ////console.log("🔄 Starting document upload process...");
+      ////console.log("uplaoded file " + JSON.stringify(this.uploadedFiles));
+      ////console.log("studentData  " + JSON.stringify(this.studentData));
       const uploadResults = await cloudStorage.uploadFilesToStorage(
         this.uploadedFiles,
         this.studentData
       );
 
-      //console.log("uplaodedResults  " + JSON.stringify(uploadResults));
+      ////console.log("uplaodedResults  " + JSON.stringify(uploadResults));
       // Check for upload failures
       const failedUploads = uploadResults.filter(
         (result) => !result.url || result.error
@@ -1336,7 +1336,7 @@ class ITFormSubmission {
         };
       }
 
-      //console.log("All files uploaded successfully, processing application...");
+      ////console.log("All files uploaded successfully, processing application...");
 
       const application = cloudStorage.processUploadResults(
         StudentApplication.createNewApplication(
@@ -1563,7 +1563,7 @@ function showEmailNotification(message, type = "success") {
 
 async function emailIndustrialTraining(student, internship, appurl) {
   try {
-    //console.log(
+    ////console.log(
     //   " Preparing to send industrial training application to company..."
     // );
 
@@ -1574,14 +1574,14 @@ async function emailIndustrialTraining(student, internship, appurl) {
       throw new Error("Internship data is null");
     }
 
-    //console.log("company data:", internship.company);
+    ////console.log("company data:", internship.company);
     const companyEmail = internship.company?.email;
 
     if (!companyEmail) {
       throw new Error("Company email not found");
     }
 
-    //console.log(` Sending email to company: ${companyEmail}`);
+    ////console.log(` Sending email to company: ${companyEmail}`);
     // Prepare email parameters - MUST MATCH YOUR TEMPLATE VARIABLES EXACTLY
     const params = {
       to_email: companyEmail,
@@ -1627,7 +1627,7 @@ Best regards,
 IT Connect Application System`,
     };
 
-    //console.log("Email parameters:", params);
+    ////console.log("Email parameters:", params);
 
     // Send email to COMPANY using EmailJS
     const response = await emailjs.send(
@@ -1636,7 +1636,7 @@ IT Connect Application System`,
       params
     );
 
-    //console.log(
+    ////console.log(
     //   "Email sent to company successfully:",
     //   response.status,
     //   response.text
@@ -1656,7 +1656,7 @@ IT Connect Application System`,
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  //console.log("DOM loaded, initializing ITFormSubmission...");
+  ////console.log("DOM loaded, initializing ITFormSubmission...");
   new ITFormSubmission();
 });
 
@@ -1677,7 +1677,7 @@ export function initializeDurationSection() {
   // Setup all event listeners
   setupDurationEventListeners();
 
-  console.log("Duration section initialized");
+  //console.log("Duration section initialized");
 }
 
 function setDefaultStartDate() {

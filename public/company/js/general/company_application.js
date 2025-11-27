@@ -94,7 +94,7 @@ class ApplicationsManager {
         };
       });
 
-      //console.log("Loaded applications:", this.applications);
+      ////console.log("Loaded applications:", this.applications);
 
       // Populate opportunities dropdown
       this.populateOpportunitiesDropdown();
@@ -432,7 +432,7 @@ class ApplicationsManager {
 
   viewApplication(applicationIndex) {
     const application = this.filteredApplications[applicationIndex];
-   // console.log("applciations "+JSON.stringify(application));
+   // //console.log("applciations "+JSON.stringify(application));
     if (application) {
        if(application.training.id && application.id)
        {

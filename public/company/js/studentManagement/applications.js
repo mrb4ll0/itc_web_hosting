@@ -22,7 +22,7 @@ export default class Applications {
   }
 
   async init() {
-    //console.log("Initializing Applications Tab");
+    ////console.log("Initializing Applications Tab");
     this.initializeElements();
     this.initializeEventListeners();
     await this.buildApplicationsContent();
@@ -59,7 +59,7 @@ export default class Applications {
     this.statusFilter = document.getElementById("status-filter");
     this.clearFiltersBtn = document.getElementById("clear-filters");
 
-    //console.log("Applications elements initialized");
+    ////console.log("Applications elements initialized");
   }
 
   initializeEventListeners() {
@@ -155,7 +155,7 @@ export default class Applications {
   }
 
   async buildApplicationsContent() {
-    console.log("Building applications content...");
+    //console.log("Building applications content...");
 
     const applications = this.tabManager.getAllCompanyApplications();
     this.filteredApplications = this.applyFilters(applications);
@@ -296,7 +296,7 @@ export default class Applications {
         const application = applicationData.application;
         const student = application.student || {};
         const opportunity = applicationData.opportunity || {};
-        //console.log("opportunity " + opportunity);
+        ////console.log("opportunity " + opportunity);
         const applicationId = application.id || `app-${startIndex + index}`;
 
         const row = this.createApplicationRow(
@@ -336,7 +336,7 @@ export default class Applications {
     row.dataset.applicationId = applicationId;
 
     const appliedDate = application.applicationDate;
-    // console.log(
+    // //console.log(
     //   "Applied date for application ",
     //   applicationId,
     //   " is ",
@@ -753,11 +753,11 @@ export default class Applications {
     var itid = applicationData.training.id;
     var appId = applicationData.application.id;
     if (!itid || !appId) {
-      console.log("itid " + itid);
-      console.log("appId " + appId);
+      //console.log("itid " + itid);
+      //console.log("appId " + appId);
       return;
     }
-    console.log("View application:", applicationData);
+    //console.log("View application:", applicationData);
     if (typeof generateShareableUrl === "function") {
       const profileUrl = generateShareableUrl(
         "/company/student_profile.html",
@@ -765,13 +765,13 @@ export default class Applications {
         appId
       );
 
-      console.log("Generated URL:", profileUrl);
+      //console.log("Generated URL:", profileUrl);
       window.location.href = profileUrl;
     }
   }
 
   async editApplication(appData, e = null) {
-    console.log("Edit application:", appData);
+    //console.log("Edit application:", appData);
 
     if (appData.application.applicationStatus == "pending") {
       alert("Status is Pending Already");
@@ -826,7 +826,7 @@ export default class Applications {
 
     try {
       this.showGlobalLoading("Deleting application...");
-      console.log("Delete application:", appData);
+      //console.log("Delete application:", appData);
 
       await this.removeApplicationFromData(appData.application.id);
 
@@ -858,7 +858,7 @@ export default class Applications {
         (app) => app.application.id === applicationId
       );
 
-      console.log("given applications is applciation");
+      //console.log("given applications is applciation");
       if (!application) {
         console.warn(`Application ${applicationId} not found`);
         return Promise.resolve();
@@ -867,9 +867,9 @@ export default class Applications {
       if (applicationIndex !== -1) {
         // Remove the application from the array
         allApplications.splice(applicationIndex, 1);
-        console.log(
-          `Removed application ${applicationId} at index ${applicationIndex}`
-        );
+        //console.log(
+        //   `Removed application ${applicationId} at index ${applicationIndex}`
+        // );
       }
 
       // Also remove from filtered applications
@@ -892,16 +892,16 @@ export default class Applications {
         throw new Error("Missing IT ID or Company ID for deletion");
       }
 
-      console.log(
-        `Deleting application: Company=${compId}, IT=${itId}, App=${applicationId}`
-      );
+      //console.log(
+      //   `Deleting application: Company=${compId}, IT=${itId}, App=${applicationId}`
+      // );
 
       await it_base_companycloud.deleteCompanyApplication(
         compId,
         itId,
         applicationId
       );
-      //console.log("given application is "+ JSON.stringify(application));
+      ////console.log("given application is "+ JSON.stringify(application));
       messageDialog(true,application.application);
       this.tabManager.processApplicationsData();
       this.tabManager.updateSharedStats();
@@ -916,7 +916,7 @@ export default class Applications {
   }
 
   exportApplications() {
-  console.log("Export applications");
+  //console.log("Export applications");
   
   const applicationsToExport =
     this.selectedApplications.size > 0
@@ -1033,10 +1033,7 @@ downloadCSV(csvContent, filename) {
 }
 
   async performBulkAction(action) {
-    console.log(
-      `Performing bulk action: ${action} on ${this.selectedApplications.size} applications`
-    );
-
+  
     // Auto-generate message based on status
     const autoMessage = this.generateAutoMessage(action);
     
@@ -1072,7 +1069,7 @@ downloadCSV(csvContent, filename) {
         // Show bulk progress indicator
         //this.showBulkProgress(this.selectedApplications.size);
         
-        console.log("appId is " + JSON.stringify(this.selectedApplications));
+        //console.log("appId is " + JSON.stringify(this.selectedApplications));
         
         // Process all applications with the notification message
         const applicationsArray = Array.from(this.selectedApplications);

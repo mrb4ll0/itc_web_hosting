@@ -58,18 +58,18 @@ export class CurrentStudentService {
       }
 
       const studentData = this.serializeCurrentStudent(currentStudent);
-      console.log("studentData is " + JSON.stringify(studentData));
+      //console.log("studentData is " + JSON.stringify(studentData));
       const studentPath = this.getCurrentTraineePath(currentStudent.id);
 
-      console.log(` Saving student to Firebase: ${studentPath}`);
+      //console.log(` Saving student to Firebase: ${studentPath}`);
 
       // Convert path to Firestore reference
       const docRef = doc(db, studentPath);
       await setDoc(docRef, studentData);
 
-      console.log(
-        ` Successfully saved ${currentStudent.studentInfo.fullName} to Firebase`
-      );
+      //console.log(
+      //   ` Successfully saved ${currentStudent.studentInfo.fullName} to Firebase`
+      // );
       return true;
     } catch (error) {
       console.error(" Error saving student to Firebase:", error);
@@ -79,7 +79,7 @@ export class CurrentStudentService {
 
   // Add this method to debug application statuses
   async validateApplicationStatuses(applications) {
-    console.log("🔍 Validating application statuses...");
+    //console.log("🔍 Validating application statuses...");
 
     const statusCount = {};
     applications.forEach((app) => {
@@ -87,9 +87,9 @@ export class CurrentStudentService {
       statusCount[status] = (statusCount[status] || 0) + 1;
     });
 
-    console.log("📊 Application Status Breakdown:");
+    //console.log("📊 Application Status Breakdown:");
     Object.entries(statusCount).forEach(([status, count]) => {
-      console.log(`   - ${status}: ${count} applications`);
+      //console.log(`   - ${status}: ${count} applications`);
     });
 
     return statusCount;
@@ -103,9 +103,9 @@ export class CurrentStudentService {
         throw new Error("No authenticated company user found");
       }
 
-      console.log(
-        `📥 Loading current students from Firebase for company: ${companyId}`
-      );
+      //console.log(
+      //   `📥 Loading current students from Firebase for company: ${companyId}`
+      // );
 
       const currentStudentsPath = `users/companies/companies/${companyId}/currenttrainee`;
       const collectionRef = collection(db, currentStudentsPath);
@@ -119,19 +119,19 @@ export class CurrentStudentService {
           // Reconstruct CurrentStudent object from Firebase data
           const currentStudent = this.deserializeCurrentStudent(studentData);
           this.currentStudents.set(currentStudent.id, currentStudent);
-          console.log(
-            "current students after setting " +
-              JSON.stringify(this.currentStudents.size)
-          );
-          console.log(
-            "current students after setting id " +
-              JSON.stringify(currentStudent.id)
-          );
+          //console.log(
+          //   "current students after setting " +
+          //     JSON.stringify(this.currentStudents.size)
+          // );
+          //console.log(
+          //   "current students after setting id " +
+          //     JSON.stringify(currentStudent.id)
+          // );
           loadedStudents.push(currentStudent);
 
-          console.log(
-            `✅ Loaded student: ${currentStudent.studentInfo.fullName}`
-          );
+          //console.log(
+          //   `✅ Loaded student: ${currentStudent.studentInfo.fullName}`
+          // );
         } catch (error) {
           console.error(
             ` Error loading student from doc ${docSnapshot.id}:`,
@@ -140,9 +140,9 @@ export class CurrentStudentService {
         }
       });
 
-      console.log(
-        `📋 Loaded ${loadedStudents.length} current students from Firebase`
-      );
+      //console.log(
+      //   `📋 Loaded ${loadedStudents.length} current students from Firebase`
+      // );
       return loadedStudents;
     } catch (error) {
       console.error("❌ Error loading current students from Firebase:", error);
@@ -504,9 +504,9 @@ export class CurrentStudentService {
           updatedAt: new Date().toISOString(),
         });
 
-        console.log(
-          `✅ Updated application ${applicationId} status to ${newStatus} in Firebase`
-        );
+        //console.log(
+        //   `✅ Updated application ${applicationId} status to ${newStatus} in Firebase`
+        // );
         return true;
       } else {
         console.warn(`⚠️ Application ${applicationId} not found in Firebase`);
@@ -526,13 +526,13 @@ export class CurrentStudentService {
 
     const students = Array.from(this.currentStudents.values());
 
-    console.log(
-      `📋 Retrieved ${students.length} current students from service:`
-    );
+    //console.log(
+    //   `📋 Retrieved ${students.length} current students from service:`
+    // );
     students.forEach((student) => {
-      console.log(
-        `   - ${student.studentInfo.fullName} (${student.benchInfo.currentBench}) - ${student.progress.overall}%`
-      );
+      //console.log(
+      //   `   - ${student.studentInfo.fullName} (${student.benchInfo.currentBench}) - ${student.progress.overall}%`
+      // );
     });
 
     return students;
@@ -553,7 +553,7 @@ export class CurrentStudentService {
   }
 
   async getPendingMigrations(applications) {
-    console.log("🔍 Checking for pending migrations...");
+    //console.log("🔍 Checking for pending migrations...");
 
     // FIXED: Use Promise.all with map for async filtering
     const eligibilityChecks = await Promise.all(
@@ -567,18 +567,18 @@ export class CurrentStudentService {
       .filter((check) => check.isEligible)
       .map((check) => check.application);
 
-    console.log(`📋 Found ${pendingMigrations.length} pending migrations`);
+    //console.log(`📋 Found ${pendingMigrations.length} pending migrations`);
 
     // Log detailed status of all applications for debugging
-    console.log("📊 Application Status Summary:");
+    //console.log("📊 Application Status Summary:");
     applications.forEach((app, index) => {
       const eligibility = eligibilityChecks[index].isEligible;
       const status = app.application.status;
-      console.log(
-        `   ${index + 1}. ${
-          app.application.student.fullName
-        } - Status: "${status}" - Eligible: ${eligibility}`
-      );
+      //console.log(
+      //   `   ${index + 1}. ${
+      //     app.application.student.fullName
+      //   } - Status: "${status}" - Eligible: ${eligibility}`
+      // );
     });
 
     return {
@@ -600,29 +600,29 @@ export class CurrentStudentService {
 
     // Check and log each condition individually
     const isStartDateValid = startDate <= now;
-    console.log(
-      `Start Date Check: ${startDate.toISOString()} <= ${now.toISOString()} = ${isStartDateValid}`
-    );
+    //console.log(
+    //   `Start Date Check: ${startDate.toISOString()} <= ${now.toISOString()} = ${isStartDateValid}`
+    // );
 
     const isStatusAccepted = applicationData.application.status === "accepted";
-    console.log(
-      `Status Check: "${applicationData.application.status}" === "accepted" = ${isStatusAccepted}`
-    );
+    //console.log(
+    //   `Status Check: "${applicationData.application.status}" === "accepted" = ${isStatusAccepted}`
+    // );
 
     const isAlreadyCurrentStudentCheck = await this.isAlreadyCurrentStudent(
       applicationData.application.id
     );
     const isNotCurrentStudent = !isAlreadyCurrentStudentCheck;
-    console.log(
-      `Not Current Student Check: !isAlreadyCurrentStudent(${applicationData.application.id}) = ${isNotCurrentStudent}`
-    );
+    //console.log(
+    //   `Not Current Student Check: !isAlreadyCurrentStudent(${applicationData.application.id}) = ${isNotCurrentStudent}`
+    // );
 
     // Combine all conditions
     const isEligible =
       isStartDateValid && isStatusAccepted && isNotCurrentStudent;
-    console.log(
-      `Final Eligibility Result for ${applicationData.application.student.fullName}: ${isEligible}`
-    );
+    //console.log(
+    //   `Final Eligibility Result for ${applicationData.application.student.fullName}: ${isEligible}`
+    // );
 
     return isEligible;
   }
@@ -632,7 +632,7 @@ export class CurrentStudentService {
     const inMemory = this.currentStudents.has(applicationId);
 
     if (inMemory) {
-      console.log(`📝 Application ${applicationId} found in memory cache`);
+      //console.log(`📝 Application ${applicationId} found in memory cache`);
       return true;
     }
 
@@ -640,7 +640,7 @@ export class CurrentStudentService {
     const inFirebase = await this.isApplicationInFirebase(applicationId);
 
     if (inFirebase) {
-      console.log(`🔥 Application ${applicationId} found in Firebase`);
+      //console.log(`🔥 Application ${applicationId} found in Firebase`);
       // Optionally load it into memory for future checks
       await this.loadCurrentStudentsFromFirebase();
     }
@@ -668,14 +668,14 @@ export class CurrentStudentService {
 
       const exists = !querySnapshot.empty;
 
-      console.log(
-        `🔍 Firebase Check - Application ${applicationId} exists: ${exists}`
-      );
+      //console.log(
+      //   `🔍 Firebase Check - Application ${applicationId} exists: ${exists}`
+      // );
 
       if (exists) {
-        console.log(
-          `⚠️ Application ${applicationId} already exists in Firebase as current trainee`
-        );
+        //console.log(
+        //   `⚠️ Application ${applicationId} already exists in Firebase as current trainee`
+        // );
       }
 
       return exists;
@@ -691,7 +691,7 @@ export class CurrentStudentService {
   // Background migration process (UPDATED with Firebase saving)
   async startBackgroundMigration(applications, progressCallback = null) {
     if (this.isMigrating) {
-      console.log("⏳ Migration already in progress");
+      //console.log("⏳ Migration already in progress");
       return { error: "Migration already in progress" };
     }
 
@@ -712,9 +712,9 @@ export class CurrentStudentService {
       failed: 0,
     };
 
-    console.log(
-      `🚀 Starting background migration for ${pendingMigrations.length} students`
-    );
+    //console.log(
+    //   `🚀 Starting background migration for ${pendingMigrations.length} students`
+    // );
 
     // Use setTimeout to make it non-blocking
     return new Promise((resolve) => {
@@ -759,11 +759,11 @@ export class CurrentStudentService {
           });
         }
 
-        console.log(
-          `🔄 Migrating ${i + 1}/${applications.length}: ${
-            application.application.student.fullName
-          }`
-        );
+        //console.log(
+        //   `🔄 Migrating ${i + 1}/${applications.length}: ${
+        //     application.application.student.fullName
+        //   }`
+        // );
 
         const currentStudent = await this.migrateToCurrentStudent(application);
 
@@ -793,7 +793,7 @@ export class CurrentStudentService {
       await this.delay(50);
     }
 
-    console.log("✅ Background migration completed:", results.summary);
+    //console.log("✅ Background migration completed:", results.summary);
 
     // Final progress callback
     if (progressCallback) {
@@ -812,15 +812,15 @@ export class CurrentStudentService {
     // FIXED: Remove the ! operator that was inverting the logic
     const isEligible = await this.isEligibleForMigration(applicationData);
     if (!isEligible) {
-      console.log(
-        ` Application ${applicationData.application.id} is not eligible for migration`
-      );
+      //console.log(
+      //   ` Application ${applicationData.application.id} is not eligible for migration`
+      // );
       return null;
     }
 
     try {
       const currentStudent = new CurrentStudent(applicationData);
-      console.log("currentStudent " + JSON.stringify(currentStudent));
+      //console.log("currentStudent " + JSON.stringify(currentStudent));
 
       // Save to Firebase first
       await this.saveCurrentStudentToFirebase(currentStudent);
@@ -843,9 +843,9 @@ export class CurrentStudentService {
         savedToFirebase: true,
       });
 
-      console.log(
-        `Successfully migrated ${applicationData.application.student.fullName}`
-      );
+      //console.log(
+      //   `Successfully migrated ${applicationData.application.student.fullName}`
+      // );
       return currentStudent;
     } catch (error) {
       console.error("Migration error:", error);
@@ -887,7 +887,7 @@ export class CurrentStudentService {
   cancelMigration() {
     if (this.isMigrating) {
       this.isMigrating = false;
-      console.log("🛑 Migration cancelled by user");
+      //console.log("🛑 Migration cancelled by user");
       return true;
     }
     return false;
@@ -905,7 +905,7 @@ export class CurrentStudentService {
 
   // Clear all data (for testing/reset)
   clearAllData() {
-    console.log(`🧹 Clearing all current student data`);
+    //console.log(`🧹 Clearing all current student data`);
     this.currentStudents.clear();
     this.migrationLog = [];
   }

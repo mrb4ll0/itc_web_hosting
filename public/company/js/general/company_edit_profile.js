@@ -35,7 +35,7 @@ let currentCompany = null;
 window.addEventListener("DOMContentLoaded", async () => {
   try {
     await auth.authStateReady();
-    //console.log("user id is " + auth.currentUser.uid);
+    ////console.log("user id is " + auth.currentUser.uid);
     
     currentUser = auth.currentUser;
     if (!currentUser) {

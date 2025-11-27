@@ -14,7 +14,7 @@ import { ITCFirebaseLogic } from "../fireabase/ITCFirebaseLogic.js";
 const itc_firebase_logic = new ITCFirebaseLogic();
 
 document.addEventListener("DOMContentLoaded", function () {
-  //console.log("Signup script loaded"); // Debug log
+  ////console.log("Signup script loaded"); // Debug log
 
   // Form elements
   const signupForm = document.getElementById("signup-form");
@@ -33,16 +33,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const passwordToggles = document.querySelectorAll(".password-toggle");
 
-  //console.log("Password toggles found:", passwordToggles.length);
+  ////console.log("Password toggles found:", passwordToggles.length);
 
   passwordToggles.forEach((toggle) => {
     toggle.addEventListener("click", function () {
-      //console.log("Toggle clicked"); // Debug log
+      ////console.log("Toggle clicked"); // Debug log
 
       const input = this.closest(".relative").querySelector(
         'input[type="password"], input[type="text"]'
       );
-      //console.log("Input found:", input); // Debug log
+      ////console.log("Input found:", input); // Debug log
 
       if (input) {
         const type =

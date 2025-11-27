@@ -21,7 +21,7 @@ export class CompanyProfile
 {
     constructor()
      { 
-        //console.log("CompanyProfile initialized");  
+        ////console.log("CompanyProfile initialized");  
      }
     
     async init() {        

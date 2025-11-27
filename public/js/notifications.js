@@ -30,7 +30,7 @@ class NotificationManager {
 
   async init() {
     try {
-      //console.log('Starting auth initialization...');
+      ////console.log('Starting auth initialization...');
 
       // Use authStateReady to wait for auth initialization
       await auth.authStateReady();
@@ -38,7 +38,7 @@ class NotificationManager {
 
       if (auth.currentUser) {
         this.currentStudentUid = auth.currentUser.uid;
-        //console.log('User authenticated:', this.currentStudentUid);
+        ////console.log('User authenticated:', this.currentStudentUid);
 
         // Set up header profile
         this.setupHeaderProfile();
@@ -55,7 +55,7 @@ class NotificationManager {
             unsubscribe(); // Clean up the listener immediately
             if (user) {
               this.currentStudentUid = user.uid;
-              //console.log('User authenticated via listener:', this.currentStudentUid);
+              ////console.log('User authenticated via listener:', this.currentStudentUid);
               resolve();
             } else {
               reject(new Error("User not authenticated after waiting"));
@@ -107,7 +107,7 @@ class NotificationManager {
       link.href = path;
       // Check if this might be the correct path (basic check)
       if (!path.includes("undefined") && path.length > 0) {
-        //console.log('Attempting redirect to:', path);
+        ////console.log('Attempting redirect to:', path);
         setTimeout(() => {
           window.location.href = path;
         }, 2000);
@@ -129,7 +129,7 @@ class NotificationManager {
     const user = auth.currentUser;
 
       const image = this.currentStudent.imageUrl;
-      //console.log("image is "+image);
+      ////console.log("image is "+image);
     if (image) {
       profileElement.style.backgroundImage = `url('${image}')`;
       profileElement.classList.remove("loading-skeleton");
@@ -215,17 +215,17 @@ class NotificationManager {
       this.unsubscribe();
     }
 
-    //console.log('Starting notifications stream for user:', this.currentStudentUid);
+    ////console.log('Starting notifications stream for user:', this.currentStudentUid);
 
     // Add error handling for the notifications stream
     try {
       this.unsubscribe = unifiedNotificationsStream(
         this.currentStudentUid,
         (notifications) => {
-          //console.log('Received notifications:', notifications.length);
+          ////console.log('Received notifications:', notifications.length);
           this.notifications = notifications;
           this.isLoadingNotifications = false;
-          //console.log("isloadingNotifications is "+this.isLoadingNotifications );
+          ////console.log("isloadingNotifications is "+this.isLoadingNotifications );
           this.renderNotifications();
         }
       );
@@ -376,7 +376,7 @@ class NotificationManager {
     if (this.selectedNotification) {
       // Here you would update the notification as read in Firestore
       // For now, we'll just close the dialog
-      //console.log("Marking as read:", this.selectedNotification);
+      ////console.log("Marking as read:", this.selectedNotification);
       this.closeDialog();
     }
   }
@@ -445,7 +445,7 @@ function unifiedNotificationsStream(studentUid, callback) {
     return () => {}; // Return empty cleanup function
   }
 
-  //console.log('Setting up notifications stream for:', studentUid);
+  ////console.log('Setting up notifications stream for:', studentUid);
 
   let privateUnsubscribe = null;
   let generalUnsubscribe = null;
@@ -480,7 +480,7 @@ function unifiedNotificationsStream(studentUid, callback) {
     privateUnsubscribe = onSnapshot(
       privateQuery,
       async (snapshot) => {
-        //console.log('Private notifications updated:', snapshot.docs.length);
+        ////console.log('Private notifications updated:', snapshot.docs.length);
 
         // Use await with Promise.all to wait for all async operations
         privateNotifications = await Promise.all(
@@ -524,7 +524,7 @@ function unifiedNotificationsStream(studentUid, callback) {
     generalUnsubscribe = onSnapshot(
       generalQuery,
       (snapshot) => {
-        //console.log('General notifications updated:', snapshot.docs.length);
+        ////console.log('General notifications updated:', snapshot.docs.length);
         generalNotifications = snapshot.docs.map((doc) => {
           const data = doc.data();
           return {
@@ -548,7 +548,7 @@ function unifiedNotificationsStream(studentUid, callback) {
 
   // Return cleanup function
   return () => {
-    //console.log('Cleaning up notifications stream');
+    ////console.log('Cleaning up notifications stream');
     if (privateUnsubscribe) privateUnsubscribe();
     if (generalUnsubscribe) generalUnsubscribe();
   };

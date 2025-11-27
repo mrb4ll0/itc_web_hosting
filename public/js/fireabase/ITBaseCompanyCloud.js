@@ -56,7 +56,7 @@ async updateCompanyIndustry(companyId, industry) {
     }
 
     if (!industry || typeof industry !== 'string' || industry.trim() === '') {
-        //console.log("industry is "+industry);
+        ////console.log("industry is "+industry);
         throw new Error("Industry is required and must be a non-empty string");
     }
 
@@ -78,7 +78,7 @@ async updateCompanyIndustry(companyId, industry) {
 
         // Perform the update
         await updateDoc(companyRef, updateData);
-        //console.log("Company industry updated successfully");
+        ////console.log("Company industry updated successfully");
 
     } catch (error) {
         console.error("Error updating company industry:", error);
@@ -112,7 +112,7 @@ async updateCompanyIndustry(companyId, industry) {
             };
 
             await updateDoc(companyRef, updateData);
-            //console.log("Company profile updated successfully");
+            ////console.log("Company profile updated successfully");
 
         } catch (error) {
             console.error("Error updating company profile:", error);
@@ -155,7 +155,7 @@ async updateCompanyIndustry(companyId, industry) {
             };
 
             const docRef = await addDoc(itCollectionRef, itData);
-            //console.log("Industrial Training posted with ID:", docRef.id);
+            ////console.log("Industrial Training posted with ID:", docRef.id);
             
             return docRef.id;
 
@@ -208,7 +208,7 @@ async updateCompanyIndustry(companyId, industry) {
      * @returns {Promise<IndustrialTraining|null>} Industrial training object or null if not found
      */
     async getIndustrialTrainingById(companyId, itId) {
-        console.log("companyId is "+companyId+" itId "+itId);
+        //console.log("companyId is "+companyId+" itId "+itId);
         if (!companyId || !itId) {
             throw new Error("Company ID and Industrial Training ID are required");
         }
@@ -269,7 +269,7 @@ async updateCompanyIndustry(companyId, industry) {
             };
 
             await updateDoc(itDocRef, updateData);
-            //console.log("Industrial Training updated successfully");
+            ////console.log("Industrial Training updated successfully");
 
         } catch (error) {
             console.error("Error updating industrial training:", error);
@@ -321,7 +321,7 @@ async updateCompanyIndustry(companyId, industry) {
             );
 
             await deleteDoc(itDocRef);
-            //console.log("Industrial Training and its applications deleted successfully");
+            ////console.log("Industrial Training and its applications deleted successfully");
 
         } catch (error) {
             console.error("Error deleting industrial training:", error);
@@ -446,9 +446,9 @@ async getApplicationsForIndustrialTraining(companyId, itId) {
         const applications = await Promise.all(
             
             snapshot.docs.map(async (docSnap) => {
-                console.log("snap total is "+snapshot.docs.length);
+                //console.log("snap total is "+snapshot.docs.length);
                 const data = docSnap.data();
-                //console.log("applicationDate is " + JSON.stringify(data.applicationDate));
+                ////console.log("applicationDate is " + JSON.stringify(data.applicationDate));
                 
                 // Get industrial training data
                 const industrialTraining = await this.getIndustrialTrainingById(companyId, itId);
@@ -461,7 +461,7 @@ async getApplicationsForIndustrialTraining(companyId, itId) {
                   
                 app.industrialTraining = industrialTraining;
                 
-                //console.log("applicationDate before returning "+JSON.stringify(app.applicationDate));
+                ////console.log("applicationDate before returning "+JSON.stringify(app.applicationDate));
                 // Create proper StudentApplication object using fromMap
                 return app;
             })
@@ -489,26 +489,26 @@ async updateInternshipStatus(companyId, itId) {
         // Get internship data
         const internship = await this.getIndustrialTrainingById(companyId, itId);
         
-        console.log(`Current applications: ${currentApplicationsCount}, Intake capacity: ${internship.intakeCapacity}`);
+        //console.log(`Current applications: ${currentApplicationsCount}, Intake capacity: ${internship.intakeCapacity}`);
 
         let newStatus = internship.status;
         
         // Update status based on application count and intake capacity
         if (internship.intakeCapacity && currentApplicationsCount >= internship.intakeCapacity) {
             newStatus = 'closed';
-            console.log(`Application count (${currentApplicationsCount}) reached intake capacity (${internship.intakeCapacity}). Status set to: ${newStatus}`);
+            //console.log(`Application count (${currentApplicationsCount}) reached intake capacity (${internship.intakeCapacity}). Status set to: ${newStatus}`);
         } else if (internship.status === 'closed' && currentApplicationsCount < internship.intakeCapacity) {
             // Reopen if it was closed but now has capacity
             newStatus = 'open';
-            console.log(`Application count (${currentApplicationsCount}) is below intake capacity (${internship.intakeCapacity}). Reopening status to: ${newStatus}`);
+            //console.log(`Application count (${currentApplicationsCount}) is below intake capacity (${internship.intakeCapacity}). Reopening status to: ${newStatus}`);
         }
 
         // Only update if status has changed
         if (newStatus !== internship.status) {
             await this.updateInternshipStatusInDatabase(companyId, itId, newStatus, currentApplicationsCount);
-            console.log(`Internship status updated from '${internship.status}' to '${newStatus}'`);
+            //console.log(`Internship status updated from '${internship.status}' to '${newStatus}'`);
         } else {
-            console.log(`Internship status unchanged: '${internship.status}'`);
+            //console.log(`Internship status unchanged: '${internship.status}'`);
         }
 
         return {
@@ -581,7 +581,7 @@ async updateInternshipStatusInDatabase(companyId, itId, status, applicationsCoun
                 updatedAt: serverTimestamp()
             });
 
-            //console.log(`Application status updated to: ${status}`);
+            ////console.log(`Application status updated to: ${status}`);
 
         } catch (error) {
             console.error("Error updating application status:", error);
@@ -737,7 +737,7 @@ async removeImageFromGallery(companyId, imageUrl) {
       updatedAt: serverTimestamp()
     });
 
-    //console.log(`Image removed successfully from gallery of company ${companyId}`);
+    ////console.log(`Image removed successfully from gallery of company ${companyId}`);
   } catch (error) {
     console.error("Error removing image from gallery:", error);
     throw error;
@@ -795,7 +795,7 @@ async toggleITStatus(companyId, itId) {
             updatedAt: serverTimestamp()
         });
 
-        //console.log(`IT ${itId} status updated from ${currentStatus} to ${newStatus} in Firestore`);
+        ////console.log(`IT ${itId} status updated from ${currentStatus} to ${newStatus} in Firestore`);
         return newStatus;
 
     } catch (error) {
@@ -833,7 +833,7 @@ async setITStatus(companyId, itId, status) {
             updatedAt: serverTimestamp()
         });
 
-        //console.log(`IT ${itId} status set to: ${status} in Firestore`);
+        ////console.log(`IT ${itId} status set to: ${status} in Firestore`);
 
     } catch (error) {
         console.error("Error setting IT status in Firestore:", error);
@@ -871,7 +871,7 @@ async deleteCompanyField(companyId, fieldName) {
             updatedAt: serverTimestamp()
         });
 
-        //console.log(`Field "${fieldName}" deleted successfully from company ${companyId}`);
+        ////console.log(`Field "${fieldName}" deleted successfully from company ${companyId}`);
 
     } catch (error) {
         console.error(`Error deleting field "${fieldName}":`, error);
@@ -923,7 +923,7 @@ async removeValueFromCompanyArray(companyId, arrayFieldName, valueToRemove) {
             updatedAt: serverTimestamp()
         });
 
-        //console.log(`Value removed from ${arrayFieldName} for company ${companyId}`);
+        ////console.log(`Value removed from ${arrayFieldName} for company ${companyId}`);
 
     } catch (error) {
         console.error(`Error removing value from ${arrayFieldName}:`, error);
@@ -977,7 +977,7 @@ async updateValueInCompanyArray(companyId, arrayFieldName, oldValue, newValue) {
             updatedAt: serverTimestamp()
         });
 
-        //console.log(`Value updated in ${arrayFieldName} for company ${companyId}`);
+        ////console.log(`Value updated in ${arrayFieldName} for company ${companyId}`);
 
     } catch (error) {
         console.error(`Error updating value in ${arrayFieldName}:`, error);
@@ -1022,7 +1022,7 @@ async deleteMultipleCompanyFields(companyId, fieldNames) {
 
         await updateDoc(companyRef, updateData);
 
-        //console.log(`Fields [${fieldNames.join(', ')}] deleted successfully from company ${companyId}`);
+        ////console.log(`Fields [${fieldNames.join(', ')}] deleted successfully from company ${companyId}`);
 
     } catch (error) {
         console.error(`Error deleting fields [${fieldNames.join(', ')}]:`, error);
@@ -1062,7 +1062,7 @@ async removeFormUrl(companyId, urlToRemove) {
 
         const data = companySnap.data();
         const currentForms = Array.isArray(data.form) ? data.form : [];
-          //console.log("forms is "+JSON.stringify(currentForms));
+          ////console.log("forms is "+JSON.stringify(currentForms));
         // Filter out the URL to remove
         const updatedForms = currentForms.filter(url => url !== urlToRemove);
 
@@ -1072,7 +1072,7 @@ async removeFormUrl(companyId, urlToRemove) {
             updatedAt: serverTimestamp()
         });
 
-        //console.log(`URL removed from forms array for company ${companyId}`);
+        ////console.log(`URL removed from forms array for company ${companyId}`);
 
     } catch (error) {
         console.error("Error removing URL from forms array:", error);
@@ -1118,7 +1118,7 @@ async removeFileFromIT(companyId, itId, urlToRemove) {
                 updatedAt: serverTimestamp()
             });
 
-            //console.log(`URL removed from attachedFiles for IT ${itId}`);
+            ////console.log(`URL removed from attachedFiles for IT ${itId}`);
 
         } catch (error) {
             console.error("Error removing URL from IT attachedFiles:", error);
@@ -1172,7 +1172,7 @@ async removeFileFromIT(companyId, itId, urlToRemove) {
                 updatedAt: serverTimestamp()
             });
 
-            //console.log(`URL removed from ${arrayFieldName} for IT ${itId}`);
+            ////console.log(`URL removed from ${arrayFieldName} for IT ${itId}`);
 
         } catch (error) {
             console.error(`Error removing URL from IT ${arrayFieldName}:`, error);
@@ -1208,7 +1208,7 @@ async removeFileFromIT(companyId, itId, urlToRemove) {
                 updatedAt: serverTimestamp()
             });
 
-            //console.log(`All files cleared from IT ${itId}`);
+            ////console.log(`All files cleared from IT ${itId}`);
 
         } catch (error) {
             console.error("Error clearing IT files:", error);
@@ -1249,7 +1249,7 @@ async removeFileFromIT(companyId, itId, urlToRemove) {
                 updatedAt: serverTimestamp()
             });
 
-            //console.log(`Field "${fieldName}" deleted from IT ${itId}`);
+            ////console.log(`Field "${fieldName}" deleted from IT ${itId}`);
 
         } catch (error) {
             console.error(`Error deleting field "${fieldName}" from IT:`, error);
@@ -1304,7 +1304,7 @@ async removeFileFromIT(companyId, itId, urlToRemove) {
                 updatedAt: serverTimestamp()
             });
 
-            //console.log(`URL updated in ${arrayFieldName} for IT ${itId}`);
+            ////console.log(`URL updated in ${arrayFieldName} for IT ${itId}`);
 
         } catch (error) {
             console.error(`Error updating URL in IT ${arrayFieldName}:`, error);
@@ -1359,7 +1359,7 @@ async removeFileFromIT(companyId, itId, urlToRemove) {
                 updatedAt: serverTimestamp()
             });
 
-            //console.log(`URL added to attachedFiles for IT ${itId}`);
+            ////console.log(`URL added to attachedFiles for IT ${itId}`);
 
         } catch (error) {
             console.error("Error adding URL to IT attachedFiles:", error);
@@ -1410,7 +1410,7 @@ async submitITApplication(companyId, itId, applicationData) {
         // Update application count
         await this.updateApplicationCount(companyId, itId, itDoc.applicationsCount || 0);
         
-        console.log("IT Application submitted with ID:", docRef.id);
+        //console.log("IT Application submitted with ID:", docRef.id);
         
         return docRef.id;
 
@@ -1461,11 +1461,11 @@ async getApplicationById(companyId, itId, applicationId) {
             applicationId
         );
         
-        //console.log(" Application reference path:", applicationRef.path);
+        ////console.log(" Application reference path:", applicationRef.path);
         
         const applicationDoc = await getDoc(applicationRef);
-        //console.log(" Document exists:", applicationDoc.exists());
-        //console.log(" Document ID:", applicationDoc.id);
+        ////console.log(" Document exists:", applicationDoc.exists());
+        ////console.log(" Document ID:", applicationDoc.id);
         
         if (applicationDoc.exists()) {
 
@@ -1474,7 +1474,7 @@ async getApplicationById(companyId, itId, applicationId) {
 
               const studentApp =  StudentApplication.fromMap(data);
 
-            //console.log(" Fetching industrial training data...");
+            ////console.log(" Fetching industrial training data...");
             const industrialTraining = await this.getIndustrialTrainingById(companyId, itId);
             
                 industrialTraining.company = await this.getCompany(industrialTraining.company.id);            
@@ -1533,7 +1533,7 @@ async sendNotificationToStudent(studentUid, notificationData) {
 
         const docRef = await addDoc(notificationsRef, notification);
         
-        //console.log(`Notification sent to student ${studentUid}`);
+        ////console.log(`Notification sent to student ${studentUid}`);
         return { 
             success: true, 
             id: docRef.id 
@@ -1614,7 +1614,7 @@ async deleteCompanyApplication(companyId, itId, applicationId) {
         );
 
         await deleteDoc(applicationRef);
-        console.log(`Successfully deleted application ${applicationId} from IT ${itId}`);
+        //console.log(`Successfully deleted application ${applicationId} from IT ${itId}`);
         
     } catch (error) {
         console.error("Error deleting application:", error);
@@ -1656,7 +1656,7 @@ async updateCompanyApplicationDuration(durationObject, applicationId,itId,sid) {
             duration: durationObject
         });
 
-        console.log(`Successfully updated duration for application ${applicationId}`);
+        //console.log(`Successfully updated duration for application ${applicationId}`);
         
     } catch (error) {
         console.error("Error updating application duration:", error);

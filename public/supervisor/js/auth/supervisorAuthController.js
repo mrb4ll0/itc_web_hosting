@@ -16,7 +16,7 @@ class SupervisorAuthController {
 
 
     setupSignupEventListeners() {
-      console.log("signup even listeners is set");
+      //console.log("signup even listeners is set");
         const companyCodeForm = document.getElementById('companyCodeForm');
         const registrationForm = document.getElementById('registrationForm');
         const backToCodeBtn = document.getElementById('backToCodeBtn');
@@ -59,7 +59,7 @@ class SupervisorAuthController {
             
             // Verify company code
             const isValid = await this.authService.verifyCompanyCode(companyCode);
-            console.log("isValid "+isValid);
+            //console.log("isValid "+isValid);
             
             if (isValid) {
                 this.authService.setCompanyCode(companyCode);

@@ -202,15 +202,15 @@ class SupervisorManagementService {
             ) {
               students.push(student);
             } else {
-              console.log(
-                `Skipping student ${studentUid}: selectedApplication condition not met`,
-                {
-                  hasSelectedApplication: !!student?.selectedApplication,
-                  selectedApplication: student?.selectedApplication,
-                  traineeDocId: traineeDoc.id,
-                  matches: student?.selectedApplication === traineeDoc.id,
-                }
-              );
+              //console.log(
+              //   `Skipping student ${studentUid}: selectedApplication condition not met`,
+              //   {
+              //     hasSelectedApplication: !!student?.selectedApplication,
+              //     selectedApplication: student?.selectedApplication,
+              //     traineeDocId: traineeDoc.id,
+              //     matches: student?.selectedApplication === traineeDoc.id,
+              //   }
+              // );
             }
           }
         } catch (error) {

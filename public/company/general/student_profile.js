@@ -62,7 +62,7 @@ class StudentApplication {
 
       this.companyId = await this.getCompanyId();
       this.itId = this.getITIdFromURL();
-      // //console.log(
+      // ////console.log(
       //   "this.applicationId " +
       //     this.applicationId +
       //     " this.companyId " +
@@ -136,7 +136,7 @@ class StudentApplication {
    */
   async populateApplicationData() {
     const app = this.currentApplication;
-    //console.log("app is "+JSON.stringify(app));
+    ////console.log("app is "+JSON.stringify(app));
 
     // Set page title
     document.getElementById(
@@ -195,18 +195,18 @@ class StudentApplication {
         ? `Level: ${student.level}`
         : "Expected Graduation: Not Specified";
 
-    // //console.log(
+    // ////console.log(
     //   "applicant Education " +
     //     app.student.institution +
     //     " " +
     //     app.student.courseOfStudy
     // );
-    // //console.log("applicant level " + app.student.level);
-    // //console.log("applicant Education " + app.student.institution);
-    // //console.log("applicant Education " + app.student.institution);
+    // ////console.log("applicant level " + app.student.level);
+    // ////console.log("applicant Education " + app.student.institution);
+    // ////console.log("applicant Education " + app.student.institution);
 
     // Populate applicant details
-     //console.log("student profile "+JSON.stringify(app.student));
+     ////console.log("student profile "+JSON.stringify(app.student));
     document.getElementById("full-name-value").textContent =
       app.student.fullName;
     document.getElementById("university-value").textContent =
@@ -225,7 +225,7 @@ class StudentApplication {
     await this.populateDocuments(app);
 
     // Set industrial training info
-    // //console.log("appIt " + JSON.stringify(app));
+    // ////console.log("appIt " + JSON.stringify(app));
     document.getElementById("internship-title-field").textContent =
       app.internship.title;
     this.populateInternshipInfo(app);
@@ -260,10 +260,10 @@ class StudentApplication {
     // Handle dates
     const startDate = app.duration.startDate ;
     const endDate = app.duration.endDate ;
-    // console.log("start Date "+startDate);
-    // console.log(" end Date "+endDate);
-    // console.log("duratios is "+JSON.stringify(app.duration));
-    // console.log("app id is "+app.id);
+    // //console.log("start Date "+startDate);
+    // //console.log(" end Date "+endDate);
+    // //console.log("duratios is "+JSON.stringify(app.duration));
+    // //console.log("app id is "+app.id);
 
     this.setTextContent(
       "internship-start-date-value",
@@ -385,14 +385,14 @@ class StudentApplication {
    */
  async populateDocuments(application) {
     const files = application.applicationFiles || {};
-    //console.log("applicationFiles " + JSON.stringify(files));
+    ////console.log("applicationFiles " + JSON.stringify(files));
 
     // ID Card
      var idCard = files.idCard ?? application.student.studentIDCard
      var itLetter = files.trainingLetter ?? application.student.studentITLetter;
     if (idCard) {
       var ifIDCard = await validateStorageUrl(idCard);
-      //console.log("if ID card "+ifIDCard);
+      ////console.log("if ID card "+ifIDCard);
       if(ifIDCard)
       {
       this.setupDocumentButtons("id-card", idCard);
@@ -408,7 +408,7 @@ class StudentApplication {
     // Training Letter (Application Letter)
     if (itLetter) {
       var   ifITLetter = await validateStorageUrl(itLetter);
-       console.log("itLetter validation "+ifITLetter);
+       //console.log("itLetter validation "+ifITLetter);
        if(ifITLetter)
        {
       this.setupDocumentButtons("application-letter", itLetter);
@@ -431,7 +431,7 @@ class StudentApplication {
     }
 
     // Application Forms - FIXED VERSION
-    //console.log("files is " + JSON.stringify(files));
+    ////console.log("files is " + JSON.stringify(files));
 
     if (
       files.applicationForms &&
@@ -485,9 +485,9 @@ class StudentApplication {
    * Setup buttons for multiple documents
    */
   setupMultipleDocuments(documentType, fileUrls) {
-    //console.log("mutiple files " + fileUrls);
+    ////console.log("mutiple files " + fileUrls);
     if (fileUrls.length > 0) {
-      //console.log("multiple files is greater than 0");
+      ////console.log("multiple files is greater than 0");
       this.setupDocumentButtons(documentType, fileUrls[0]);
     }
   }
@@ -505,7 +505,7 @@ class StudentApplication {
   downloadDocument(fileUrl) {
     // Ensure fileUrl is a string
     const urlString = String(fileUrl);
-    console.log("fileUrl is", urlString);
+    //console.log("fileUrl is", urlString);
     
     const link = document.createElement("a");
     link.href = urlString;
@@ -593,7 +593,7 @@ class StudentApplication {
 
       // Handle result
       if (result.success) {
-        //console.log(`Status notification sent to student: ${status}`);
+        ////console.log(`Status notification sent to student: ${status}`);
         alert(` ${this.getSuccessMessage(status)}`);
 
         // Close modal if exists in current context

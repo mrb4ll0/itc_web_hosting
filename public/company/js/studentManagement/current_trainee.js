@@ -23,7 +23,7 @@ export default class CurrentTraining {
   }
 
   async init() {
-    console.log("Initializing Current Training Tab");
+    //console.log("Initializing Current Training Tab");
     this.initializeElements();
     this.initializeEventListeners();
     await this.buildTrainingContent();
@@ -100,7 +100,7 @@ export default class CurrentTraining {
         this.migrationBtn = migrateBtn;
       }
     }
-    console.log("Current Training elements initialized");
+    //console.log("Current Training elements initialized");
   }
 
   initializeEventListeners() {
@@ -171,14 +171,13 @@ export default class CurrentTraining {
   }
 
   applyAllFilters() {
-    console.log("orignal Trainees is " + JSON.stringify(this.originalTrainees));
     let filtered = [...this.originalTrainees];
 
     // Search filter
     if (this.currentSearchTerm) {
       filtered = filtered.filter((trainee) => {
-        const student = trainee.studentInfo || {};
-        const training = trainee.training || {};
+        const student = this.getTraineeStudent(trainee);
+        const training = this.getTraineeTraining(trainee);
         const institution = student.institution || "";
 
         const searchableText = [
@@ -199,7 +198,8 @@ export default class CurrentTraining {
     const institutionValue = this.institutionFilter?.value;
     if (institutionValue && institutionValue !== "all") {
       filtered = filtered.filter((trainee) => {
-        const institution = trainee.studentInfo?.institution || "";
+        const student = this.getTraineeStudent(trainee);
+        const institution = student.institution || "";
         return institution.toLowerCase().includes(institutionValue);
       });
     }
@@ -208,7 +208,7 @@ export default class CurrentTraining {
     const progressValue = this.progressFilter?.value;
     if (progressValue && progressValue !== "all") {
       filtered = filtered.filter((trainee) => {
-        const progress = trainee.progress.overall || 0;
+        const progress = this.getTraineeProgress(trainee);
 
         switch (progressValue) {
           case "0-25":
@@ -233,10 +233,8 @@ export default class CurrentTraining {
       const now = new Date();
 
       filtered = filtered.filter((trainee) => {
-        const progress = trainee.progress.overall || 0;
-        const endDate = trainee.duration?.endDate
-          ? new Date(trainee.duration.endDate)
-          : null;
+        const progress = this.getTraineeProgress(trainee);
+        const endDate = this.getTraineeEndDate(trainee);
         const daysRemaining = endDate
           ? Math.ceil((endDate - now) / (1000 * 60 * 60 * 24))
           : null;
@@ -259,12 +257,27 @@ export default class CurrentTraining {
     }
 
     this.filteredTrainees = filtered;
-    this.currentPage = 1; // Reset to first page when filtering
+    this.currentPage = 1;
     this.renderTraineesTable();
     this.updatePagination();
     this.updateStats();
     this.updateActiveFiltersDisplay();
   }
+
+  getTraineeStudent(trainee) {
+  if (trainee.application) {
+    return trainee.application.student || {};
+  }
+  return trainee.studentInfo || {};
+}
+
+getTraineeTraining(trainee) {
+  if (trainee.application) {
+    return trainee.training || trainee.industrialTraining || trainee.application.internship || {};
+  }
+  return trainee.trainingInfo || {};
+}
+
 
   applyFilters() {
     let filtered = [...(this.originalTrainees || this.filteredTrainees)];
@@ -476,24 +489,25 @@ export default class CurrentTraining {
   }
 
   async buildTrainingContent() {
-    console.log("Building training content...");
+    //console.log("Building training content...");
 
     const currentTrainees =
       this.tabManager.getTrainingStudentsByDate("current");
     // Use already migrated students or applications
     const currentStudents =
       await this.currentStudentService.getAllCurrentStudents();
-    console.log("current Trainees ", currentTrainees);
-    if (currentStudents.length > 0) {
+    //console.log("current Trainees ", currentTrainees);
+    if (currentTrainees.length > 0) {
       // Use migrated students
-      this.originalTrainees = currentStudents;
-      console.log(`🎯 Using ${currentStudents.length} migrated students`);
+      this.originalTrainees = currentTrainees;
+      console.log("originalTrainees " + JSON.stringify(this.originalTrainees));
+      //console.log(`🎯 Using ${currentStudents.length} migrated students`);
     } else {
       // Use applications (not yet migrated)
-      this.originalTrainees = currentTrainees;
-      console.log(
-        `📋 Using ${currentTrainees.length} applications (not migrated yet)`
-      );
+      this.originalTrainees = currentStudents;
+      // //console.log(
+      //   `📋 Using ${currentTrainees.length} applications (not migrated yet)`
+      // );
     }
     this.filteredTrainees = this.applyInitialFilters(this.originalTrainees);
 
@@ -516,9 +530,9 @@ export default class CurrentTraining {
       );
 
     if (hasPendingMigrations) {
-      console.log("📢 Migration notification shown to user");
+      //console.log("📢 Migration notification shown to user");
     } else {
-      console.log("✅ No pending migrations found");
+      //console.log("✅ No pending migrations found");
     }
   }
 
@@ -575,10 +589,7 @@ export default class CurrentTraining {
     // Calculate stats
     const now = new Date();
     const endingThisMonth = this.filteredTrainees.filter((trainee) => {
-      console.log("trainee " + JSON.stringify(trainee));
-      const endDate = trainee.trainingInfo.duration?.endDate
-        ? new Date(trainee.trainingInfo.duration.endDate)
-        : null;
+      const endDate = this.getTraineeEndDate(trainee);
       if (!endDate) return false;
 
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -589,10 +600,19 @@ export default class CurrentTraining {
       this.filteredTrainees.length > 0
         ? Math.round(
             this.filteredTrainees.reduce(
-              (sum, trainee) => sum + (trainee.trainingInfo.progress || 0),
+              (sum, trainee) => sum + this.getTraineeProgress(trainee),
               0
             ) / this.filteredTrainees.length
           )
+        : 0;
+
+    const completedCount = this.filteredTrainees.filter(
+      (trainee) => this.getTraineeProgress(trainee) === 100
+    ).length;
+
+    const completionRate =
+      totalTrainees > 0
+        ? Math.round((completedCount / totalTrainees) * 100)
         : 0;
 
     // Update DOM
@@ -600,12 +620,7 @@ export default class CurrentTraining {
       this.activeTraineesCount.textContent = totalTrainees;
     }
     if (this.completionRate) {
-      const completed = this.filteredTrainees.filter(
-        (t) => t.trainingInfo.progress === 100
-      ).length;
-      const rate =
-        totalTrainees > 0 ? Math.round((completed / totalTrainees) * 100) : 0;
-      this.completionRate.textContent = `${rate}%`;
+      this.completionRate.textContent = `${completionRate}%`;
     }
     if (this.averageProgress) {
       this.averageProgress.textContent = `${averageProgress}%`;
@@ -615,6 +630,49 @@ export default class CurrentTraining {
     }
   }
 
+  // Helper method to get end date from any trainee structure
+  getTraineeEndDate(trainee) {
+    if (trainee.application?.duration?.endDate) {
+      return new Date(trainee.application.duration.endDate);
+    }
+    if (trainee.trainingInfo?.duration?.endDate) {
+      return new Date(trainee.trainingInfo.duration.endDate);
+    }
+    if (trainee.duration?.endDate) {
+      return new Date(trainee.duration.endDate);
+    }
+    if (trainee.training?.duration?.endDate) {
+      return new Date(trainee.training.duration.endDate);
+    }
+    return null;
+  }
+
+  // Helper method to get progress from any trainee structure
+  getTraineeProgress(trainee) {
+    // Application-based structure
+    if (trainee.application) {
+      return (
+        trainee.application.progress ||
+        trainee.training?.progress ||
+        trainee.progress?.overall ||
+        0
+      );
+    }
+
+    // Normalized structure
+    if (trainee.trainingInfo) {
+      return trainee.trainingInfo.progress || trainee.progress?.overall || 0;
+    }
+
+    // Direct progress structure
+    if (trainee.progress) {
+      return typeof trainee.progress === "object"
+        ? trainee.progress.overall || 0
+        : trainee.progress || 0;
+    }
+
+    return 0;
+  }
   renderTraineesTable() {
     if (!this.traineesTableBody) return;
 
@@ -649,14 +707,37 @@ export default class CurrentTraining {
     const row = document.createElement("tr");
     row.className = "hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors";
 
-    const application = traineeData.trainingInfo;
-    const student = traineeData.studentInfo || {};
-    const opportunity = traineeData.trainingInfo.opportunity || {};
-    const duration = traineeData.duration || {};
-    const it = traineeData.trainingInfo;
-    console.log("training is " + JSON.stringify(application));
-    console.log("training data is "+JSON.stringify(traineeData));
-    console.log("trainee id is "+ traineeData.id);
+    // Extract data based on structure type
+    let student, training, duration, progress, traineeId;
+
+    if (traineeData.application) {
+      // Application-based structure
+      student = traineeData.application.student || {};
+      training =
+        traineeData.training ||
+        traineeData.industrialTraining ||
+        traineeData.application.internship ||
+        {};
+      duration = traineeData.application.duration || {};
+      progress =
+        traineeData.application.progress || traineeData.progress?.overall || 0;
+      traineeId = traineeData.application.id || traineeData.id;
+    } else {
+      // Normalized structure
+      student = traineeData.studentInfo || {};
+      training = traineeData.trainingInfo || {};
+      duration = traineeData.duration || {};
+      progress =
+        traineeData.progress?.overall ||
+        traineeData.trainingInfo?.progress ||
+        0;
+      traineeId = traineeData.id;
+    }
+
+    // Handle progress format (could be object or number)
+    const progressValue =
+      typeof progress === "object" ? progress.overall || 0 : progress || 0;
+
     const safeConvertDate = (date) => {
       if (!date) return null;
 
@@ -716,111 +797,100 @@ export default class CurrentTraining {
     const isoStartDate = safeConvertDate(duration.startDate);
     const isoEndDate = safeConvertDate(duration.endDate);
 
-    const progress = traineeData.progress || 0;
-
-
     // Calculate days remaining
     const daysRemaining = isoEndDate
       ? Math.ceil((new Date(isoEndDate) - new Date()) / (1000 * 60 * 60 * 24))
       : null;
 
-    console.log("daysRemaining is " + daysRemaining);
-    var startDate = formatForDisplay(isoStartDate);
-    var endDate = formatForDisplay(isoEndDate);
+    const startDate = formatForDisplay(isoStartDate);
+    const endDate = formatForDisplay(isoEndDate);
 
-    const statusConfig = this.getStatusConfig(progress, daysRemaining);
+    const statusConfig = this.getStatusConfig(progressValue, daysRemaining);
 
     // Get avatar content
     const avatarContent = getAvatarInitials(student.fullName, student.imageUrl);
     const hasImage = avatarContent.startsWith("url(");
 
     row.innerHTML = `
-      <td class="px-6 py-4 whitespace-nowrap">
-        <div class="flex items-center">
-          <div class="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-white font-semibold text-sm ${
-            hasImage
-              ? "bg-cover bg-center"
-              : "bg-gradient-to-br from-blue-500 to-purple-600"
-          }" ${hasImage ? `style="background-image: ${avatarContent}"` : ""}>
-            ${!hasImage ? avatarContent : ""}
+    <td class="px-6 py-4 whitespace-nowrap">
+      <div class="flex items-center">
+        <div class="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center text-white font-semibold text-sm ${
+          hasImage
+            ? "bg-cover bg-center"
+            : "bg-gradient-to-br from-blue-500 to-purple-600"
+        }" ${hasImage ? `style="background-image: ${avatarContent}"` : ""}>
+          ${!hasImage ? avatarContent : ""}
+        </div>
+        <div class="ml-4">
+          <div class="text-sm font-medium text-gray-900 dark:text-white">
+            ${student.fullName || "Unknown Trainee"}
           </div>
-          <div class="ml-4">
-            <div class="text-sm font-medium text-gray-900 dark:text-white">
-              ${student.fullName || "Unknown Trainee"}
-            </div>
-            <div class="text-sm text-gray-500 dark:text-gray-400">
-              ${student.email || "No email"}
-            </div>
+          <div class="text-sm text-gray-500 dark:text-gray-400">
+            ${student.email || "No email"}
           </div>
         </div>
-      </td>
-      <td class="px-6 py-4 whitespace-nowrap">
-        <div class="text-sm text-gray-900 dark:text-white">${
-          it.title || "N/A"
-        }</div>
-      </td>
-      <td class="px-6 py-4 whitespace-nowrap">
-        <div class="text-sm text-gray-900 dark:text-white">${
-          student.institution || "N/A"
-        }</div>
-      </td>
-      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-        ${startDate}
-      </td>
-      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-        ${endDate}
+      </div>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap">
+      <div class="text-sm text-gray-900 dark:text-white">${
+        training.title || "N/A"
+      }</div>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap">
+      <div class="text-sm text-gray-900 dark:text-white">${
+        student.institution || "N/A"
+      }</div>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+      ${startDate}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+      ${endDate}
+      ${
+        daysRemaining !== null
+          ? `<div class="text-xs text-gray-400">${daysRemaining} days left</div>`
+          : ""
+      }
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap">
+      <div class="flex items-center">
+        <div class="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2 mr-3">
+          <div class="bg-green-500 h-2 rounded-full transition-all duration-300" 
+               style="width: ${progressValue}%"></div>
+        </div>
+        <span class="text-sm text-gray-700 dark:text-gray-300">${progressValue}%</span>
+      </div>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap">
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+        statusConfig.class
+      }">
         ${
-          daysRemaining !== null
-            ? `<div class="text-xs text-gray-400">${daysRemaining} days left</div>`
+          statusConfig.icon
+            ? `<span class="material-symbols-outlined text-xs mr-1">${statusConfig.icon}</span>`
             : ""
         }
-      </td>
-      <td class="px-6 py-4 whitespace-nowrap">
-        <div class="flex items-center">
-          <div class="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2 mr-3">
-            <div class="bg-green-500 h-2 rounded-full transition-all duration-300" 
-                 style="width: ${progress.overall}%"></div>
-          </div>
-          <span class="text-sm text-gray-700 dark:text-gray-300">${progress.overall}%</span>
-        </div>
-      </td>
-      <td class="px-6 py-4 whitespace-nowrap">
-        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-          statusConfig.class
-        }">
-          ${
-            statusConfig.icon
-              ? `<span class="material-symbols-outlined text-xs mr-1">${statusConfig.icon}</span>`
-              : ""
-          }
-          ${statusConfig.text}
-        </span>
-      </td>
-      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-        <div class="flex gap-2">
-          <button class="view-trainee text-primary hover:text-blue-700 transition-colors" data-trainee-id="${
-            traineeData.id
-          }">
-            <span class="material-symbols-outlined text-base">visibility</span>
-          </button>
-          <button class="edit-progress text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors" data-trainee-id="${
-            traineeData.id
-          }">
-            <span class="material-symbols-outlined text-base">edit</span>
-          </button>
-          <button class="send-message text-green-600 hover:text-green-800 transition-colors" data-trainee-id="${
-            traineeData.id
-          }">
-            <span class="material-symbols-outlined text-base">mail</span>
-          </button>
-        </div>
-      </td>
-    `;
+        ${statusConfig.text}
+      </span>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+      <div class="flex gap-2">
+        <button class="view-trainee text-primary hover:text-blue-700 transition-colors" data-trainee-id="${traineeId}">
+          <span class="material-symbols-outlined text-base">visibility</span>
+        </button>
+        <button class="edit-progress text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors" data-trainee-id="${traineeId}">
+          <span class="material-symbols-outlined text-base">edit</span>
+        </button>
+        <button class="send-message text-green-600 hover:text-green-800 transition-colors" data-trainee-id="${traineeId}">
+          <span class="material-symbols-outlined text-base">mail</span>
+        </button>
+      </div>
+    </td>
+  `;
 
-    this.attachTraineeEventListeners(row, traineeData.id);
+    this.attachTraineeEventListeners(row, traineeId);
     return row;
   }
-
   getStatusConfig(progress, daysRemaining) {
     if (progress === 100) {
       return {
@@ -859,7 +929,7 @@ export default class CurrentTraining {
   }
 
   attachTraineeEventListeners(row, traineeId) {
-    console.log("even listener traineId is "+traineeId);
+    //console.log("even listener traineId is "+traineeId);
     const viewBtn = row.querySelector(".view-trainee");
     const editBtn = row.querySelector(".edit-progress");
     const messageBtn = row.querySelector(".send-message");
@@ -868,7 +938,9 @@ export default class CurrentTraining {
       viewBtn.addEventListener("click", () => this.viewTrainee(traineeId));
     }
     if (editBtn) {
-      editBtn.addEventListener("click",async () => this.editProgress(traineeId));
+      editBtn.addEventListener("click", async () =>
+        this.editProgress(traineeId)
+      );
     }
     if (messageBtn) {
       messageBtn.addEventListener("click", () => this.sendMessage(traineeId));
@@ -945,8 +1017,7 @@ export default class CurrentTraining {
     if (!this.recentActivitiesList) return;
 
     // Sample activities - replace with real data
-    const activities = [
-    ];
+    const activities = [];
 
     if (activities.length === 0) {
       this.recentActivitiesList.innerHTML = `
@@ -1001,65 +1072,137 @@ export default class CurrentTraining {
     const now = new Date();
     const upcomingDeadlines = this.filteredTrainees
       .filter((trainee) => {
-        const endDate = trainee.trainingInfo.duration?.endDate
-          ? new Date(trainee.trainingInfo.duration.endDate)
-          : null;
+        let endDate = null;
+
+        // Handle different data structures
+        if (trainee.application) {
+          // Application-based structure
+          endDate = trainee.application.duration?.endDate
+            ? new Date(trainee.application.duration.endDate)
+            : null;
+        } else if (trainee.trainingInfo) {
+          // Normalized structure
+          endDate = trainee.trainingInfo.duration?.endDate
+            ? new Date(trainee.trainingInfo.duration.endDate)
+            : null;
+        } else if (trainee.duration) {
+          // Direct duration structure
+          endDate = trainee.duration.endDate
+            ? new Date(trainee.duration.endDate)
+            : null;
+        }
+
         if (!endDate) return false;
         const daysUntilEnd = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
         return daysUntilEnd <= 30 && daysUntilEnd > 0;
       })
-      .sort(
-        (a, b) =>
-          new Date(a.application.duration.endDate) -
-          new Date(b.application.duration.endDate)
-      )
+      .sort((a, b) => {
+        // Get end dates for sorting
+        let endDateA = null,
+          endDateB = null;
+
+        if (a.application) {
+          endDateA = a.application.duration?.endDate
+            ? new Date(a.application.duration.endDate)
+            : null;
+        } else if (a.trainingInfo) {
+          endDateA = a.trainingInfo.duration?.endDate
+            ? new Date(a.trainingInfo.duration.endDate)
+            : null;
+        } else if (a.duration) {
+          endDateA = a.duration.endDate ? new Date(a.duration.endDate) : null;
+        }
+
+        if (b.application) {
+          endDateB = b.application.duration?.endDate
+            ? new Date(b.application.duration.endDate)
+            : null;
+        } else if (b.trainingInfo) {
+          endDateB = b.trainingInfo.duration?.endDate
+            ? new Date(b.trainingInfo.duration.endDate)
+            : null;
+        } else if (b.duration) {
+          endDateB = b.duration.endDate ? new Date(b.duration.endDate) : null;
+        }
+
+        // Handle cases where dates might be null
+        if (!endDateA && !endDateB) return 0;
+        if (!endDateA) return 1;
+        if (!endDateB) return -1;
+
+        return endDateA - endDateB;
+      })
       .slice(0, 5);
 
     if (upcomingDeadlines.length === 0) {
       this.upcomingDeadlinesList.innerHTML = `
-        <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-          <span class="material-symbols-outlined text-4xl mb-2 opacity-50">event</span>
-          <p>No upcoming deadlines</p>
-        </div>
-      `;
+      <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+        <span class="material-symbols-outlined text-4xl mb-2 opacity-50">event</span>
+        <p>No upcoming deadlines</p>
+      </div>
+    `;
       return;
     }
 
     this.upcomingDeadlinesList.innerHTML = upcomingDeadlines
       .map((trainee) => {
-        const student = trainee.studentInfo || {};
-        const endDate = new Date(trainee.duration.endDate);
+        // Extract student and training data based on structure
+        let student = {};
+        let training = {};
+        let endDate = null;
+
+        if (trainee.application) {
+          // Application-based structure
+          student = trainee.application.student || {};
+          training =
+            trainee.training ||
+            trainee.industrialTraining ||
+            trainee.application.internship ||
+            {};
+          endDate = trainee.application.duration?.endDate
+            ? new Date(trainee.application.duration.endDate)
+            : null;
+        } else {
+          // Normalized structure
+          student = trainee.studentInfo || {};
+          training = trainee.trainingInfo || {};
+          endDate = trainee.duration?.endDate
+            ? new Date(trainee.duration.endDate)
+            : null;
+        }
+
+        if (!endDate) return ""; // Skip if no end date
+
         const daysLeft = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
 
         return `
-        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-          <div>
-            <p class="text-sm font-medium text-gray-900 dark:text-white">${
-              student.fullName || "Unknown Trainee"
-            }</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">${
-              trainee.opportunity?.course || "N/A"
-            }</p>
-          </div>
-          <div class="text-right">
-            <p class="text-sm font-medium ${
-              daysLeft <= 7
-                ? "text-orange-600 dark:text-orange-400"
-                : "text-gray-900 dark:text-white"
-            }">
-              ${endDate.toLocaleDateString()}
-            </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">${daysLeft} days left</p>
-          </div>
+      <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <div>
+          <p class="text-sm font-medium text-gray-900 dark:text-white">${
+            student.fullName || "Unknown Trainee"
+          }</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">${
+            training.title || "N/A"
+          }</p>
         </div>
-      `;
+        <div class="text-right">
+          <p class="text-sm font-medium ${
+            daysLeft <= 7
+              ? "text-orange-600 dark:text-orange-400"
+              : "text-gray-900 dark:text-white"
+          }">
+            ${endDate.toLocaleDateString()}
+          </p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">${daysLeft} days left</p>
+        </div>
+      </div>
+    `;
       })
       .join("");
   }
-
   // Action methods
   viewTrainee(traineeId) {
-    console.log("View trainee details:", traineeId);
+    //console.log("View trainee details:", traineeId);
 
     // Find the trainee data
     const traineeData = this.filteredTrainees.find(
@@ -1079,12 +1222,12 @@ export default class CurrentTraining {
     const student = traineeData.studentInfo || {};
     const training = traineeData.trainingInfo || {};
     const duration = traineeData.duration || {};
-    //console.log("students is "+JSON.stringify(student));
+    ////console.log("students is "+JSON.stringify(student));
 
     const isoStartDate = this.safeConvertDate(duration.startDate);
     const isoEndDate = this.safeConvertDate(duration.endDate);
 
-    //console.log("application "+JSON.stringify(application));
+    ////console.log("application "+JSON.stringify(application));
     let progressValue = 0;
     if (
       typeof traineeData.progress === "object" &&
@@ -1423,7 +1566,7 @@ export default class CurrentTraining {
   }
 
   async editProgress(traineeId) {
-    console.log("Edit progress for trainee:", traineeId);
+    //console.log("Edit progress for trainee:", traineeId);
 
     // Find the trainee data
     const traineeData = this.filteredTrainees.find(
@@ -1439,17 +1582,19 @@ export default class CurrentTraining {
     const student = traineeData.studentInfo || {};
 
     // Get progress - handle both object and number cases
-let progressValue = 0;
-if (typeof traineeData.progress === 'object' && traineeData.progress !== null) {
-    // If progress is an object, try to get the overall progress
-    progressValue = traineeData.progress.overall || 0;
-} else {
-    // If progress is a number or undefined
-    progressValue = traineeData.progress || 0;
-}
+    let progressValue = 0;
+    if (
+      typeof traineeData.progress === "object" &&
+      traineeData.progress !== null
+    ) {
+      // If progress is an object, try to get the overall progress
+      progressValue = traineeData.progress.overall || 0;
+    } else {
+      // If progress is a number or undefined
+      progressValue = traineeData.progress || 0;
+    }
 
-const currentProgress = Math.round(progressValue); 
-
+    const currentProgress = Math.round(progressValue);
 
     // Show progress update dialog
     const newProgress = prompt(
@@ -1462,67 +1607,76 @@ const currentProgress = Math.round(progressValue);
     if (newProgress !== null) {
       const progressValue = parseInt(newProgress);
       if (!isNaN(progressValue) && progressValue >= 0 && progressValue <= 100) {
-        var isUpdated = await this.currentStudentService.updateStudentProgressInFirebase(traineeId, progressValue);
-         if(isUpdated)
-         {
-           this.updateLocalTraineeProgress(); 
-           this.renderTraineesTable();
-         }
+        var isUpdated =
+          await this.currentStudentService.updateStudentProgressInFirebase(
+            traineeId,
+            progressValue
+          );
+        if (isUpdated) {
+          this.updateLocalTraineeProgress();
+          this.renderTraineesTable();
+        }
       } else {
         alert("Please enter a valid progress value between 0 and 100");
       }
     }
   }
 
-updateLocalTraineeProgress(traineeId, progressValue, notes = '') {
-  // Find the trainee in filteredTrainees
-  const traineeIndex = this.filteredTrainees.findIndex(t => t.id === traineeId);
-  if (traineeIndex !== -1) {
-    // Update progress
-    this.filteredTrainees[traineeIndex].progress = {
-      ...this.filteredTrainees[traineeIndex].progress,
-      overall: progressValue,
-      lastUpdated: new Date().toISOString()
-    };
+  updateLocalTraineeProgress(traineeId, progressValue, notes = "") {
+    // Find the trainee in filteredTrainees
+    const traineeIndex = this.filteredTrainees.findIndex(
+      (t) => t.id === traineeId
+    );
+    if (traineeIndex !== -1) {
+      // Update progress
+      this.filteredTrainees[traineeIndex].progress = {
+        ...this.filteredTrainees[traineeIndex].progress,
+        overall: progressValue,
+        lastUpdated: new Date().toISOString(),
+      };
 
-    // Add note if provided
-    if (notes.trim()) {
-      if (!this.filteredTrainees[traineeIndex].progress.notes) {
-        this.filteredTrainees[traineeIndex].progress.notes = [];
+      // Add note if provided
+      if (notes.trim()) {
+        if (!this.filteredTrainees[traineeIndex].progress.notes) {
+          this.filteredTrainees[traineeIndex].progress.notes = [];
+        }
+        this.filteredTrainees[traineeIndex].progress.notes.push({
+          note: notes,
+          timestamp: new Date().toISOString(),
+          type: "progress_update",
+        });
       }
-      this.filteredTrainees[traineeIndex].progress.notes.push({
-        note: notes,
-        timestamp: new Date().toISOString(),
-        type: 'progress_update'
-      });
-    }
 
-    // Also update in currentStudents map if it exists
-    if (this.currentStudentService && this.currentStudentService.currentStudents) {
-      const currentStudent = this.currentStudentService.currentStudents.get(traineeId);
-      if (currentStudent) {
-        currentStudent.progress.overall = progressValue;
-        currentStudent.progress.lastUpdated = new Date().toISOString();
-        
-        if (notes.trim()) {
-          if (!currentStudent.progress.notes) {
-            currentStudent.progress.notes = [];
+      // Also update in currentStudents map if it exists
+      if (
+        this.currentStudentService &&
+        this.currentStudentService.currentStudents
+      ) {
+        const currentStudent =
+          this.currentStudentService.currentStudents.get(traineeId);
+        if (currentStudent) {
+          currentStudent.progress.overall = progressValue;
+          currentStudent.progress.lastUpdated = new Date().toISOString();
+
+          if (notes.trim()) {
+            if (!currentStudent.progress.notes) {
+              currentStudent.progress.notes = [];
+            }
+            currentStudent.progress.notes.push({
+              note: notes,
+              timestamp: new Date().toISOString(),
+              type: "progress_update",
+            });
           }
-          currentStudent.progress.notes.push({
-            note: notes,
-            timestamp: new Date().toISOString(),
-            type: 'progress_update'
-          });
         }
       }
-    }
 
-    console.log(`📝 Updated local progress for trainee ${traineeId}`);
+      //console.log(`📝 Updated local progress for trainee ${traineeId}`);
+    }
   }
-}
 
   sendMessage(traineeId) {
-    console.log("Send message to trainee:", traineeId);
+    //console.log("Send message to trainee:", traineeId);
 
     // Find the trainee/application data
     const traineeData = this.filteredTrainees.find(
@@ -1534,7 +1688,6 @@ updateLocalTraineeProgress(traineeId, progressValue, notes = '') {
       return;
     }
 
-    
     const student = traineeData.studentInfo || {};
     const training = traineeData.trainingInfo || {};
 
@@ -1546,32 +1699,34 @@ updateLocalTraineeProgress(traineeId, progressValue, notes = '') {
     );
   }
 
-   messageDialog(hideCancel = true, traineeData, fromEdit = true) {
-  var currentTrainee = traineeData;
-  const modalOverlay = document.createElement("div");
-  modalOverlay.style.cssText = `
+  messageDialog(hideCancel = true, traineeData, fromEdit = true) {
+    var currentTrainee = traineeData;
+    const modalOverlay = document.createElement("div");
+    modalOverlay.style.cssText = `
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; 
       align-items: center; z-index: 1000; font-family: sans-serif;
   `;
 
-  const modal = document.createElement("div");
-  modal.style.cssText = `
+    const modal = document.createElement("div");
+    modal.style.cssText = `
       background: white; padding: 24px; border-radius: 8px; 
       width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;
   `;
 
-  // Get student data from traineeData.studentInfo
-  const studentEmail = currentTrainee.studentInfo?.email || '';
-  const studentName = currentTrainee.studentInfo?.fullName || 'Student';
-  const studentUid = currentTrainee.studentInfo?.uid || '';
+    // Get student data from traineeData.studentInfo
+    const studentEmail = currentTrainee.studentInfo?.email || "";
+    const studentName = currentTrainee.studentInfo?.fullName || "Student";
+    const studentUid = currentTrainee.studentInfo?.uid || "";
 
-  // Get training/company data from traineeData.trainingInfo
-  const companyName = currentTrainee.trainingInfo?.companyName || 'Our Company';
-  const trainingTitle = currentTrainee.trainingInfo?.title || 'Industrial Training';
+    // Get training/company data from traineeData.trainingInfo
+    const companyName =
+      currentTrainee.trainingInfo?.companyName || "Our Company";
+    const trainingTitle =
+      currentTrainee.trainingInfo?.title || "Industrial Training";
 
-  // Conditionally render the buttons based on hideCancel parameter
-  const buttonsHTML = hideCancel
+    // Conditionally render the buttons based on hideCancel parameter
+    const buttonsHTML = hideCancel
       ? `<div style="display: flex; justify-content: flex-end; gap: 12px;">
           <button id="send-notification" style="padding: 8px 16px; border: 1px solid #007bff; border-radius: 4px; background: white; color: #007bff; cursor: pointer; display: flex; align-items: center; gap: 8px;">
               <span id="notification-text">Send Notification</span>
@@ -1596,10 +1751,12 @@ updateLocalTraineeProgress(traineeId, progressValue, notes = '') {
           </button>
       </div>`;
 
-  var edit = fromEdit ? '<p style="margin: 0 0 20px 0; color: #333;">Kindly leave a note for the student</p>' : '<h2 style="margin: 0 0 20px 0; color: #333;">Contact Student</h2>';
-  console.log("from edit is " + fromEdit);
+    var edit = fromEdit
+      ? '<p style="margin: 0 0 20px 0; color: #333;">Kindly leave a note for the student</p>'
+      : '<h2 style="margin: 0 0 20px 0; color: #333;">Contact Student</h2>';
+    //console.log("from edit is " + fromEdit);
 
-  modal.innerHTML = `
+    modal.innerHTML = `
         ${edit}  
       <!-- Communication Mode Selection -->
       <div style="margin-bottom: 20px; padding: 16px; background: #f8f9fa; border-radius: 6px;">
@@ -1679,25 +1836,27 @@ Best regards
       ${buttonsHTML}
   `;
 
-  modalOverlay.appendChild(modal);
-  document.body.appendChild(modalOverlay);
+    modalOverlay.appendChild(modal);
+    document.body.appendChild(modalOverlay);
 
-  // Get references to elements
-  const sendNotificationBtn = modal.querySelector("#send-notification");
-  const sendEmailBtn = modal.querySelector("#send-email");
-  const notificationText = modal.querySelector("#notification-text");
-  const notificationLoading = modal.querySelector("#notification-loading");
-  const emailText = modal.querySelector("#email-text");
-  const emailLoading = modal.querySelector("#email-loading");
-  const studentNameInput = modal.querySelector("#student-name");
-  const studentEmailInput = modal.querySelector("#student-email");
-  const messageTextarea = modal.querySelector("#message-text");
-  const emailField = modal.querySelector("#email-field");
-  const communicationModeRadios = modal.querySelectorAll('input[name="communication-mode"]');
-  const templateSelect = modal.querySelector("#message-templates");
+    // Get references to elements
+    const sendNotificationBtn = modal.querySelector("#send-notification");
+    const sendEmailBtn = modal.querySelector("#send-email");
+    const notificationText = modal.querySelector("#notification-text");
+    const notificationLoading = modal.querySelector("#notification-loading");
+    const emailText = modal.querySelector("#email-text");
+    const emailLoading = modal.querySelector("#email-loading");
+    const studentNameInput = modal.querySelector("#student-name");
+    const studentEmailInput = modal.querySelector("#student-email");
+    const messageTextarea = modal.querySelector("#message-text");
+    const emailField = modal.querySelector("#email-field");
+    const communicationModeRadios = modal.querySelectorAll(
+      'input[name="communication-mode"]'
+    );
+    const templateSelect = modal.querySelector("#message-templates");
 
-  // Message templates - updated for current trainees
-  const messageTemplates = {
+    // Message templates - updated for current trainees
+    const messageTemplates = {
       progress_check: `Hello {name},
 
 I hope you're doing well with your ${trainingTitle} at ${companyName}. I'd like to check on your progress and see how everything is going.
@@ -1748,94 +1907,96 @@ I've noticed some concerns with your attendance record in the ${trainingTitle} p
 
 Please ensure you maintain consistent attendance and inform us in advance if you're unable to attend.
 
-Best regards`
-  };
+Best regards`,
+    };
 
-  // Event handlers
-  const closeModal = () => document.body.removeChild(modalOverlay);
+    // Event handlers
+    const closeModal = () => document.body.removeChild(modalOverlay);
 
-  // Function to set loading state for notification
-  const setNotificationLoadingState = (isLoading) => {
+    // Function to set loading state for notification
+    const setNotificationLoadingState = (isLoading) => {
       if (isLoading) {
-          sendNotificationBtn.disabled = true;
-          sendNotificationBtn.style.opacity = "0.6";
-          sendNotificationBtn.style.cursor = "not-allowed";
-          notificationText.style.display = "none";
-          notificationLoading.style.display = "inline";
+        sendNotificationBtn.disabled = true;
+        sendNotificationBtn.style.opacity = "0.6";
+        sendNotificationBtn.style.cursor = "not-allowed";
+        notificationText.style.display = "none";
+        notificationLoading.style.display = "inline";
       } else {
-          sendNotificationBtn.disabled = false;
-          sendNotificationBtn.style.opacity = "1";
-          sendNotificationBtn.style.cursor = "pointer";
-          notificationText.style.display = "inline";
-          notificationLoading.style.display = "none";
+        sendNotificationBtn.disabled = false;
+        sendNotificationBtn.style.opacity = "1";
+        sendNotificationBtn.style.cursor = "pointer";
+        notificationText.style.display = "inline";
+        notificationLoading.style.display = "none";
       }
-  };
+    };
 
-  // Function to set loading state for email
-  const setEmailLoadingState = (isLoading) => {
+    // Function to set loading state for email
+    const setEmailLoadingState = (isLoading) => {
       if (isLoading) {
-          sendEmailBtn.disabled = true;
-          sendEmailBtn.style.opacity = "0.6";
-          sendEmailBtn.style.cursor = "not-allowed";
-          emailText.style.display = "none";
-          emailLoading.style.display = "inline";
+        sendEmailBtn.disabled = true;
+        sendEmailBtn.style.opacity = "0.6";
+        sendEmailBtn.style.cursor = "not-allowed";
+        emailText.style.display = "none";
+        emailLoading.style.display = "inline";
       } else {
-          sendEmailBtn.disabled = false;
-          sendEmailBtn.style.opacity = "1";
-          sendEmailBtn.style.cursor = "pointer";
-          emailText.style.display = "inline";
-          emailLoading.style.display = "none";
+        sendEmailBtn.disabled = false;
+        sendEmailBtn.style.opacity = "1";
+        sendEmailBtn.style.cursor = "pointer";
+        emailText.style.display = "inline";
+        emailLoading.style.display = "none";
       }
-  };
+    };
 
-  // Function to disable all inputs
-  const disableInputs = (disabled) => {
+    // Function to disable all inputs
+    const disableInputs = (disabled) => {
       studentNameInput.disabled = disabled;
       messageTextarea.disabled = disabled;
       if (studentEmailInput) studentEmailInput.disabled = disabled;
       templateSelect.disabled = disabled;
-      communicationModeRadios.forEach(radio => radio.disabled = disabled);
-  };
+      communicationModeRadios.forEach((radio) => (radio.disabled = disabled));
+    };
 
-  // Communication mode change handler
-  communicationModeRadios.forEach(radio => {
-      radio.addEventListener('change', (e) => {
-          if (e.target.value === 'email') {
-              emailField.style.display = 'block';
-              sendNotificationBtn.style.display = 'none';
-              sendEmailBtn.style.display = 'flex';
-          } else {
-              emailField.style.display = 'none';
-              sendNotificationBtn.style.display = 'flex';
-              sendEmailBtn.style.display = 'none';
-          }
+    // Communication mode change handler
+    communicationModeRadios.forEach((radio) => {
+      radio.addEventListener("change", (e) => {
+        if (e.target.value === "email") {
+          emailField.style.display = "block";
+          sendNotificationBtn.style.display = "none";
+          sendEmailBtn.style.display = "flex";
+        } else {
+          emailField.style.display = "none";
+          sendNotificationBtn.style.display = "flex";
+          sendEmailBtn.style.display = "none";
+        }
       });
-  });
+    });
 
-  // Template selection handler
-  templateSelect.addEventListener('change', (e) => {
+    // Template selection handler
+    templateSelect.addEventListener("change", (e) => {
       const template = e.target.value;
       if (template && messageTemplates[template]) {
-          messageTextarea.value = messageTemplates[template]
-              .replace(/{name}/g, studentNameInput.value)
-              .replace(/{training}/g, trainingTitle)
-              .replace(/{company}/g, companyName);
+        messageTextarea.value = messageTemplates[template]
+          .replace(/{name}/g, studentNameInput.value)
+          .replace(/{training}/g, trainingTitle)
+          .replace(/{company}/g, companyName);
       }
-  });
+    });
 
-  // Only add cancel event listener if cancel button exists
-  if (!hideCancel) {
-      modal.querySelector("#cancel-message").addEventListener("click", closeModal);
-  }
+    // Only add cancel event listener if cancel button exists
+    if (!hideCancel) {
+      modal
+        .querySelector("#cancel-message")
+        .addEventListener("click", closeModal);
+    }
 
-  // Send Notification Handler
-  sendNotificationBtn.addEventListener("click", async () => {
+    // Send Notification Handler
+    sendNotificationBtn.addEventListener("click", async () => {
       const studentName = studentNameInput.value;
       const messageText = messageTextarea.value;
 
       if (!studentName || !messageText) {
-          alert("Please enter student name and message");
-          return;
+        alert("Please enter student name and message");
+        return;
       }
 
       // Set loading state
@@ -1843,58 +2004,60 @@ Best regards`
       disableInputs(true);
 
       try {
-          if (!studentUid) {
-              alert("Student information is missing");
-              setNotificationLoadingState(false);
-              disableInputs(false);
-              return;
-          }
-
-          const result = await it_base_companycloud.sendNotificationToStudent(
-              studentUid,
-              {
-                  title: `Message from ${companyName} - ${trainingTitle}`,
-                  message: messageText,
-                  type: "message",
-                  timestamp: new Date().toISOString(),
-                  trainingProgram: trainingTitle,
-                  company: companyName
-              }
-          );
-
-          if (result.success) {
-              setTimeout(() => {
-                  alert(`Notification sent to ${studentName}`);
-                  closeModal();
-              }, 500);
-          } else {
-              alert("Failed to send notification: " + (result.error || 'Unknown error'));
-              setNotificationLoadingState(false);
-              disableInputs(false);
-          }
-      } catch (error) {
-          alert("Error sending notification: " + error.message);
+        if (!studentUid) {
+          alert("Student information is missing");
           setNotificationLoadingState(false);
           disableInputs(false);
-      }
-  });
+          return;
+        }
 
-  // Send Email Handler
-  sendEmailBtn.addEventListener("click", async () => {
+        const result = await it_base_companycloud.sendNotificationToStudent(
+          studentUid,
+          {
+            title: `Message from ${companyName} - ${trainingTitle}`,
+            message: messageText,
+            type: "message",
+            timestamp: new Date().toISOString(),
+            trainingProgram: trainingTitle,
+            company: companyName,
+          }
+        );
+
+        if (result.success) {
+          setTimeout(() => {
+            alert(`Notification sent to ${studentName}`);
+            closeModal();
+          }, 500);
+        } else {
+          alert(
+            "Failed to send notification: " + (result.error || "Unknown error")
+          );
+          setNotificationLoadingState(false);
+          disableInputs(false);
+        }
+      } catch (error) {
+        alert("Error sending notification: " + error.message);
+        setNotificationLoadingState(false);
+        disableInputs(false);
+      }
+    });
+
+    // Send Email Handler
+    sendEmailBtn.addEventListener("click", async () => {
       const studentName = studentNameInput.value;
       const studentEmail = studentEmailInput.value;
       const messageText = messageTextarea.value;
 
       if (!studentName || !studentEmail || !messageText) {
-          alert("Please enter student name, email, and message");
-          return;
+        alert("Please enter student name, email, and message");
+        return;
       }
 
       // Validate email format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(studentEmail)) {
-          alert("Please enter a valid email address");
-          return;
+        alert("Please enter a valid email address");
+        return;
       }
 
       // Set loading state
@@ -1902,183 +2065,187 @@ Best regards`
       disableInputs(true);
 
       try {
-          // Create email subject and body
-          const subject = `${trainingTitle} - Message from ${companyName}`;
-          const body = messageText;
+        // Create email subject and body
+        const subject = `${trainingTitle} - Message from ${companyName}`;
+        const body = messageText;
 
-          // Encode the email parameters
-          const encodedSubject = encodeURIComponent(subject);
-          const encodedBody = encodeURIComponent(body);
+        // Encode the email parameters
+        const encodedSubject = encodeURIComponent(subject);
+        const encodedBody = encodeURIComponent(body);
 
-          // Create mailto link
-          const mailtoLink = `mailto:${studentEmail}?subject=${encodedSubject}&body=${encodedBody}`;
+        // Create mailto link
+        const mailtoLink = `mailto:${studentEmail}?subject=${encodedSubject}&body=${encodedBody}`;
 
-          // Open email client
-          window.open(mailtoLink, '_blank');
+        // Open email client
+        window.open(mailtoLink, "_blank");
 
-          // Simulate sending completion
-          setTimeout(() => {
-              setEmailLoadingState(false);
-              disableInputs(false);
-              alert(`Email opened for ${studentName}. Please send it from your email client.`);
-              closeModal();
-          }, 1000);
-
-      } catch (error) {
-          alert("Error preparing email: " + error.message);
+        // Simulate sending completion
+        setTimeout(() => {
           setEmailLoadingState(false);
           disableInputs(false);
+          alert(
+            `Email opened for ${studentName}. Please send it from your email client.`
+          );
+          closeModal();
+        }, 1000);
+      } catch (error) {
+        alert("Error preparing email: " + error.message);
+        setEmailLoadingState(false);
+        disableInputs(false);
       }
-  });
-
-  // Only allow clicking outside to close if cancel button is visible
-  if (!hideCancel) {
-      modalOverlay.addEventListener("click", (e) => {
-          if (e.target === modalOverlay) closeModal();
-      });
-  }
-
-  // Initialize UI state
-  communicationModeRadios[0].checked = true; // Default to notification mode
-  sendEmailBtn.style.display = 'none'; // Hide email button initially
-}
-
- exportTrainees() {
-  console.log("Export trainees");
-  const traineesToExport = this.filteredTrainees;
-  console.log("Exporting trainees:", traineesToExport);
-
-  if (!traineesToExport || traineesToExport.length === 0) {
-    alert("No trainees to export");
-    return;
-  }
-
-  try {
-    // Define CSV headers
-    const headers = [
-      'Student Name',
-      'Email',
-      'Training Program',
-      'Company',
-      'Department',
-      'Start Date',
-      'End Date',
-      'Progress (%)',
-      'Current Bench',
-      'Next Bench',
-      'Attendance Rate (%)',
-      'Performance Rating',
-      'Status'
-    ];
-
-    // Convert trainees data to CSV rows
-    const csvRows = traineesToExport.map(trainee => {
-      const studentInfo = trainee.studentInfoInfo || {};
-      const trainingInfo = trainee.trainingInfo || {};
-      const duration = trainee.duration || {};
-      const progress = trainee.progress || {};
-      const benchInfo = trainee.benchInfo || {};
-      const attendance = trainee.attendance || {};
-      const performance = trainee.performance || {};
-      const metadata = trainee.metadata || {};
-
-      return [
-        this.escapeCsvValue(studentInfo.fullName || ''),
-        this.escapeCsvValue(studentInfo.email || ''),
-        this.escapeCsvValue(trainingInfo.title || ''),
-        this.escapeCsvValue(trainingInfo.companyName || ''),
-        this.escapeCsvValue(trainingInfo.department || ''),
-        this.formatDateForExport(duration.startDate),
-        this.formatDateForExport(duration.endDate),
-        progress.overall || 0,
-        benchInfo.currentBench || '',
-        benchInfo.nextBench || '',
-        attendance.attendanceRate || 0,
-        performance.rating || 0,
-        metadata.status || 'active'
-      ];
     });
 
-    // Combine headers and rows
-    const csvContent = [headers, ...csvRows]
-      .map(row => row.join(','))
-      .join('\n');
+    // Only allow clicking outside to close if cancel button is visible
+    if (!hideCancel) {
+      modalOverlay.addEventListener("click", (e) => {
+        if (e.target === modalOverlay) closeModal();
+      });
+    }
 
-    // Create and download CSV file
-    this.downloadCsv(csvContent, 'trainees_export.csv');
-
-    console.log(`✅ Successfully exported ${traineesToExport.length} trainees to CSV`);
-
-  } catch (error) {
-    console.error('❌ Error exporting trainees:', error);
-    alert('Error exporting trainees: ' + error.message);
+    // Initialize UI state
+    communicationModeRadios[0].checked = true; // Default to notification mode
+    sendEmailBtn.style.display = "none"; // Hide email button initially
   }
-}
 
-// Helper method to escape CSV values
-escapeCsvValue(value) {
-  if (value === null || value === undefined) return '';
-  
-  const stringValue = String(value);
-  
-  // Escape quotes and wrap in quotes if contains comma, quote, or newline
-  if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
-    return '"' + stringValue.replace(/"/g, '""') + '"';
+  exportTrainees() {
+    //console.log("Export trainees");
+    const traineesToExport = this.filteredTrainees;
+    //console.log("Exporting trainees:", traineesToExport);
+
+    if (!traineesToExport || traineesToExport.length === 0) {
+      alert("No trainees to export");
+      return;
+    }
+
+    try {
+      // Define CSV headers
+      const headers = [
+        "Student Name",
+        "Email",
+        "Training Program",
+        "Company",
+        "Department",
+        "Start Date",
+        "End Date",
+        "Progress (%)",
+        "Current Bench",
+        "Next Bench",
+        "Attendance Rate (%)",
+        "Performance Rating",
+        "Status",
+      ];
+
+      // Convert trainees data to CSV rows
+      const csvRows = traineesToExport.map((trainee) => {
+        const studentInfo = trainee.studentInfoInfo || {};
+        const trainingInfo = trainee.trainingInfo || {};
+        const duration = trainee.duration || {};
+        const progress = trainee.progress || {};
+        const benchInfo = trainee.benchInfo || {};
+        const attendance = trainee.attendance || {};
+        const performance = trainee.performance || {};
+        const metadata = trainee.metadata || {};
+
+        return [
+          this.escapeCsvValue(studentInfo.fullName || ""),
+          this.escapeCsvValue(studentInfo.email || ""),
+          this.escapeCsvValue(trainingInfo.title || ""),
+          this.escapeCsvValue(trainingInfo.companyName || ""),
+          this.escapeCsvValue(trainingInfo.department || ""),
+          this.formatDateForExport(duration.startDate),
+          this.formatDateForExport(duration.endDate),
+          progress.overall || 0,
+          benchInfo.currentBench || "",
+          benchInfo.nextBench || "",
+          attendance.attendanceRate || 0,
+          performance.rating || 0,
+          metadata.status || "active",
+        ];
+      });
+
+      // Combine headers and rows
+      const csvContent = [headers, ...csvRows]
+        .map((row) => row.join(","))
+        .join("\n");
+
+      // Create and download CSV file
+      this.downloadCsv(csvContent, "trainees_export.csv");
+
+      //console.log(`✅ Successfully exported ${traineesToExport.length} trainees to CSV`);
+    } catch (error) {
+      console.error("❌ Error exporting trainees:", error);
+      alert("Error exporting trainees: " + error.message);
+    }
   }
-  
-  return stringValue;
-}
 
-// Helper method to format dates for export
-formatDateForExport(dateValue) {
-  if (!dateValue) return '';
-  
-  try {
-    // If it's already a string in ISO format
-    if (typeof dateValue === 'string') {
-      const date = new Date(dateValue);
-      if (!isNaN(date.getTime())) {
-        return date.toLocaleDateString('en-US');
+  // Helper method to escape CSV values
+  escapeCsvValue(value) {
+    if (value === null || value === undefined) return "";
+
+    const stringValue = String(value);
+
+    // Escape quotes and wrap in quotes if contains comma, quote, or newline
+    if (
+      stringValue.includes(",") ||
+      stringValue.includes('"') ||
+      stringValue.includes("\n")
+    ) {
+      return '"' + stringValue.replace(/"/g, '""') + '"';
+    }
+
+    return stringValue;
+  }
+
+  // Helper method to format dates for export
+  formatDateForExport(dateValue) {
+    if (!dateValue) return "";
+
+    try {
+      // If it's already a string in ISO format
+      if (typeof dateValue === "string") {
+        const date = new Date(dateValue);
+        if (!isNaN(date.getTime())) {
+          return date.toLocaleDateString("en-US");
+        }
       }
-    }
-    
-    // If it's a Firestore timestamp object
-    if (dateValue && typeof dateValue === 'object' && dateValue.seconds) {
-      const date = new Date(dateValue.seconds * 1000);
-      return date.toLocaleDateString('en-US');
-    }
-    
-    return String(dateValue);
-  } catch (error) {
-    console.warn('Error formatting date for export:', dateValue, error);
-    return String(dateValue);
-  }
-}
 
-// Helper method to download CSV file
-downloadCsv(csvContent, filename) {
-  // Create blob
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  
-  // Create download link
-  const link = document.createElement('a');
-  const url = URL.createObjectURL(blob);
-  
-  link.setAttribute('href', url);
-  link.setAttribute('download', filename);
-  link.style.visibility = 'hidden';
-  
-  // Trigger download
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  
-  // Clean up
-  URL.revokeObjectURL(url);
-}
+      // If it's a Firestore timestamp object
+      if (dateValue && typeof dateValue === "object" && dateValue.seconds) {
+        const date = new Date(dateValue.seconds * 1000);
+        return date.toLocaleDateString("en-US");
+      }
+
+      return String(dateValue);
+    } catch (error) {
+      console.warn("Error formatting date for export:", dateValue, error);
+      return String(dateValue);
+    }
+  }
+
+  // Helper method to download CSV file
+  downloadCsv(csvContent, filename) {
+    // Create blob
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+    // Create download link
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    link.style.visibility = "hidden";
+
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Clean up
+    URL.revokeObjectURL(url);
+  }
 
   addTrainee() {
-    console.log("Add new trainee");
+    //console.log("Add new trainee");
     // Implement add trainee functionality
   }
 

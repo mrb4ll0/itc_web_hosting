@@ -22,9 +22,9 @@ const companyCloud = new CompanyCloud();
 const studentCloudDB = new StudentCloudDB();
 class Opportunities {
   constructor() {
-    //console.log("🚀 Opportunities constructor called");
+    ////console.log("🚀 Opportunities constructor called");
     this.companyCloud = companyCloud;
-    //console.log("CompanyCloud instance:", this.companyCloud);
+    ////console.log("CompanyCloud instance:", this.companyCloud);
     this.allInternships = [];
     this.filteredInternships = [];
     
@@ -37,7 +37,7 @@ class Opportunities {
 
      onAuthStateChanged(auth, (user) => {
       if (user) {
-        //console.log(" User is signed in:", user.uid);
+        ////console.log(" User is signed in:", user.uid);
         this.loadStudentImage(user.uid);
       } else {
         console.warn(" No user signed in");
@@ -45,7 +45,7 @@ class Opportunities {
       }
     });
     
-    //console.log("Search elements found:", {
+    ////console.log("Search elements found:", {
     //   searchInput: !!this.searchInput,
     //   industryFilter: !!this.industryFilter,
     //   locationFilter: !!this.locationFilter,
@@ -58,7 +58,7 @@ class Opportunities {
   
 
   setupEventListeners() {
-    //console.log("🔗 Setting up event listeners");
+    ////console.log("🔗 Setting up event listeners");
     
     // Search input with debouncing
     if (this.searchInput) {
@@ -103,7 +103,7 @@ class Opportunities {
   }
 
   populateFilterOptions(internships) {
-    //console.log("📊 Populating filter options with", internships.length, "internships");
+    ////console.log("📊 Populating filter options with", internships.length, "internships");
     
     // Clear existing options (keep the first "All" option)
     [this.industryFilter, this.locationFilter, this.durationFilter].forEach(select => {
@@ -143,7 +143,7 @@ class Opportunities {
   }
 
   filterInternships() {
-    //console.log("🔍 Filtering internships");
+    ////console.log("🔍 Filtering internships");
     const searchTerm = this.searchInput ? this.searchInput.value.toLowerCase() : '';
     const industry = this.industryFilter ? this.industryFilter.value : '';
     const location = this.locationFilter ? this.locationFilter.value : '';
@@ -169,13 +169,13 @@ class Opportunities {
       return matchesSearch && matchesIndustry && matchesLocation && matchesDuration;
     });
 
-    //console.log(`📈 Filtered to ${this.filteredInternships.length} internships`);
+    ////console.log(`📈 Filtered to ${this.filteredInternships.length} internships`);
     this.renderOpportunities(this.filteredInternships);
   }
 
 
  renderOpportunities(internships) {
-  //console.log("🎨 renderOpportunities called with:", internships);
+  ////console.log("🎨 renderOpportunities called with:", internships);
   const container = document.getElementById("opportunities-container");
   
   if (!container) {
@@ -207,7 +207,7 @@ class Opportunities {
     return;
   }
             //  internships.map(it=>
-            //   //console.log("it "+it.company.logoURL+" company name "+it.company.name)
+            //   ////console.log("it "+it.company.logoURL+" company name "+it.company.name)
             //  );
   
    container.innerHTML = `
@@ -255,7 +255,7 @@ class Opportunities {
   this.addCardClickListeners();
 }
   clearFilters() {
-    //console.log("🧹 Clearing all filters");
+    ////console.log("🧹 Clearing all filters");
     if (this.searchInput) this.searchInput.value = '';
     if (this.industryFilter) this.industryFilter.value = '';
     if (this.locationFilter) this.locationFilter.value = '';
@@ -265,11 +265,11 @@ class Opportunities {
 
   addCardClickListeners() {
     const cards = document.querySelectorAll('.opportunity-card');
-    //console.log(`🔗 Adding click listeners to ${cards.length} cards`);
+    ////console.log(`🔗 Adding click listeners to ${cards.length} cards`);
     cards.forEach(card => {
       card.addEventListener('click', (e) => {
         const internshipId = e.currentTarget.dataset.id;
-        //console.log("🖱️ Card clicked, internship ID:", internshipId);
+        ////console.log("🖱️ Card clicked, internship ID:", internshipId);
         window.location.href = `details/it_details.html?id=${internshipId}`;
       });
     });
@@ -339,7 +339,7 @@ class Opportunities {
 
 
 document.addEventListener('DOMContentLoaded', async () => {
-  //console.log("📄 DOM fully loaded");
+  ////console.log("📄 DOM fully loaded");
   window.opportunities = new Opportunities();
   await window.opportunities.init();
 });

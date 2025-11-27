@@ -379,7 +379,7 @@ export class StudentCloudDB {
       // Update student in Firestore
       await this.updateStudent(updatedStudent);
 
-      //console.log(`Student ID uploaded and profile updated for ${studentId}`);
+      ////console.log(`Student ID uploaded and profile updated for ${studentId}`);
       return downloadUrl;
     } catch (error) {
       console.error("Error uploading student ID:", error);
@@ -417,7 +417,7 @@ export class StudentCloudDB {
       const studentData = updatedStudent.toMap();
 
       await updateDoc(ref, studentData);
-      //console.log(`Student ${student.uid} updated successfully`);
+      ////console.log(`Student ${student.uid} updated successfully`);
     } catch (error) {
       console.error("Error updating student:", error);
       throw error;
@@ -475,7 +475,7 @@ export class StudentCloudDB {
       // Update student in Firestore
       await this.updateStudent(updatedStudent);
 
-      // console.log(
+      // //console.log(
       //   `Student IT letter uploaded and profile updated for ${studentId}`
       // );
       return downloadUrl;
@@ -491,7 +491,7 @@ export class StudentCloudDB {
    * @returns {Promise<Student|null>} - Student object if found, null if not found
    */
   async getStudentById(studentId) {
-    //console.log("getStudentById");
+    ////console.log("getStudentById");
     try {
       if (!studentId) {
         throw new Error("Student ID is required");
@@ -504,11 +504,11 @@ export class StudentCloudDB {
         "students",
         studentId
       );
-      //console.log("studentId after studentRef " + studentId);
+      ////console.log("studentId after studentRef " + studentId);
       const studentDoc = await getDoc(studentRef);
 
       if (!studentDoc.exists()) {
-        //console.log(`Student with ID ${studentId} not found`);
+        ////console.log(`Student with ID ${studentId} not found`);
         return null;
       }
 
@@ -519,9 +519,9 @@ export class StudentCloudDB {
       if (!studentData.uid) {
         studentData.uid = studentId;
       }
-      //console.log("studentData "+JSON.stringify(studentData) );
+      ////console.log("studentData "+JSON.stringify(studentData) );
       // Convert to Student object using your existing fromMap method
-      //console.log("before return Student.fromMap ", studentData);
+      ////console.log("before return Student.fromMap ", studentData);
       return Student.fromMap(studentData);
     } catch (error) {
       console.error("Error getting student by ID:", error);
@@ -546,8 +546,8 @@ export class StudentCloudDB {
       const studentData = studentDoc.data();
       const studentIdCardUrl = studentData.studentIDCard;
       const itLetterUrl = studentData.studentITLetter;
-      //console.log("studentIdCardUrl:", studentIdCardUrl);
-      //console.log("itLetterUrl:", itLetterUrl);
+      ////console.log("studentIdCardUrl:", studentIdCardUrl);
+      ////console.log("itLetterUrl:", itLetterUrl);
 
       // Get file metadata from storage if needed
       let studentIdCardMetadata = null;
@@ -653,7 +653,7 @@ async setSelectedApplication(studentId, applicationData) {
       updatedAt: new Date(),
     });
 
-    //console.log("selectedApplication updated for student:", studentId);
+    ////console.log("selectedApplication updated for student:", studentId);
   } catch (error) {
     console.error("Error setting selectedApplication:", error);
     throw error;

@@ -30,7 +30,7 @@ class Login {
   checkAuthState() {
     onAuthStateChanged(this.auth, (user) => {
       if (user) {
-        //console.log("User already logged in:", user.email);
+        ////console.log("User already logged in:", user.email);
         localStorage.setItem(
           "student",
           JSON.stringify({
@@ -43,7 +43,7 @@ class Login {
 
         window.location.replace("../dashboard/itc_dashboard.html");
       } else {
-        //console.log("No user session found — showing login form.");
+        ////console.log("No user session found — showing login form.");
         document.body.style.display = "block";
       }
     });
@@ -65,7 +65,7 @@ class Login {
         this.handleGoogleLogin(e)
       );
     }
-    //console.log("Forget Password Link:", this.forgetPasswordLink);
+    ////console.log("Forget Password Link:", this.forgetPasswordLink);
     if (this.forgetPasswordLink) {
       this.forgetPasswordLink.addEventListener("click", (e) =>
         this.handleForgotPassword()
@@ -172,7 +172,7 @@ class Login {
       return;
     }
 
-    //console.log("about to login with credential");
+    ////console.log("about to login with credential");
 
     try {
       const userCredential = await signInWithEmailAndPassword(
@@ -181,7 +181,7 @@ class Login {
         password
       );
 
-      //console.log("email is "+email+" password is "+password);
+      ////console.log("email is "+email+" password is "+password);
 
       if (userCredential == null) {
         return;

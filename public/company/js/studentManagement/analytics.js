@@ -13,7 +13,7 @@ export default class Analytics {
   }
 
   async init() {
-    //console.log("Initializing Analytics Tab");
+    ////console.log("Initializing Analytics Tab");
     this.initializeElements();
     this.initializeEventListeners();
     await this.buildAnalyticsContent();
@@ -51,7 +51,7 @@ export default class Analytics {
     );
     this.insightsList = document.getElementById("insights-list");
 
-    //console.log("Analytics elements initialized");
+    ////console.log("Analytics elements initialized");
   }
 
   initializeEventListeners() {
@@ -72,7 +72,7 @@ export default class Analytics {
   }
 
   async buildAnalyticsContent() {
-    //console.log("Building analytics content...");
+    ////console.log("Building analytics content...");
 
     // Process analytics data
     this.processAnalyticsData();
@@ -116,7 +116,7 @@ export default class Analytics {
       ),
     };
 
-    console.log("Processed analytics data:", this.analyticsData);
+    //console.log("Processed analytics data:", this.analyticsData);
   }
 
   filterDataByPeriod(data, period) {
@@ -609,7 +609,7 @@ export default class Analytics {
 
         // Simple tooltip
         e.target.setAttribute("fill", "#1d4ed8"); // Darker blue on hover
-        console.log(`Applications: ${value} on ${formattedDate}`); // For debugging
+        //console.log(`Applications: ${value} on ${formattedDate}`); // For debugging
       });
 
       bar.addEventListener("mouseleave", (e) => {
@@ -914,7 +914,7 @@ export default class Analytics {
         }
 
         // You could also filter the data based on the clicked status
-        console.log(`Clicked on ${status}: ${count} applications`);
+        //console.log(`Clicked on ${status}: ${count} applications`);
       });
     });
 
@@ -956,7 +956,7 @@ export default class Analytics {
             );
           }
 
-          console.log(`Clicked legend for ${status}: ${count} applications`);
+          //console.log(`Clicked legend for ${status}: ${count} applications`);
         }
       });
     });
@@ -1195,7 +1195,7 @@ addCourseChartInteractivity() {
             const applications = event.target.getAttribute('data-applications');
             const acceptance = event.target.getAttribute('data-acceptance');
             
-            console.log(`Course: ${course}, Applications: ${applications}, Acceptance: ${acceptance}`);
+            //console.log(`Course: ${course}, Applications: ${applications}, Acceptance: ${acceptance}`);
             // You can add more interactive behavior here
         });
     });
@@ -1420,7 +1420,7 @@ addCourseChartInteractivity() {
   }
 
   exportAnalytics() {
-    console.log("Exporting analytics report");
+    //console.log("Exporting analytics report");
 
     if (this.analyticsData.totalApplications === 0) {
       showNotification("No data to export", "warning");

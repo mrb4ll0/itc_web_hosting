@@ -79,7 +79,7 @@ class MainCompanyProfile {
     );
 
     // Gallery images
-    //console.log("images " + c.galleryImages);
+    ////console.log("images " + c.galleryImages);
     this.setGalleryImages(c.galleryImages || []);
 
     // Simulate profile completion based on filled fields
@@ -219,7 +219,7 @@ class MainCompanyProfile {
     try {
       // Delete the image from Firebase Storage
       await this.cloudStorage.deleteFile(imageToRemove.url);
-      //console.log("Image deleted from storage:", imageToRemove.name);
+      ////console.log("Image deleted from storage:", imageToRemove.name);
     } catch (error) {
       console.error("Error deleting image from storage:", error);
       // Continue with removal from gallery even if storage deletion fails
@@ -284,7 +284,7 @@ class MainCompanyProfile {
       for (const file of files) {
         if (file.type.startsWith("image/")) {
           try {
-            //console.log(`Uploading image: ${file.name}`);
+            ////console.log(`Uploading image: ${file.name}`);
 
             // Upload to Firebase Storage using CloudStorage class
             const imageUrl = await this.uploadImageToStorage(file);
@@ -295,7 +295,7 @@ class MainCompanyProfile {
                 name: file.name,
                 timestamp: new Date().toISOString(),
               });
-              //console.log(`Successfully uploaded: ${file.name}`);
+              ////console.log(`Successfully uploaded: ${file.name}`);
             } else {
               console.error(`Failed to upload: ${file.name}`);
               alert(`Failed to upload ${file.name}. Please try again.`);
@@ -318,7 +318,7 @@ class MainCompanyProfile {
           const newImageUrls = uploadedImages.map((img) => img.url);
           await this.addImagesToGallery(newImageUrls);
 
-          //console.log("Gallery updated in Firestore with new images");
+          ////console.log("Gallery updated in Firestore with new images");
         } catch (error) {
           console.error("Error updating gallery in Firebase:", error);
           alert(
@@ -330,7 +330,7 @@ class MainCompanyProfile {
       this.renderGallery();
 
       if (uploadedImages.length > 0) {
-        //console.log(`Successfully uploaded ${uploadedImages.length} image(s)`);
+        ////console.log(`Successfully uploaded ${uploadedImages.length} image(s)`);
       }
     } catch (error) {
       console.error("Error in gallery upload process:", error);
@@ -466,7 +466,7 @@ class MainCompanyProfile {
   async addImagesToGallery(imageUrls) {
       if(imageUrls.length > 1)
       {
-        //console.log("image length "+imageUrls.length);
+        ////console.log("image length "+imageUrls.length);
         return;
       }
     if (!this.company || !imageUrls || !imageUrls.length) {
@@ -497,7 +497,7 @@ class MainCompanyProfile {
 
       this.renderGallery();
       this.showToast("Images added successfully!", "success");
-      //console.log("Images added to gallery successfully:", imageUrls);
+      ////console.log("Images added to gallery successfully:", imageUrls);
     } catch (error) {
       console.error("Error adding images to gallery:", error);
       this.showToast("Failed to add images to gallery", "error");

@@ -78,7 +78,7 @@ class NewIndustrialTraining {
           return;
         }
 
-        //console.log("industry after dialog is"+industry);
+        ////console.log("industry after dialog is"+industry);
         this.companyCloud.updateCompanyIndustry(auth.currentUser.uid, industry);
 
         // Close dialog
@@ -99,7 +99,7 @@ class NewIndustrialTraining {
 
 
   async init() {
-    //console.log("NewIndustrialTraining initialized");
+    ////console.log("NewIndustrialTraining initialized");
     var isCompanyIndustrySet = await this.checkIfCompanyIndustryIsSet();
     if (!isCompanyIndustrySet) {
       this.showSetCompanyIndustryDialog();
@@ -108,7 +108,7 @@ class NewIndustrialTraining {
     const companyLogo = document.getElementById("company-logo");
      await auth.authStateReady();
       const company = await itc_firebaselogic.getCompany(auth.currentUser.uid);
-       //console.log("url "+company.logoURL);
+       ////console.log("url "+company.logoURL);
       companyLogo.style.backgroundImage = `url('${company.logoURL}')`;
 
      this.fileUploadArea = document.getElementById("file-upload-area");
@@ -142,12 +142,12 @@ class NewIndustrialTraining {
       const user = auth.currentUser;
 
       if (!user) {
-        //console.log("No user logged in, redirecting to login");
+        ////console.log("No user logged in, redirecting to login");
         window.location.href = "company_login.html";
         return;
       }
 
-      //console.log("User authenticated:", user.uid);
+      ////console.log("User authenticated:", user.uid);
       await this.loadCompanyData(user.uid);
     } catch (error) {
       console.error("Auth state check error:", error);
@@ -163,7 +163,7 @@ class NewIndustrialTraining {
         throw new Error("Company profile not found");
       }
 
-      //console.log("Company loaded:", this.currentCompany.name);
+      ////console.log("Company loaded:", this.currentCompany.name);
     } catch (error) {
       console.error("Error loading company data:", error);
       this.showNotification(
@@ -359,7 +359,7 @@ class NewIndustrialTraining {
 
       // Create IndustrialTraining object
       const industrialTraining = this.createIndustrialTrainingObject(formData);
-      //console.log("formData :" + industrialTraining.toMap());
+      ////console.log("formData :" + industrialTraining.toMap());
 
       // Submit to Firebase
       const itId = await this.companyCloud.postIndustrialTraining(
@@ -387,7 +387,7 @@ class NewIndustrialTraining {
 
   validateForm() {
     const requiredFields = document.querySelectorAll("[required]");
-    //console.log("requiredFields " + requiredFields.length);
+    ////console.log("requiredFields " + requiredFields.length);
     let isValid = true;
 
     requiredFields.forEach((field) => {
@@ -399,7 +399,7 @@ class NewIndustrialTraining {
       if (!departmentValid) {
         isValid = false;
       }
-      //console.log("isValid is " + isValid);
+      ////console.log("isValid is " + isValid);
     });
 
     return isValid;
@@ -407,7 +407,7 @@ class NewIndustrialTraining {
 
   validateForm() {
     const requiredFields = document.querySelectorAll("[required]");
-    //console.log("requiredFields " + requiredFields.length);
+    ////console.log("requiredFields " + requiredFields.length);
     let isValid = true;
 
     // First, validate all regular required fields
@@ -424,7 +424,7 @@ class NewIndustrialTraining {
       isValid = false;
     }
 
-    //console.log("isValid is " + isValid);
+    ////console.log("isValid is " + isValid);
     return isValid;
   }
 
@@ -452,13 +452,13 @@ class NewIndustrialTraining {
   .map(result => result.url)  // Get only the URL from each result
   .filter(url => url !== null); // Remove any failed uploads
 
-      //console.log("Extracted URLs only:", formUrls);
+      ////console.log("Extracted URLs only:", formUrls);
       if(document.getElementById("use-as-universal"))
       {
-         //console.log("is universal form and form is "+JSON.stringify(formUrls));
+         ////console.log("is universal form and form is "+JSON.stringify(formUrls));
         await auth.authStateReady();
         await this.companyCloud.updateCompanyProfile(auth.currentUser.uid,{'form':formUrls});
-        //console.log("is universal form added ");
+        ////console.log("is universal form added ");
       }
     return {
       title: document.getElementById("title").value.trim(),
@@ -545,7 +545,7 @@ class NewIndustrialTraining {
 
   // Handle file validation and preview
   handleFiles(files) {
-      //console.log("files length is "+files.length);
+      ////console.log("files length is "+files.length);
         if(files.length >0)
         {
           document.getElementById('radiosection').style.display='';

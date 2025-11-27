@@ -98,8 +98,8 @@ class ITPostView {
                 await auth.authStateReady();
             // Load training data
             this.currentTraining = await this.companyCloud.getIndustrialTrainingById(auth.currentUser.uid,this.trainingId);
-             //console.log("it is "+JSON.stringify(this.currentTraining));
-             //console.log("and title is  "+JSON.stringify(this.currentTraining.title));
+             ////console.log("it is "+JSON.stringify(this.currentTraining));
+             ////console.log("and title is  "+JSON.stringify(this.currentTraining.title));
             
             if (!this.currentTraining) {
                 throw new Error("Training opportunity not found");
@@ -126,8 +126,8 @@ class ITPostView {
         if (!this.currentTraining || !this.currentCompany) return;
 
         // Populate header and basic info
-         //console.log("title "+this.currentTraining.title);
-             //console.log("title "+this.currentCompany.name);
+         ////console.log("title "+this.currentTraining.title);
+             ////console.log("title "+this.currentCompany.name);
         this.setElementText('training-title', this.currentTraining.title);
         this.setElementText('company-name', `Posted by ${this.currentCompany.name}`);
         this.setElementText('breadcrumb-current', this.currentTraining.title);
@@ -274,7 +274,7 @@ class ITPostView {
 
     
 setupEventListeners() {
-    //console.log("setupevent listener");
+    ////console.log("setupevent listener");
     
     // Edit button
     document.getElementById('edit-button').addEventListener('click', () => {
@@ -289,19 +289,19 @@ setupEventListeners() {
     // Tab navigation
     document.getElementById('details-tab').addEventListener('click', (e) => {
         e.preventDefault();
-        //console.log("details-tab clicked");
+        ////console.log("details-tab clicked");
         this.showDetailsTab();
     });
 
     document.getElementById('applications-tab').addEventListener('click', (e) => {
         e.preventDefault();
-        //console.log("applications-tab clicked");
+        ////console.log("applications-tab clicked");
         this.showApplicationsTab();
     });
 
     document.getElementById('analytics-tab').addEventListener('click', (e) => {
         e.preventDefault();
-        //console.log("analytics-tab clicked");
+        ////console.log("analytics-tab clicked");
         this.showAnalyticsTab();
     });
 
@@ -319,12 +319,12 @@ setupEventListeners() {
 
 // Tab switching methods - KEEP ONLY ONE VERSION OF EACH
 showDetailsTab() {
-    //console.log('Switching to Details tab');
+    ////console.log('Switching to Details tab');
     this.switchToTab('details-tab', 'tab-content');
 }
 
 async showApplicationsTab() {
-    //console.log('Switching to Applications tab');
+    ////console.log('Switching to Applications tab');
     try {
         this.showLoadingDialog("Loading applications...");
         
@@ -360,17 +360,17 @@ async showApplicationsTab() {
 }
 
 showAnalyticsTab() {
-    //console.log('Switching to Analytics tab');
+    ////console.log('Switching to Analytics tab');
     this.switchToTab('analytics-tab', 'analytics-content');
 }
 
 
 switchToTab(tabId, contentId) {
-    //console.log(`Switching to tab: ${tabId}, content: ${contentId}`);
+    ////console.log(`Switching to tab: ${tabId}, content: ${contentId}`);
     
     // Debug: Check if elements exist
-    //console.log('Active tab element:', document.getElementById(tabId));
-    //console.log('Active content element:', document.getElementById(contentId));
+    ////console.log('Active tab element:', document.getElementById(tabId));
+    ////console.log('Active content element:', document.getElementById(contentId));
     
     // Remove active classes from all tabs
     document.querySelectorAll('[id$="-tab"]').forEach(tab => {
@@ -386,23 +386,23 @@ switchToTab(tabId, contentId) {
     // Activate current tab
     const activeTab = document.getElementById(tabId);
     const activeContent = document.getElementById(contentId);
-    //console.log("activeTab is "+activeTab+" active content "+activeContent);
+    ////console.log("activeTab is "+activeTab+" active content "+activeContent);
     if (activeTab && activeContent) {
         activeTab.classList.add('border-primary', 'text-primary');
         activeTab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
         activeContent.classList.remove('hidden');
-        //console.log(`Successfully switched to ${tabId}`);
+        ////console.log(`Successfully switched to ${tabId}`);
     } else {
         console.error(`Tab or content not found: ${tabId}, ${contentId}`);
         
         // Debug: List all available tabs and content
-        //console.log('All tabs:', document.querySelectorAll('[id$="-tab"]'));
-        //console.log('All content:', document.querySelectorAll('[data-tab-content]'));
+        ////console.log('All tabs:', document.querySelectorAll('[id$="-tab"]'));
+        ////console.log('All content:', document.querySelectorAll('[data-tab-content]'));
     }
 }
 // Update the populateApplicationsTable method to ensure empty state works:
 populateApplicationsTable(applications) {
-     //console.log("populate application table is and applications is null ? "+(applications == null));
+     ////console.log("populate application table is and applications is null ? "+(applications == null));
     const tbody = document.getElementById('applications-table-body');
     if (!tbody) {
         console.error('Applications table body not found');
@@ -410,7 +410,7 @@ populateApplicationsTable(applications) {
     }
 
     if (!applications || applications.length === 0) {
-         //console.log("error body");
+         ////console.log("error body");
         tbody.innerHTML = `
             <tr>
                 <td colspan="6" class="px-6 py-12 text-center">
@@ -426,7 +426,7 @@ populateApplicationsTable(applications) {
     }
 
     // Your existing table population code here...
-    //console.log("Your existing table population code here");
+    ////console.log("Your existing table population code here");
     tbody.innerHTML = applications.map((application, index) => `
         <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
             <td class="px-6 py-4 whitespace-nowrap">

@@ -44,7 +44,7 @@ class StudentApplicationView {
       const applications = await companyCloud.getStudentInternships(
         currentUser.uid
       );
-      ////console.log("Applications:", applications);
+      //////console.log("Applications:", applications);
       var student = await  itc_firebase_logic.getStudent(currentUser.uid);
       
         if(student){
@@ -54,7 +54,7 @@ class StudentApplicationView {
        
 
       // Render applications in both table and mobile views
-      //console.log("Rendering applications:", applications);
+      ////console.log("Rendering applications:", applications);
       this.renderApplications(applications);
     } catch (error) {
       console.error("Error:", error);
@@ -99,7 +99,7 @@ class StudentApplicationView {
 
     // Format date
     let appDate;
-    //console.log("Application date raw:", application.appliedAt);
+    ////console.log("Application date raw:", application.appliedAt);
 
     if (application.appliedAt?.toDate) {
       // It's a Firebase Timestamp - convert to Date
@@ -266,7 +266,7 @@ class StudentApplicationView {
     });
 
     // Create modal or alert with application details
-     //console.log("Showing details for application:"+JSON.stringify(application));
+     ////console.log("Showing details for application:"+JSON.stringify(application));
     const details = `
 Company: ${application.internship.company.name}
 Position: ${application.internship.title}

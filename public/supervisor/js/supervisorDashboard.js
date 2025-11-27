@@ -51,7 +51,7 @@ class SupervisorDashboard {
             // Load supervisor profile
             const supervisor = await this.dashboardService.getSupervisorProfile();
             this.supCompany = await it_base_company_cloud.getCompany(supervisor.companyId);
-            console.log("company id is "+supervisor.companyId);
+            //console.log("company id is "+supervisor.companyId);
             
             // Update user info in UI
             this.updateUserInfo(supervisor);
@@ -198,19 +198,19 @@ class SupervisorDashboard {
     }
 
     viewStudent(student) {
-        console.log('Viewing student:', student);
+        //console.log('Viewing student:', student);
         // Implement view student functionality
         alert(`Viewing ${student.name}'s profile`);
     }
 
     emailStudent(student) {
-        console.log('Emailing student:', student);
+        //console.log('Emailing student:', student);
         // Implement email functionality
         window.location.href = `mailto:${student.email}?subject=IT Connect - Regarding Your Internship`;
     }
 
     reviewStudent(student) {
-        console.log('Reviewing student:', student);
+        //console.log('Reviewing student:', student);
         // Implement review functionality
         alert(`Opening review for ${student.name}`);
     }
@@ -250,7 +250,7 @@ class SupervisorDashboard {
     }
 
     createNewReport() {
-        console.log('Creating new report');
+        //console.log('Creating new report');
         // Implement new report functionality
         alert('Opening new report creation form');
     }

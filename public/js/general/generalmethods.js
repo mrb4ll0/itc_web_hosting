@@ -1270,10 +1270,10 @@ let nigeria = {
 };
 
 // Usage examples:
-//console.log(nigeria.lagos.capital); // "Ikeja"
-//console.log(nigeria.lagos.lgas.length); // 20
-//console.log(nigeria.kano.lgas); // Array of all Kano LGAs
-//console.log(nigeria.abuja.lgas); // Array of Abuja area councils
+////console.log(nigeria.lagos.capital); // "Ikeja"
+////console.log(nigeria.lagos.lgas.length); // 20
+////console.log(nigeria.kano.lgas); // Array of all Kano LGAs
+////console.log(nigeria.abuja.lgas); // Array of Abuja area councils
 
 // Function to get all states
 function getNigerianStates() {
@@ -1305,12 +1305,12 @@ export { nigeria };
 
 function isFormExist(it) {
   const compForm = it.company.forms;
-  //console.log("compForm "+compForm.length);
+  ////console.log("compForm "+compForm.length);
   if (compForm && compForm.length != 0) {
     return true;
   }
   if (it.formUrl) {
-    //console.log("it files "+it.formUrl.length);
+    ////console.log("it files "+it.formUrl.length);
   }
   if (it.formUrl && it.formUrl.length != 0) {
     return true;
@@ -1342,7 +1342,7 @@ function generateShareableUrl(pagePath, itid, applicationId) {
   // Construct the full URL with proper query parameters
   const fullUrl = `${baseUrl}${pagePath}?itid=${itid}&id=${applicationId}`;
   
-  console.log('Generated URL:', fullUrl, 'Test environment:', isTestEnvironment);
+  //console.log('Generated URL:', fullUrl, 'Test environment:', isTestEnvironment);
   return fullUrl;
 }
 export { generateShareableUrl };
@@ -1363,14 +1363,14 @@ export function showFileDialog(
   fileName = "Document"
 ) {
   // Create modal overlay
-  console.log("file is ", file);
+  //console.log("file is ", file);
   
   // FIX: Handle the case where file is an array
   let actualFile;
   if (Array.isArray(file)) {
     if (file.length > 0) {
       actualFile = file[0]; // Take the first element
-      console.log("Extracted file from array:", actualFile);
+      //console.log("Extracted file from array:", actualFile);
     } else {
       console.error("File array is empty");
       return;
@@ -1418,7 +1418,7 @@ export function showFileDialog(
 
     // FIX: Use actualFile instead of file
     if (typeof actualFile === "string") {
-      console.log("Setting image src to:", actualFile);
+      //console.log("Setting image src to:", actualFile);
       fileContent.src = actualFile;
       
       // Add error handling
@@ -1946,7 +1946,7 @@ function messageDialog(hideCancel = true, application , fromEdit=true) {
       </div>`;
 
       var edit = fromEdit?'<p style="margin: 0 0 20px 0; color: #333;"> Kindly leave a note for the student </p>':'<h2 style="margin: 0 0 20px 0; color: #333;">Contact Student</h2>';
-      console.log("from edit is "+fromEdit);
+      //console.log("from edit is "+fromEdit);
 
   modal.innerHTML = `
         ${edit}  
@@ -2501,10 +2501,10 @@ function hideLoadingDialog() {
 function safeConvertToTimestamp(timestamp) {
     
     if (timestamp && typeof timestamp === 'object') {
-        console.log('Timestamp keys:', Object.keys(timestamp));
-        console.log('Has seconds?', 'seconds' in timestamp);
-        console.log('Has nanoseconds?', 'nanoseconds' in timestamp);
-        console.log('Has toDate?', typeof timestamp.toDate === 'function');
+        //console.log('Timestamp keys:', Object.keys(timestamp));
+        //console.log('Has seconds?', 'seconds' in timestamp);
+        //console.log('Has nanoseconds?', 'nanoseconds' in timestamp);
+        //console.log('Has toDate?', typeof timestamp.toDate === 'function');
     }
     
     // Handle null case first
@@ -2548,7 +2548,7 @@ function safeConvertToTimestamp(timestamp) {
     if (typeof timestamp === 'string') {
         const date = new Date(timestamp);
         if (!isNaN(date.getTime())) {
-            console.log('Converted from string:', date.getTime());
+            //console.log('Converted from string:', date.getTime());
             return date.getTime();
         }
     }

@@ -55,8 +55,8 @@ export class ITCFirebaseLogic {
       "students",
       uid
     );
-     //console.log("ref is "+ref);
-    //console.log("Student Data:", JSON.stringify(studentData, null, 2));
+     ////console.log("ref is "+ref);
+    ////console.log("Student Data:", JSON.stringify(studentData, null, 2));
      await setDoc(ref, {
       ...studentData,
       createdAt: serverTimestamp(),
@@ -76,27 +76,27 @@ export class ITCFirebaseLogic {
         throw new Error("User not logged in");
     }
 
-      //console.log("is currnet user null ?"+(!currentUser));
-      //console.log("uid is "+currentUser.uid);
-      //console.log("user map is "+student.toMap());
+      ////console.log("is currnet user null ?"+(!currentUser));
+      ////console.log("uid is "+currentUser.uid);
+      ////console.log("user map is "+student.toMap());
     const register = await ITCFirebaseLogic.registerStudent(currentUser.uid, {
       ...student.toMap(),
       role: "student",
     });
     if(register)
     {
-           //console.log("student registered");
+           ////console.log("student registered");
     }
     else
       {
-        //console.log("student not registered");
+        ////console.log("student not registered");
           throw new Error("Failed to register student");
       }
      
   }
 
   async getStudent(uid) {
-    //console.log("about to get user with uid "+uid);
+    ////console.log("about to get user with uid "+uid);
     const ref = doc(
       this._firebaseFirestore,
       this.usersCollection,
@@ -106,7 +106,7 @@ export class ITCFirebaseLogic {
     );
       if(!ref)
       {
-        //console.log("ref is null");
+        ////console.log("ref is null");
       }
     const snap = await getDoc(ref);
     if (snap.exists()) {
@@ -155,7 +155,7 @@ export class ITCFirebaseLogic {
       );
       const snap = await getDoc(ref);
       if (snap.exists()) {
-        //console.log("company exists"+JSON.stringify(snap.data(), null, 2));
+        ////console.log("company exists"+JSON.stringify(snap.data(), null, 2));
         return Company.fromMap(snap.data());
       }
     } catch (e) {
@@ -271,7 +271,7 @@ export class ITCFirebaseLogic {
       { merge: true }
     );
 
-    //console.log(`✅ Student (${uid}) updated with school & matric number`);
+    ////console.log(`✅ Student (${uid}) updated with school & matric number`);
   }
 
   async hasCompletedInstitutionInfo() {
@@ -301,7 +301,7 @@ export class ITCFirebaseLogic {
   // Add this method to your ITCFirebaseLogic class
 async getCompanyByEmail(email) {
   try {
-    //console.log(`🔍 Searching for company with email: ${email}`);
+    ////console.log(`🔍 Searching for company with email: ${email}`);
     
     const companiesRef = collection(
       this._firebaseFirestore,
@@ -316,10 +316,10 @@ async getCompanyByEmail(email) {
     
     if (!querySnapshot.empty) {
       const companyDoc = querySnapshot.docs[0];
-      //console.log(" Company found:", companyDoc.id);
+      ////console.log(" Company found:", companyDoc.id);
       return Company.fromMap(companyDoc.data());
     } else {
-      //console.log(" No company found with email:", email);
+      ////console.log(" No company found with email:", email);
       return null;
     }
   } catch (error) {

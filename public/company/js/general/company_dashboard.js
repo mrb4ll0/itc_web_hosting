@@ -12,7 +12,7 @@ class CompanyDashboard {
     }
 
     init() {
-        //console.log("CompanyDashboard initialized");
+        ////console.log("CompanyDashboard initialized");
         this.setupMobileMenu();
         this.attachEventListeners();
         this.checkAuthState();
@@ -146,12 +146,12 @@ class CompanyDashboard {
             const user = auth.currentUser;
             
             if (!user) {
-                //console.log("No user logged in, redirecting to login");
+                ////console.log("No user logged in, redirecting to login");
                 window.location.href = 'auth/company_login.html';
                 return;
             }
 
-            //console.log("User authenticated:", user.uid);
+            ////console.log("User authenticated:", user.uid);
             
         } catch (error) {
             console.error("Auth state check error:", error);
@@ -167,7 +167,7 @@ class CompanyDashboard {
                 throw new Error("No user logged in");
             }
 
-            //console.log("Loading company data for user:", user.uid);
+            ////console.log("Loading company data for user:", user.uid);
             
             // Get company data from Firestore
             this.currentCompany = await this.itc_firebaselogic.getCompany(user.uid);
@@ -240,7 +240,7 @@ class CompanyDashboard {
     }
 
 updateStatsCards(stats) {
-    //console.log("Updating stats cards with:", stats);
+    ////console.log("Updating stats cards with:", stats);
     
     // Show loading state for all stats first
     this.showStatsLoading();
@@ -261,21 +261,21 @@ updateStatsCards(stats) {
 }
 
 updateStatCard(statKey, value) {
-    //console.log(`Updating ${statKey} with value: ${value}`);
+    ////console.log(`Updating ${statKey} with value: ${value}`);
     
     // Use the exact ID from HTML (with hyphens)
     const spinner = document.getElementById(`${statKey}-spinner`);
     const valueElement = document.getElementById(`${statKey}-value`);
     
-    //console.log(`Spinner element:`, spinner);
-    //console.log(`Value element:`, valueElement);
+    ////console.log(`Spinner element:`, spinner);
+    ////console.log(`Value element:`, valueElement);
     
     if (valueElement && spinner) {
         // Hide spinner and show value
         spinner.classList.add('hidden');
         valueElement.textContent = value;
         valueElement.classList.remove('hidden');
-        //console.log(`Successfully updated ${statKey} to ${value}`);
+        ////console.log(`Successfully updated ${statKey} to ${value}`);
     } else {
         console.error(`Could not find elements for ${statKey}`);
         console.error(`Spinner found: ${!!spinner}, Value element found: ${!!valueElement}`);
@@ -283,7 +283,7 @@ updateStatCard(statKey, value) {
 }
 
 showStatsLoading() {
-    //console.log("Showing stats loading state");
+    ////console.log("Showing stats loading state");
     const statKeys = ['total-postings', 'active-postings', 'new-applications', 'hired-students'];
     
     statKeys.forEach(key => {
@@ -300,7 +300,7 @@ showStatsLoading() {
 }
 
 showStatsError() {
-    //console.log("Showing stats error state");
+    ////console.log("Showing stats error state");
     const statKeys = ['total-postings', 'active-postings', 'new-applications', 'hired-students'];
     
     statKeys.forEach(key => {
@@ -554,7 +554,7 @@ getEmptyStateHTML(type) {
             row.addEventListener('click', () => {
                 const applicationId = row.getAttribute('data-application-id');//data-it-id
                 const itId = row.getAttribute('data-it-id');
-                 //console.log(" appplicationId "+applicationId+" itId "+itId);
+                 ////console.log(" appplicationId "+applicationId+" itId "+itId);
                  //return;
                 this.viewApplicationDetails(applicationId,itId);
             });
@@ -773,7 +773,7 @@ showDeleteConfirmation(postingId) {
 // Add this method to handle the actual deletion
 deletePosting(postingId) {
     // Implement your deletion logic here
-    //console.log('Deleting posting:', postingId);
+    ////console.log('Deleting posting:', postingId);
     
     // Example: Remove from DOM and show success message
     const postingElement = document.querySelector(`[data-posting-id="${postingId}"]`).closest('.group');
@@ -867,7 +867,7 @@ attachPostingButtonListeners() {
             localStorage.removeItem('currentCompany');
             localStorage.removeItem('userRole');
             
-            //console.log("User signed out successfully");
+            ////console.log("User signed out successfully");
             
             // Redirect to login page
             window.location.href = 'auth/company_login.html';
@@ -887,7 +887,7 @@ attachPostingButtonListeners() {
 
     handleSearch(query) {
         // Implement real-time search if needed
-        //console.log("Search query:", query);
+        ////console.log("Search query:", query);
         
         // Filter applications in real-time
         this.filterApplications(query);
@@ -909,23 +909,23 @@ attachPostingButtonListeners() {
 
     performSearch(query) {
         // Implement search functionality
-        //console.log("Performing search for:", query);
+        ////console.log("Performing search for:", query);
         this.showNotification(`Searching for: ${query}`, 'info');
     }
 
     viewApplicationDetails(applicationId,itid) {
-        //console.log("Viewing application details:", applicationId);
+        ////console.log("Viewing application details:", applicationId);
         // Navigate to application details page
         window.location.href = `student_profile.html?itid=${itid}&id=${applicationId}`;
     }
 
     viewApplicantsForPosting(postingId,itid) {
-        //console.log("Viewing applicants for posting ID:", postingId);
+        ////console.log("Viewing applicants for posting ID:", postingId);
         window.location.href = `student_profile.html?itid=${itid}&id=${applicationId}`;
     }
 
     editPostingById(postingId,itid) {
-        //console.log("Editing posting ID:", postingId);
+        ////console.log("Editing posting ID:", postingId);
         window.location.href = `edit_posting.html?itid=${itid}&id=${applicationId}`;
     }
 

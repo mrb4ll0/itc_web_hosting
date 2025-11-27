@@ -35,7 +35,7 @@ class CompanyProfile {
 
   init() {
     onAuthStateChanged(auth, async (user) => {
-      //console.log("Auth state changed. User:", user);
+      ////console.log("Auth state changed. User:", user);
       if (user) {
         await this.loadCompanyProfile(user.uid);
       }
@@ -54,7 +54,7 @@ class CompanyProfile {
         // Load analytics after company profile is rendered
         await this.loadCompanyAnalytics(company);
       } else {
-        //console.log("No company profile found.");
+        ////console.log("No company profile found.");
         this.renderError("Company not found");
       }
     } catch (error) {
@@ -615,7 +615,7 @@ class CompanyProfile {
   }
 
   async renderReview(company) {
-    //console.log("render reviews");
+    ////console.log("render reviews");
     const companyReviewElement = document.getElementById("view-reviews");
     if (!companyReviewElement) {
       alert("An error occurred while switching");
@@ -642,7 +642,7 @@ class CompanyProfile {
 
       // Get reviews from the company
       const reviews = await this.getCompanyReviewsPromise(company.id);
-      console.log("company review is "+JSON.stringify(reviews));
+      //console.log("company review is "+JSON.stringify(reviews));
 
       // Clear existing content
       reviewsList.innerHTML = "";
@@ -669,7 +669,7 @@ class CompanyProfile {
 
       // Render each review
       reviews.forEach((review, index) => {
-        //console.log("review is "+JSON.stringify(review));
+        ////console.log("review is "+JSON.stringify(review));
         const li = document.createElement("li");
         li.className =
           "p-4 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors duration-200";
@@ -835,7 +835,7 @@ class CompanyProfile {
   // Format date (reuse from previous method or define here)
   formatDate(date) {
     if (!date) return "Unknown date";
-    //console.log("createdDate is ", date);
+    ////console.log("createdDate is ", date);
 
     try {
       let d = null;
@@ -933,7 +933,7 @@ class CompanyProfile {
 
     // Render each review
     reviews.forEach((review) => {
-      //console.log("review timestamp ",review.createdAt);
+      ////console.log("review timestamp ",review.createdAt);
       const li = document.createElement("li");
       li.className =
         "p-4 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors duration-200";
@@ -1011,7 +1011,7 @@ class CompanyProfile {
                 review.companyId,
                 reviewId
               );
-              //console.log("Review deleted:", reviewId);
+              ////console.log("Review deleted:", reviewId);
             } catch (error) {
               console.error("Failed to delete review:", error);
               alert("Failed to delete review. Please try again.");
@@ -1212,10 +1212,10 @@ class CompanyProfile {
         createdAt: new Date(),
       });
 
-      console.log("review timestamp "+review.createdAt);
+      //console.log("review timestamp "+review.createdAt);
 
       // Submit to Firebase
-      //console.log("review before addCompanyReview ", review);
+      ////console.log("review before addCompanyReview ", review);
       await companyCloud.addCompanyReview(review);
 
       // Show success message

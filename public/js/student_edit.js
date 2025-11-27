@@ -27,7 +27,7 @@ class StudentEdit {
 
             // Load student data
             this.currentStudent = await companyCloud.getCurrentStudent();
-            //console.log("currentStudent "+this.currentStudent);
+            ////console.log("currentStudent "+this.currentStudent);
             
             if (!this.currentStudent) {
                 this.showError("Student profile not found");
@@ -164,10 +164,10 @@ class StudentEdit {
       auth.authStateReady();
     const profilePictureInput = document.getElementById('profile-picture');
     if (profilePictureInput.files[0]) {
-          //console.log(this.currentStudent.toMap());
+          ////console.log(this.currentStudent.toMap());
            if(!auth.currentUser.uid || !profilePictureInput.files[0])
            {
-            //console.log("the current user id is "+auth.currentUser.uid+" and the profile pic is "+profilePictureInput.files[0]);
+            ////console.log("the current user id is "+auth.currentUser.uid+" and the profile pic is "+profilePictureInput.files[0]);
            }
         const imageUrl = await companyCloud.uploadStudentImage(
             auth.currentUser.uid, 
@@ -431,7 +431,7 @@ class StudentEdit {
         return;
     }
 
-    //console.log(`File selected for ${inputId}:`, file.name);
+    ////console.log(`File selected for ${inputId}:`, file.name);
     
     // Update the UI to show the file name
     this.updateFileDisplay(inputId, file);

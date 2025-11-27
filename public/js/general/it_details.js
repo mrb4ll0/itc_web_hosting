@@ -18,7 +18,7 @@ class InternshipDetails {
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        //console.log("✅ User is signed in:", user.uid);
+        ////console.log("✅ User is signed in:", user.uid);
         this.loadStudentImage(user.uid);
       } else {
         console.warn("⚠️ No user signed in");
@@ -63,7 +63,7 @@ class InternshipDetails {
           internship.company.id,
           internship.id
         );
-      //console.log("applications is "+JSON.stringify(applications));
+      ////console.log("applications is "+JSON.stringify(applications));
       this.applicationsCount = applications.length;
       if (!internship) {
         this.showError("Internship not found");
@@ -112,12 +112,12 @@ class InternshipDetails {
   }
 
   renderInternshipDetails(internship) {
-    //console.log("main internship "+JSON.stringify(internship));
+    ////console.log("main internship "+JSON.stringify(internship));
     const container = document.getElementById("internship-details-container");
     if (!container) return;
-    console.log("internship " + JSON.stringify(internship.eligibilityCriteria));
-    console.log("postedAt is " + internship.postedAt);
-    console.log("global application counts is " + this.applicationsCount);
+    //console.log("internship " + JSON.stringify(internship.eligibilityCriteria));
+    //console.log("postedAt is " + internship.postedAt);
+    //console.log("global application counts is " + this.applicationsCount);
 
     let appStatus;
     appStatus = internship.status;
@@ -128,7 +128,7 @@ class InternshipDetails {
       this.applicationsCount || 0
     );
 
-    console.log("Using application count: " + currentApplicationsCount);
+    //console.log("Using application count: " + currentApplicationsCount);
 
     // Update application count (you might want to save this back to your database)
     this.applicationsCount = currentApplicationsCount;
@@ -140,11 +140,11 @@ class InternshipDetails {
     ) {
       appStatus = "closed";
       internship.status = "closed";
-      console.log(
+      //console.log(
         `Application count (${currentApplicationsCount}) reached intake capacity (${internship.intakeCapacity}). Status set to: ${appStatus}`
       );
     } else {
-      console.log(
+      //console.log(
         `Application count (${currentApplicationsCount}) is below intake capacity (${internship.intakeCapacity}). Current status: ${appStatus}`
       );
     }
@@ -475,9 +475,9 @@ class InternshipDetails {
 
   async applyForInternship(status, title, company, id, compid) {
     // Implement application logic
-    //console.log("Applying for status:"+JSON.stringify(status));
-    //console.log("Applying for title:"+JSON.stringify(title));
-    //console.log("Applying for company:"+JSON.stringify(company));
+    ////console.log("Applying for status:"+JSON.stringify(status));
+    ////console.log("Applying for title:"+JSON.stringify(title));
+    ////console.log("Applying for company:"+JSON.stringify(company));
 
     // alert('Application feature coming soon!');
     try {
@@ -507,7 +507,7 @@ class InternshipDetails {
 
   async saveInternship(internshipId) {
     // Implement save logic
-    //console.log("Saving internship:", internshipId);
+    ////console.log("Saving internship:", internshipId);
     //alert('Save feature coming soon!');
     try {
       const user = auth.currentUser;

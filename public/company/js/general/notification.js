@@ -28,7 +28,7 @@ class NotificationManager {
          await auth.authStateReady();
          
         this.company = await itc_firebase_logic.getCompany(auth.currentUser.uid);
-        //console.log("logo url "+this.company.logoURL);
+        ////console.log("logo url "+this.company.logoURL);
         this.profileImg.style.backgroundImage = `url('${this.company.logoURL}')`;
     }
 
@@ -157,7 +157,7 @@ class NotificationManager {
     // Method to handle search functionality
     handleSearch(searchTerm) {
         // Implement search logic here
-        //console.log('Searching for:', searchTerm);
+        ////console.log('Searching for:', searchTerm);
         // This would filter notifications based on search term
     }
 
@@ -167,7 +167,7 @@ class NotificationManager {
         this.updateFilterTabStyles(filterType);
         
         // Implement filter logic here
-        //console.log('Filtering by:', filterType);
+        ////console.log('Filtering by:', filterType);
         // This would filter notifications based on the selected filter
     }
 

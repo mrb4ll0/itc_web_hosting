@@ -47,7 +47,7 @@ class FeaturedCompany {
         }
         
              right_image.style.backgroundImage = `src('${student.imageURL}')`
-            //console.log("Loaded companies:", companies);
+            ////console.log("Loaded companies:", companies);
             
             this.renderCompanies(companies);
             
@@ -181,7 +181,7 @@ generateCurvedPlaceholder(companyName) {
         companyCards.forEach(card => {
             card.addEventListener('click', (e) => {
                 // You can add tracking or analytics here
-                //console.log('Viewing company:', e.currentTarget.dataset.companyId);
+                ////console.log('Viewing company:', e.currentTarget.dataset.companyId);
             });
         });
     }

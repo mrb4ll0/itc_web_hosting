@@ -18,7 +18,7 @@ document.getElementById("login").addEventListener("click", async (event) => {
 function checkAuthState() {
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      //console.log("User already logged in:", user.email);
+      ////console.log("User already logged in:", user.email);
       localStorage.setItem(
         "student",
         JSON.stringify({
@@ -38,7 +38,7 @@ function checkAuthState() {
       // Redirect to dashboard
       window.location.replace("dashboard/itc_dashboard.html");
     } else {
-      //console.log("No user session found — showing login form.");
+      ////console.log("No user session found — showing login form.");
       window.location.href = "auth/login.html";
       document.body.style.display = "block";
     }

@@ -20,7 +20,7 @@ export default class UpcomingTraining {
   }
 
   async init() {
-    console.log("Initializing Upcoming Training Tab");
+    //console.log("Initializing Upcoming Training Tab");
     this.initializeElements();
     this.initializeEventListeners();
     await this.buildUpcomingContent();
@@ -76,7 +76,7 @@ export default class UpcomingTraining {
       "send-custom-notification"
     );
 
-    console.log("Upcoming Training elements initialized");
+    //console.log("Upcoming Training elements initialized");
   }
 
   initializeEventListeners() {
@@ -414,7 +414,7 @@ async sendCustomNotification() {
 }
 
   async buildUpcomingContent() {
-    console.log("Building upcoming training content...");
+    //console.log("Building upcoming training content...");
 
     const upcomingTrainees =
       this.tabManager.getTrainingStudentsByDate("upcoming");
@@ -543,11 +543,11 @@ async sendCustomNotification() {
     row.className = "hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors";
 
     const application = traineeData.application;
-    console.log("application id is " + application.id);
+    //console.log("application id is " + application.id);
     const student = application.student || {};
     const opportunity = traineeData.opportunity || {};
     const duration = application.duration || {};
-    console.log("application is " + JSON.stringify(opportunity));
+    //console.log("application is " + JSON.stringify(opportunity));
 
     const startDate = duration.startDate ? new Date(duration.startDate) : null;
     const endDate = duration.endDate ? new Date(duration.endDate) : null;
@@ -1025,7 +1025,7 @@ async sendCustomNotification() {
 
   // Action methods
   viewUpcoming(applicationData) {
-    console.log("View upcoming trainee:", applicationData);
+    //console.log("View upcoming trainee:", applicationData);
     var itid = applicationData.training.id;
     var appId = applicationData.application.id;
     if (!itid || !appId) {
@@ -1038,18 +1038,18 @@ async sendCustomNotification() {
         appId
       );
 
-      console.log("Generated URL:", profileUrl);
+      //console.log("Generated URL:", profileUrl);
       window.location.href = profileUrl;
     }
   }
 
   rescheduleTraining(traineeId) {
-    console.log("Reschedule training for:", traineeId);
+    //console.log("Reschedule training for:", traineeId);
     this.openRescheduleModal(traineeId);
   }
 
   async sendReminder(traineeId) {
-    console.log("Send reminder to:", traineeId);
+    //console.log("Send reminder to:", traineeId);
 
     // Show loading notification
     var loadingNotification = showNotification(
@@ -1065,7 +1065,7 @@ async sendCustomNotification() {
       );
 
       if (!application) {
-        console.log("application is " + JSON.stringify(application));
+        //console.log("application is " + JSON.stringify(application));
         throw new Error("Application not found");
       }
 
@@ -1099,7 +1099,7 @@ async sendCustomNotification() {
         opportunityTitle: opportunity,
       };
 
-      console.log("Sending reminder notification:", notificationData);
+      //console.log("Sending reminder notification:", notificationData);
 
       // Send the notification
       await it_base_companycloud.sendNotificationToStudent(
@@ -1119,7 +1119,7 @@ async sendCustomNotification() {
         removeNotification(loadingNotification);
       }, 3000);
 
-      console.log("Reminder sent successfully to student:", studentName);
+      //console.log("Reminder sent successfully to student:", studentName);
     } catch (error) {
       console.error("Failed to send reminder:", error);
 
@@ -1142,14 +1142,14 @@ async sendCustomNotification() {
         "Are you sure you want to cancel this upcoming training? This action cannot be undone."
       )
     ) {
-      console.log("Cancel training:", traineeId);
+      //console.log("Cancel training:", traineeId);
       // Implement cancellation logic
       this.buildUpcomingContent();
     }
   }
 
  exportUpcoming() {
-    console.log("Export upcoming training");
+    //console.log("Export upcoming training");
     const upcomingToExport = this.filteredUpcoming;
     
     if (upcomingToExport.length === 0) {
@@ -1319,7 +1319,7 @@ downloadCSV(csvContent, filename) {
     URL.revokeObjectURL(url);
 }
   scheduleTraining() {
-    console.log("Schedule new training");
+    //console.log("Schedule new training");
     // Implement schedule training functionality
   }
 
@@ -1525,7 +1525,7 @@ downloadCSV(csvContent, filename) {
     const currentTraining = this.filteredUpcoming.find(
       (t) => t.application.id === traineeId
     );
-    console.log("filtered training is " + JSON.stringify(currentTraining));
+    //console.log("filtered training is " + JSON.stringify(currentTraining));
     const scheduleData = {
       startDate: currentTraining.application.duration.startDate,
       endDate: currentTraining.application.duration.endDate,
@@ -1635,8 +1635,8 @@ downloadCSV(csvContent, filename) {
       }
 
       const id = it.application.internship.id;
-      console.log("it id is " + JSON.stringify(id));
-      console.log("appid " + traineeId);
+      //console.log("it id is " + JSON.stringify(id));
+      //console.log("appid " + traineeId);
 
       await it_base_companycloud.updateCompanyApplicationDuration(
         formData,
@@ -1665,7 +1665,7 @@ downloadCSV(csvContent, filename) {
   }
 
   async refreshUpcomingData() {
-    console.log("Refreshing upcoming training data...");
+    //console.log("Refreshing upcoming training data...");
 
     // Clear any cached data in tabManager
     if (this.tabManager.clearCache) {

@@ -17,7 +17,7 @@ class CompanyLogin {
   }
 
   init() {
-    //console.log("CompanyLogin initialized");
+    ////console.log("CompanyLogin initialized");
     this.attachEventListeners();
     this.setupPasswordToggle();
   }
@@ -123,7 +123,7 @@ class CompanyLogin {
       );
       const user = userCredential.user;
 
-      //console.log("User signed in:", user.uid);
+      ////console.log("User signed in:", user.uid);
 
       // Verify this is actually a company account
       const company = await this.itc_firebaselogic.getCompany(user.uid);
@@ -150,7 +150,7 @@ class CompanyLogin {
         localStorage.setItem("stprofile", false);
 
         if (!itId || !appId) {
-          //console.log("itId and appId is not found");
+          ////console.log("itId and appId is not found");
         } else {
           window.location.href = generateShareableUrl(
             "/company/student_profile.html",
@@ -202,7 +202,7 @@ class CompanyLogin {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      //console.log("Google sign-in successful:", user.uid);
+      ////console.log("Google sign-in successful:", user.uid);
 
       // Check if company exists, if not create one
       let company = await this.itc_firebaselogic.getCompany(user.uid);
@@ -222,7 +222,7 @@ class CompanyLogin {
         localStorage.setItem("stprofile", false);
 
         if (!itId || !appId) {
-          //console.log("itId and appId is not found");
+          ////console.log("itId and appId is not found");
         } else {
           window.location.href = generateShareableUrl(
             "/company/student_profile.html",

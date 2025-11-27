@@ -34,7 +34,7 @@ class CompanyRegistration {
   }
 
   init() {
-    //console.log("init got called");
+    ////console.log("init got called");
     this.addDropDownData();
     this.loadhtmlAttachment();
     this.attachEventListeners();
@@ -147,14 +147,14 @@ class CompanyRegistration {
       previewImg.src = e.target.result;
       previewImg.alt = "Company logo preview";
 
-      //console.log("File preview loaded:", file.name);
+      ////console.log("File preview loaded:", file.name);
     };
     reader.readAsDataURL(file);
   }
   addDropDownData() {
     // Nigeria states and LGAs data
 
-    //console.log("nigeria is " + nigeria);
+    ////console.log("nigeria is " + nigeria);
     // Populate states dropdown
     const stateSelect = document.getElementById("state");
     stateSelect.innerHTML = '<option value="">Select State</option>';
@@ -958,7 +958,7 @@ isValidPasswordForFirebase(password) {
       logoFile: document.getElementById("file-upload").files[0],
     };
 
-      //console.log("password is "+formData.get("password"));
+      ////console.log("password is "+formData.get("password"));
     try {
       // Create auth user
       const userCredential = await createUserWithEmailAndPassword(
@@ -994,7 +994,7 @@ isValidPasswordForFirebase(password) {
       // Upload logo if provided
       if (companyData.logoFile) {
         try {
-          //console.log("Starting logo upload...");
+          ////console.log("Starting logo upload...");
 
           // Create CloudStorage instance
           const cloudStorage = new CloudStorage();
@@ -1008,7 +1008,7 @@ isValidPasswordForFirebase(password) {
 
           if (logoURL) {
             company.logoURL = logoURL;
-            //console.log("Logo uploaded successfully:", logoURL);
+            ////console.log("Logo uploaded successfully:", logoURL);
           } else {
             console.warn("Logo upload failed, continuing without logo");
             // Continue registration even if logo upload fails
@@ -1026,7 +1026,7 @@ isValidPasswordForFirebase(password) {
       }
 
       // Register company in database
-      //console.log("Registering company in database...");
+      ////console.log("Registering company in database...");
       await this.itc_firebaselogic.addCompany(company);
 
       // Show success message
@@ -1102,6 +1102,6 @@ isValidPasswordForFirebase(password) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  //console.log("DOMContentLoaded");
+  ////console.log("DOMContentLoaded");
   new CompanyRegistration();
 });

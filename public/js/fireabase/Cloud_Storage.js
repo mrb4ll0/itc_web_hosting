@@ -30,12 +30,12 @@ export class CloudStorage {
       const readablePath = `uploads/${userId}/${category}/${fileName}`;
       const storageRef = ref(this.storage, readablePath);
 
-      //console.log(`Uploading file: ${originalName} to ${readablePath}`);
+      ////console.log(`Uploading file: ${originalName} to ${readablePath}`);
 
       const uploadTask = await uploadBytes(storageRef, file);
       const downloadUrl = await getDownloadURL(uploadTask.ref);
 
-      //console.log("File uploaded successfully:", downloadUrl);
+      ////console.log("File uploaded successfully:", downloadUrl);
       return downloadUrl;
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -53,7 +53,7 @@ export class CloudStorage {
    */
   async uploadFromUrl(fileUrl, userId = "system", category = "from_url") {
     try {
-      //console.log(`Uploading from URL: ${fileUrl}`);
+      ////console.log(`Uploading from URL: ${fileUrl}`);
 
       const response = await fetch(fileUrl);
 
@@ -75,7 +75,7 @@ export class CloudStorage {
       const uploadTask = await uploadBytes(storageRef, blob);
       const downloadUrl = await getDownloadURL(uploadTask.ref);
 
-      //console.log("File uploaded from URL successfully:", downloadUrl);
+      ////console.log("File uploaded from URL successfully:", downloadUrl);
       return downloadUrl;
     } catch (error) {
       console.error("Error uploading from URL:", error);
@@ -92,7 +92,7 @@ export class CloudStorage {
     try {
       const storageRef = ref(this.storage, fileUrl);
       await deleteObject(storageRef);
-      //console.log("File deleted successfully:", fileUrl);
+      ////console.log("File deleted successfully:", fileUrl);
       return true;
     } catch (error) {
       console.error("Error deleting file:", error);
@@ -109,9 +109,9 @@ export class CloudStorage {
    */
   async uploadMultipleFiles(givnefiles, userId, category) {
     try {
-         //console.log("givenFiles is id card "+JSON.stringify(givnefiles.idCard));
-         //console.log("givenFiles is training letter "+JSON.stringify(givnefiles.trainingLetter));
-         //console.log("givenFiles is form "+JSON.stringify(givnefiles.applicationForms));
+         ////console.log("givenFiles is id card "+JSON.stringify(givnefiles.idCard));
+         ////console.log("givenFiles is training letter "+JSON.stringify(givnefiles.trainingLetter));
+         ////console.log("givenFiles is form "+JSON.stringify(givnefiles.applicationForms));
       const files = Array.isArray(givnefiles)
         ? givnefiles
         : Object.values(givnefiles).filter((file) => file !== null);
@@ -246,14 +246,14 @@ export class CloudStorage {
   ) {
     try {
       // Upload files using your existing method
-      //console.log("files to upload "+JSON.stringify(filesToUpload));
+      ////console.log("files to upload "+JSON.stringify(filesToUpload));
       
       const uploadResults = await this.uploadMultipleFiles(
         filesToUpload,
         userId,
         category
       );
-      //console.log("uploadResults "+JSON.stringify(uploadResults));
+      ////console.log("uploadResults "+JSON.stringify(uploadResults));
        return;
       // Process results and update application
       this.processUploadResults(application, uploadResults);
@@ -277,7 +277,7 @@ export class CloudStorage {
       throw new Error('User not authenticated. Please log in again.');
     }
 
-    //console.log(' User authenticated:', currentUser.uid);
+    ////console.log(' User authenticated:', currentUser.uid);
     
     // Use the already initialized firebaseApp from your init file
     const storage = getStorage(firebaseApp);
@@ -306,14 +306,14 @@ export class CloudStorage {
         const readablePath = `uploads/${currentUser.uid}/it_applications/${finalFileName}`;
         const storageRef = ref(storage, readablePath);
 
-        //console.log(` Uploading file: ${file.name} → ${readablePath}`);
-        //console.log(` Authenticated as: ${currentUser.uid}`);
+        ////console.log(` Uploading file: ${file.name} → ${readablePath}`);
+        ////console.log(` Authenticated as: ${currentUser.uid}`);
         
         // Upload the file
         const uploadTask = await uploadBytes(storageRef, file);
         const downloadUrl = await getDownloadURL(uploadTask.ref);
         
-        //console.log(` Uploaded: ${file.name} → ${downloadUrl}`);
+        ////console.log(` Uploaded: ${file.name} → ${downloadUrl}`);
 
         return {
           file,
@@ -362,8 +362,8 @@ export class CloudStorage {
     const results = await Promise.all(uploadPromises);
     uploadResults.push(...results);
 
-    //console.log(" All uploads complete for user:", currentUser.uid);
-    //console.log(" Upload results:", uploadResults);
+    ////console.log(" All uploads complete for user:", currentUser.uid);
+    ////console.log(" Upload results:", uploadResults);
     
     return uploadResults;
 
@@ -398,37 +398,37 @@ export class CloudStorage {
       switch (field) {
         case "idCard":
           application.setIdCard(result.url);
-          //console.log(" Added ID card:", result.url);
+          ////console.log(" Added ID card:", result.url);
           successfulUploads++;
           break;
 
         case "trainingLetter":
           application.setTrainingLetter(result.url);
-          //console.log(" Added training letter:", result.url);
+          ////console.log(" Added training letter:", result.url);
           successfulUploads++;
           break;
 
         case "resume":
           application.setResume(result.url);
-          //console.log(" Added resume:", result.url);
+          ////console.log(" Added resume:", result.url);
           successfulUploads++;
           break;
 
         case "coverLetter":
           application.setCoverLetter(result.url);
-          //console.log(" Added cover letter:", result.url);
+          ////console.log(" Added cover letter:", result.url);
           successfulUploads++;
           break;
 
         case "applicationForms":
           application.addApplicationForm(result.url);
-          //console.log(" Added application form:", result.url);
+          ////console.log(" Added application form:", result.url);
           successfulUploads++;
           break;
 
         default:
           application.addOtherDocument(result.url);
-          //console.log("✅ Added other document:", result.url);
+          ////console.log("✅ Added other document:", result.url);
           successfulUploads++;
           break;
       }
@@ -438,7 +438,7 @@ export class CloudStorage {
     }
   });
 
-  console.log(`📊 Processed ${successfulUploads} successful uploads, ${failedUploads} failed uploads`);
+  //console.log(`📊 Processed ${successfulUploads} successful uploads, ${failedUploads} failed uploads`);
   
   if (failedUploads > 0) {
     throw new Error(`${failedUploads} file(s) failed to upload properly`);

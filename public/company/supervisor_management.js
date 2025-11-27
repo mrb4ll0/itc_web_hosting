@@ -40,28 +40,37 @@ class SupervisorController {
 
   setupEventListeners() {
     // Code generation
-    document
-      .getElementById("generateCodeBtn")
-      .addEventListener("click", () => this.generateCode());
+    const generateCodeBtn = document.getElementById("generateCodeBtn");
+    if (generateCodeBtn) {
+      generateCodeBtn.addEventListener("click", () => this.generateCode());
+    }
 
     // Supervisor management
-    document
-      .getElementById("refreshBtn")
-      .addEventListener("click", () => this.refreshSupervisors());
-    document
-      .getElementById("assignStudentsBtn")
-      .addEventListener("click", () => this.showAssignModal());
+    const refreshBtn = document.getElementById("refreshBtn");
+    if (refreshBtn) {
+      refreshBtn.addEventListener("click", () => this.refreshSupervisors());
+    }
+
+    const assignStudentsBtn = document.getElementById("assignStudentsBtn");
+    if (assignStudentsBtn) {
+      assignStudentsBtn.addEventListener("click", () => this.showAssignModal());
+    }
 
     // Modal controls
-    document
-      .getElementById("closeModalBtn")
-      .addEventListener("click", () => this.hideAssignModal());
-    document
-      .getElementById("cancelAssignBtn")
-      .addEventListener("click", () => this.hideAssignModal());
-    document
-      .getElementById("confirmAssignBtn")
-      .addEventListener("click", () => this.assignStudents());
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    if (closeModalBtn) {
+      closeModalBtn.addEventListener("click", () => this.hideAssignModal());
+    }
+
+    const cancelAssignBtn = document.getElementById("cancelAssignBtn");
+    if (cancelAssignBtn) {
+      cancelAssignBtn.addEventListener("click", () => this.hideAssignModal());
+    }
+
+    const confirmAssignBtn = document.getElementById("confirmAssignBtn");
+    if (confirmAssignBtn) {
+      confirmAssignBtn.addEventListener("click", () => this.assignStudents());
+    }
 
     // Assignment type toggle
     document
@@ -133,6 +142,11 @@ class SupervisorController {
       const supervisors = await this.firestore.getSupervisors();
       const supervisorsGrid = document.getElementById("supervisorsGrid");
       const emptyState = document.getElementById("emptyState");
+
+      if (!supervisorsGrid || !emptyState) {
+        console.error("Required DOM elements not found");
+        return;
+      }
 
       supervisorsGrid.innerHTML = "";
 
@@ -254,22 +268,29 @@ class SupervisorController {
   attachSupervisorCardListeners(card, supervisor, isAllowed) {
     if (isAllowed) {
       // Active supervisor actions
-      card
-        .querySelector(".manage-supervisor")
-        .addEventListener("click", () => this.manageSupervisor(supervisor));
-      card
-        .querySelector(".more-actions")
-        .addEventListener("click", () =>
-          this.showSupervisorActions(supervisor)
-        );
+      const manageBtn = card.querySelector(".manage-supervisor");
+      const moreBtn = card.querySelector(".more-actions");
+      
+      if (manageBtn) {
+        manageBtn.addEventListener("click", () => this.manageSupervisor(supervisor));
+      }
+      if (moreBtn) {
+        moreBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.showSupervisorActions(supervisor, e.target);
+        });
+      }
     } else {
       // Pending supervisor actions
-      card
-        .querySelector(".activate-supervisor")
-        .addEventListener("click", () => this.activateSupervisor(supervisor));
-      card
-        .querySelector(".reject-supervisor")
-        .addEventListener("click", () => this.rejectSupervisor(supervisor));
+      const activateBtn = card.querySelector(".activate-supervisor");
+      const rejectBtn = card.querySelector(".reject-supervisor");
+      
+      if (activateBtn) {
+        activateBtn.addEventListener("click", () => this.activateSupervisor(supervisor));
+      }
+      if (rejectBtn) {
+        rejectBtn.addEventListener("click", () => this.rejectSupervisor(supervisor));
+      }
     }
   }
 
@@ -346,16 +367,16 @@ class SupervisorController {
     
     // Navigate to the supervisor management page with supervisor ID
     window.location.href = `supervisor_details.html?id=${supervisor.id}`;
-}
+  }
 
-showSupervisorActions(supervisor) {
+  showSupervisorActions(supervisor, targetElement) {
     console.log("Showing actions for supervisor:", supervisor);
     
     // Create and show actions dropdown menu
-    this.createActionsDropdown(supervisor);
-}
+    this.createActionsDropdown(supervisor, targetElement);
+  }
 
-createActionsDropdown(supervisor) {
+  createActionsDropdown(supervisor, targetElement) {
     // Remove existing dropdown if any
     const existingDropdown = document.querySelector('.supervisor-actions-dropdown');
     if (existingDropdown) {
@@ -418,73 +439,92 @@ createActionsDropdown(supervisor) {
     this.attachActionListeners(dropdown, supervisor);
 
     // Position and show dropdown
-    this.positionDropdown(dropdown);
+    this.positionDropdown(dropdown, targetElement);
     document.body.appendChild(dropdown);
 
     // Close dropdown when clicking outside
     this.setupDropdownCloseHandler(dropdown);
-}
+  }
 
-attachActionListeners(dropdown, supervisor) {
+  attachActionListeners(dropdown, supervisor) {
     const isActive = supervisor.allowed === true;
 
     // Activate/Deactivate
     if (!isActive) {
-        dropdown.querySelector('.action-activate').addEventListener('click', () => {
-            this.activateSupervisor(supervisor);
-            dropdown.remove();
-        });
+        const activateBtn = dropdown.querySelector('.action-activate');
+        if (activateBtn) {
+            activateBtn.addEventListener('click', () => {
+                this.activateSupervisor(supervisor);
+                dropdown.remove();
+            });
+        }
     } else {
-        dropdown.querySelector('.action-deactivate').addEventListener('click', () => {
-            this.deactivateSupervisor(supervisor);
-            dropdown.remove();
-        });
+        const deactivateBtn = dropdown.querySelector('.action-deactivate');
+        if (deactivateBtn) {
+            deactivateBtn.addEventListener('click', () => {
+                this.deactivateSupervisor(supervisor);
+                dropdown.remove();
+            });
+        }
     }
 
     // Manage Students
-    dropdown.querySelector('.action-manage').addEventListener('click', () => {
-        this.manageSupervisor(supervisor);
-        dropdown.remove();
-    });
-
-    // View Details
-    dropdown.querySelector('.action-view').addEventListener('click', () => {
-        this.viewSupervisorDetails(supervisor);
-        dropdown.remove();
-    });
-
-    // Send Email
-    dropdown.querySelector('.action-email').addEventListener('click', () => {
-        this.emailSupervisor(supervisor);
-        dropdown.remove();
-    });
-
-    // Reassign Students (only for active supervisors)
-    if (isActive) {
-        dropdown.querySelector('.action-reassign').addEventListener('click', () => {
-            this.reassignAllStudents(supervisor);
+    const manageBtn = dropdown.querySelector('.action-manage');
+    if (manageBtn) {
+        manageBtn.addEventListener('click', () => {
+            this.manageSupervisor(supervisor);
             dropdown.remove();
         });
     }
 
-    // Remove Supervisor
-    dropdown.querySelector('.action-remove').addEventListener('click', () => {
-        this.removeSupervisor(supervisor);
-        dropdown.remove();
-    });
-}
-
-positionDropdown(dropdown) {
-    // Get the position of the more_vert button that was clicked
-    const moreButton = document.querySelector(`.more-actions[data-supervisor-id="${supervisor.id}"]`);
-    if (moreButton) {
-        const rect = moreButton.getBoundingClientRect();
-        dropdown.style.top = `${rect.bottom + window.scrollY}px`;
-        dropdown.style.left = `${rect.left + window.scrollX - 200}px`; // Adjust positioning
+    // View Details
+    const viewBtn = dropdown.querySelector('.action-view');
+    if (viewBtn) {
+        viewBtn.addEventListener('click', () => {
+            this.viewSupervisorDetails(supervisor);
+            dropdown.remove();
+        });
     }
-}
 
-setupDropdownCloseHandler(dropdown) {
+    // Send Email
+    const emailBtn = dropdown.querySelector('.action-email');
+    if (emailBtn) {
+        emailBtn.addEventListener('click', () => {
+            this.emailSupervisor(supervisor);
+            dropdown.remove();
+        });
+    }
+
+    // Reassign Students (only for active supervisors)
+    if (isActive) {
+        const reassignBtn = dropdown.querySelector('.action-reassign');
+        if (reassignBtn) {
+            reassignBtn.addEventListener('click', () => {
+                this.reassignAllStudents(supervisor);
+                dropdown.remove();
+            });
+        }
+    }
+
+    // Remove Supervisor
+    const removeBtn = dropdown.querySelector('.action-remove');
+    if (removeBtn) {
+        removeBtn.addEventListener('click', () => {
+            this.removeSupervisor(supervisor);
+            dropdown.remove();
+        });
+    }
+  }
+
+  positionDropdown(dropdown, targetElement) {
+    if (!targetElement) return;
+    
+    const rect = targetElement.getBoundingClientRect();
+    dropdown.style.top = `${rect.bottom + window.scrollY}px`;
+    dropdown.style.left = `${rect.left + window.scrollX - 200}px`;
+  }
+
+  setupDropdownCloseHandler(dropdown) {
     const closeHandler = (event) => {
         if (!dropdown.contains(event.target) && !event.target.closest('.more-actions')) {
             dropdown.remove();
@@ -496,33 +536,10 @@ setupDropdownCloseHandler(dropdown) {
     setTimeout(() => {
         document.addEventListener('click', closeHandler);
     }, 100);
-}
+  }
 
-// Additional action methods
-async activateSupervisor(supervisor) {
-    try {
-        console.log('Activating supervisor:', supervisor.id);
-        
-        const confirmed = confirm(`Are you sure you want to activate ${supervisor.displayName}? This will allow them full access to the system.`);
-        
-        if (!confirmed) return;
-
-        const success = await this.firestore.activateSupervisorAccount(supervisor.id);
-        
-        if (success) {
-            this.showSuccess(`Supervisor ${supervisor.displayName} activated successfully`);
-            await this.refreshSupervisors();
-        } else {
-            this.showError('Failed to activate supervisor account');
-        }
-
-    } catch (error) {
-        console.error('Error activating supervisor:', error);
-        this.showError('Failed to activate supervisor account');
-    }
-}
-
-async deactivateSupervisor(supervisor) {
+  // Additional action methods
+  async deactivateSupervisor(supervisor) {
     try {
         console.log('Deactivating supervisor:', supervisor.id);
         
@@ -543,16 +560,16 @@ async deactivateSupervisor(supervisor) {
         console.error('Error deactivating supervisor:', error);
         this.showError('Failed to deactivate supervisor account');
     }
-}
+  }
 
-viewSupervisorDetails(supervisor) {
+  viewSupervisorDetails(supervisor) {
     console.log('Viewing supervisor details:', supervisor);
     
     // Create and show a details modal
     this.showSupervisorDetailsModal(supervisor);
-}
+  }
 
-showSupervisorDetailsModal(supervisor) {
+  showSupervisorDetailsModal(supervisor) {
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50';
     modal.innerHTML = `
@@ -581,11 +598,11 @@ showSupervisorDetailsModal(supervisor) {
                 <div class="grid grid-cols-2 gap-4 mb-6">
                     <div>
                         <label class="text-sm font-medium text-slate-600 dark:text-slate-400">Student Capacity</label>
-                        <p class="text-slate-800 dark:text-slate-200">${supervisor.studentCount} / ${supervisor.maxStudents}</p>
+                        <p class="text-slate-800 dark:text-slate-200">${supervisor.students?.length || 0} / ${supervisor.maxStudents || 'N/A'}</p>
                     </div>
                     <div>
                         <label class="text-sm font-medium text-slate-600 dark:text-slate-400">Application Capacity</label>
-                        <p class="text-slate-800 dark:text-slate-200">${supervisor.applicationCount} / ${supervisor.maxApplications}</p>
+                        <p class="text-slate-800 dark:text-slate-200">${supervisor.applications?.length || 0} / ${supervisor.maxApplications || 'N/A'}</p>
                     </div>
                     <div>
                         <label class="text-sm font-medium text-slate-600 dark:text-slate-400">Created</label>
@@ -623,29 +640,33 @@ showSupervisorDetailsModal(supervisor) {
         btn.addEventListener('click', () => modal.remove());
     });
 
-    modal.querySelector('.manage-from-modal').addEventListener('click', () => {
-        modal.remove();
-        this.manageSupervisor(supervisor);
-    });
+    const manageBtn = modal.querySelector('.manage-from-modal');
+    if (manageBtn) {
+        manageBtn.addEventListener('click', () => {
+            modal.remove();
+            this.manageSupervisor(supervisor);
+        });
+    }
 
     document.body.appendChild(modal);
-}
+  }
 
-emailSupervisor(supervisor) {
+  emailSupervisor(supervisor) {
     console.log('Emailing supervisor:', supervisor);
     const subject = encodeURIComponent('IT Connect - Supervisor Account');
     const body = encodeURIComponent(`Hello ${supervisor.displayName},\n\n`);
     window.location.href = `mailto:${supervisor.email}?subject=${subject}&body=${body}`;
-}
+  }
 
-async reassignAllStudents(supervisor) {
+  async reassignAllStudents(supervisor) {
     try {
-        if (supervisor.studentCount === 0) {
+        const studentCount = supervisor.students?.length || 0;
+        if (studentCount === 0) {
             this.showError('No students to reassign');
             return;
         }
 
-        const confirmed = confirm(`Are you sure you want to reassign all ${supervisor.studentCount} students from ${supervisor.displayName}? This will remove all current assignments.`);
+        const confirmed = confirm(`Are you sure you want to reassign all ${studentCount} students from ${supervisor.displayName}? This will remove all current assignments.`);
         
         if (!confirmed) return;
 
@@ -662,9 +683,9 @@ async reassignAllStudents(supervisor) {
         console.error('Error reassigning students:', error);
         this.showError('Failed to reassign students');
     }
-}
+  }
 
-async removeSupervisor(supervisor) {
+  async removeSupervisor(supervisor) {
     try {
         const confirmed = confirm(`Are you sure you want to remove ${supervisor.displayName}? This action cannot be undone and will remove all their assignments.`);
         
@@ -685,21 +706,30 @@ async removeSupervisor(supervisor) {
         console.error('Error removing supervisor:', error);
         this.showError('Failed to remove supervisor');
     }
-}
+  }
+
   showAssignModal() {
-    document.getElementById("assignStudentsModal").classList.remove("hidden");
+    const modal = document.getElementById("assignStudentsModal");
+    if (modal) {
+      modal.classList.remove("hidden");
+    }
   }
 
   hideAssignModal() {
-    document.getElementById("assignStudentsModal").classList.add("hidden");
+    const modal = document.getElementById("assignStudentsModal");
+    if (modal) {
+      modal.classList.add("hidden");
+    }
   }
 
   toggleAssignmentType(type) {
     const manualAssignment = document.getElementById("manualAssignment");
-    if (type === "manual") {
-      manualAssignment.classList.remove("hidden");
-    } else {
-      manualAssignment.classList.add("hidden");
+    if (manualAssignment) {
+      if (type === "manual") {
+        manualAssignment.classList.remove("hidden");
+      } else {
+        manualAssignment.classList.add("hidden");
+      }
     }
   }
 
@@ -707,9 +737,14 @@ async removeSupervisor(supervisor) {
     try {
       const assignmentType = document.querySelector(
         'input[name="assignmentType"]:checked'
-      ).value;
+      );
 
-      if (assignmentType === "random") {
+      if (!assignmentType) {
+        this.showError("Please select an assignment type");
+        return;
+      }
+
+      if (assignmentType.value === "random") {
         await this.firestore.assignStudentsRandomly();
         this.showSuccess("Students assigned randomly to supervisors");
       } else {
@@ -727,42 +762,65 @@ async removeSupervisor(supervisor) {
 
   // UI Helper Methods
   hideAllSections() {
-    document.getElementById("codeGenerationSection").classList.add("hidden");
-    document.getElementById("generatedCodeSection").classList.add("hidden");
-    document.getElementById("supervisorKeySection").classList.add("hidden");
-    document.getElementById("supervisorsSection").classList.add("hidden");
-    document.getElementById("loadingSection").classList.add("hidden");
+    const sections = [
+      "codeGenerationSection",
+      "generatedCodeSection", 
+      "supervisorKeySection",
+      "supervisorsSection",
+      "loadingSection"
+    ];
+
+    sections.forEach(sectionId => {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        section.classList.add("hidden");
+      }
+    });
   }
 
   showCodeGenerationSection() {
     this.hideAllSections();
-    document.getElementById("codeGenerationSection").classList.remove("hidden");
+    const section = document.getElementById("codeGenerationSection");
+    if (section) {
+      section.classList.remove("hidden");
+    }
   }
 
   showGeneratedCodeSection() {
-    document.getElementById("generatedCodeSection").classList.remove("hidden");
+    const section = document.getElementById("generatedCodeSection");
+    if (section) {
+      section.classList.remove("hidden");
+    }
   }
 
   hideCodeGenerationSection() {
-    document.getElementById("codeGenerationSection").classList.add("hidden");
+    const section = document.getElementById("codeGenerationSection");
+    if (section) {
+      section.classList.add("hidden");
+    }
   }
 
   showLoading(show) {
+    const loadingSection = document.getElementById("loadingSection");
+    if (!loadingSection) return;
+
     if (show) {
       this.hideAllSections();
-      document.getElementById("loadingSection").classList.remove("hidden");
+      loadingSection.classList.remove("hidden");
     } else {
-      document.getElementById("loadingSection").classList.add("hidden");
+      loadingSection.classList.add("hidden");
     }
   }
 
   showError(message) {
     // Implement toast or alert notification
+    console.error("Error:", message);
     alert(`Error: ${message}`);
   }
 
   showSuccess(message) {
     // Implement toast notification
+    console.log("Success:", message);
     alert(`Success: ${message}`);
   }
 }

@@ -8,9 +8,9 @@ export class MigrationNotification {
 
   // Check and show migration notification
   async checkAndShowMigrationNotification(applications) {
-    console.log("checkAndShowMigrationNotification....");
+    //console.log("checkAndShowMigrationNotification....");
     const pendingMigrations = await this.currentStudentService.getPendingMigrations(applications);
-    console.log("pending migration is "+JSON.stringify(pendingMigrations));
+    //console.log("pending migration is "+JSON.stringify(pendingMigrations));
     
     if (pendingMigrations.count > 0 && !this.currentStudentService.isMigrationInProgress()) {
       this.showMigrationPrompt(pendingMigrations);

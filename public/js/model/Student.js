@@ -117,7 +117,7 @@ export class Student {
   }
 
   static fromMap(data) {
-  //console.log("data given to fromMap " + JSON.stringify(data));
+  ////console.log("data given to fromMap " + JSON.stringify(data));
   
   // Helper function to convert Firestore timestamps
   const convertTimestamp = (timestamp) => {
@@ -442,7 +442,7 @@ export class Student {
       const studentData = updatedStudent.toMap();
 
       await updateDoc(ref, studentData);
-      //console.log(`Student ${student.uid} updated successfully`);
+      ////console.log(`Student ${student.uid} updated successfully`);
     } catch (error) {
       console.error("Error updating student:", error);
       throw error;

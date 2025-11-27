@@ -39,7 +39,7 @@ export class Company {
 
   // Convert Firestore document data → Company object
   static fromMap(data = {}) {
-     //console.log("com gallery "+ JSON.stringify(data));
+     ////console.log("com gallery "+ JSON.stringify(data));
     return new Company({
       id: data.id || "",
       name: data.name || "",

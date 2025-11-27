@@ -63,11 +63,11 @@ export class CompanyCloud {
   }
 
   async getStudentById(studentId) {
-    //console.log("get Student by id ");
+    ////console.log("get Student by id ");
     if (!studentId) {
       throw new Error("Student ID is required");
     }
-    //console.log("before try ");
+    ////console.log("before try ");
     try {
       const studentDoc = await getDoc(
         doc(
@@ -81,7 +81,7 @@ export class CompanyCloud {
 
       if (studentDoc.exists()) {
         const data = studentDoc.data();
-        //console.log("data before mapping " + JSON.stringify(data));
+        ////console.log("data before mapping " + JSON.stringify(data));
         return Student.fromMap(data);
       } else {
         console.warn(`Student with ID ${studentId} not found`);
@@ -114,7 +114,7 @@ export class CompanyCloud {
       "IT"
     );
     const internshipRef = doc(internshipsCol); // auto-id
-    //console.log("internshipRef is", internshipRef.path);
+    ////console.log("internshipRef is", internshipRef.path);
 
     const internshipData = {
       ...internship.toMap(),
@@ -654,7 +654,7 @@ export class CompanyCloud {
           "applications"
         );
 
-        //console.log("Checking applications for student ID:", studentUid);
+        ////console.log("Checking applications for student ID:", studentUid);
 
         // Query 1: top-level uid
         const queryByUid = query(
@@ -806,7 +806,7 @@ export class CompanyCloud {
             : new Date(),
         });
       } else {
-        // //console.log(
+        // ////console.log(
         //   `Application not found for company: ${companyId}, internship: ${internshipId}, student: ${studentId}`
         // );
         return null;
@@ -1066,7 +1066,7 @@ export class CompanyCloud {
    * Add company review
    */
   async addCompanyReview(review) {
-    //console.log("Review data:", review);
+    ////console.log("Review data:", review);
 
     try {
       const reviewRef = doc(
@@ -1235,7 +1235,7 @@ export class CompanyCloud {
     }
 
     try {
-      //console.log("Updating student profile:", studentId, updates);
+      ////console.log("Updating student profile:", studentId, updates);
 
       const studentRef = doc(
         this._firebaseFirestore,
@@ -1251,11 +1251,11 @@ export class CompanyCloud {
       // Add timestamp
       updateData.updatedAt = serverTimestamp();
 
-      //console.log("Final update data:", updateData);
+      ////console.log("Final update data:", updateData);
 
       await updateDoc(studentRef, updateData);
 
-      //console.log("Student profile updated successfully");
+      ////console.log("Student profile updated successfully");
     } catch (error) {
       console.error("Error updating student profile:", error);
       throw new Error(`Failed to update profile: ${error.message}`);
@@ -1341,7 +1341,7 @@ prepareStudentUpdateData(updates) {
         throw new Error("Failed to upload image");
       }
 
-      //console.log("Image uploaded successfully:", downloadURL);
+      ////console.log("Image uploaded successfully:", downloadURL);
 
       // Update student profile with new image URL
       await this.updateStudentProfile(studentId, { imageUrl: downloadURL });
@@ -1375,7 +1375,7 @@ prepareStudentUpdateData(updates) {
         throw new Error("Failed to upload resume");
       }
 
-      //console.log("Resume uploaded successfully:", downloadURL);
+      ////console.log("Resume uploaded successfully:", downloadURL);
 
       // Update student profile with new resume URL
       await this.updateStudentProfile(studentId, { resumeUrl: downloadURL });
@@ -1409,7 +1409,7 @@ prepareStudentUpdateData(updates) {
         throw new Error("Failed to upload cover letter");
       }
 
-      //console.log("Cover letter uploaded successfully:", downloadURL);
+      ////console.log("Cover letter uploaded successfully:", downloadURL);
 
       // Update student profile with new cover letter URL
       await this.updateStudentProfile(studentId, {
@@ -1446,7 +1446,7 @@ prepareStudentUpdateData(updates) {
         throw new Error("Failed to upload certification");
       }
 
-      //console.log("Certification uploaded successfully:", downloadURL);
+      ////console.log("Certification uploaded successfully:", downloadURL);
 
       return downloadURL;
     } catch (error) {
@@ -1474,7 +1474,7 @@ prepareStudentUpdateData(updates) {
         category
       );
 
-      //console.log(`Uploaded ${files.length} files to ${category}`);
+      ////console.log(`Uploaded ${files.length} files to ${category}`);
       return results;
     } catch (error) {
       console.error("Error uploading multiple files:", error);
@@ -1496,7 +1496,7 @@ prepareStudentUpdateData(updates) {
       const success = await this.cloudStorage.deleteFile(fileUrl);
 
       if (success) {
-        //console.log("File deleted successfully:", fileUrl);
+        ////console.log("File deleted successfully:", fileUrl);
       } else {
         console.warn("File deletion may have failed:", fileUrl);
       }
@@ -1878,15 +1878,15 @@ prepareStudentUpdateData(updates) {
           const appData = appDoc.data();
 
           // Get student data
-          //console.log("set to Unknown Student");
+          ////console.log("set to Unknown Student");
           let studentName = "Unknown Student";
           let studentEmail = "";
-          //console.log("app student " + JSON.stringify(appData.student));
-          //console.log(
+          ////console.log("app student " + JSON.stringify(appData.student));
+          ////console.log(
           //   "app student " + JSON.stringify(appData.student.fullName)
           // );
           if (appData.student && appData.student.fullName) {
-            //console.log("app student " + JSON.stringify(appData.student));
+            ////console.log("app student " + JSON.stringify(appData.student));
             studentName = appData.student.fullName;
             studentEmail = appData.student.email || "";
           } else if (appData.uid) {
@@ -1894,7 +1894,7 @@ prepareStudentUpdateData(updates) {
             try {
               const student = await this.getStudentById(appData.uid);
               if (student) {
-                //console.log("app student else " + JSON.stringify(student));
+                ////console.log("app student else " + JSON.stringify(student));
                 studentName = student.fullName;
                 studentEmail = student.email;
               }
@@ -2067,7 +2067,7 @@ prepareStudentUpdateData(updates) {
 
       await updateDoc(companyRef, updateData);
 
-      //console.log("Company profile updated successfully");
+      ////console.log("Company profile updated successfully");
     } catch (error) {
       console.error("Error updating company profile:", error);
       throw error;

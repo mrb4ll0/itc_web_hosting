@@ -116,7 +116,7 @@ export class StudentApplication {
   }
 
   static convertFirestoreTimestamp(timestamp) {
-    //console.log("Converting timestamp:", timestamp);
+    ////console.log("Converting timestamp:", timestamp);
     if (!timestamp) return null;
 
     // If it's already a Date object
@@ -125,7 +125,7 @@ export class StudentApplication {
     }
 
     if (timestamp.seconds !== undefined) {
-      //console.log("Converting Firestore timestamp:", timestamp.seconds, timestamp.nanoseconds);
+      ////console.log("Converting Firestore timestamp:", timestamp.seconds, timestamp.nanoseconds);
       return new Date(
         timestamp.seconds * 1000 + Math.floor(timestamp.nanoseconds / 1000000)
       );

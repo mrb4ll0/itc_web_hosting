@@ -9,7 +9,7 @@ export default class overview {
   }
 
   async init() {
-    console.log("Initializing Overview Tab");
+    //console.log("Initializing Overview Tab");
     this.initializeElements();
     this.initializeEventListeners();
     this.initializeDragAndDrop();
@@ -38,10 +38,10 @@ export default class overview {
       "current-trainees-section"
     );
     this.traineesGrid = document.getElementById("trainees-grid");
-    console.log(
-      "Overview elements initialized traineesGrid:",
-      this.traineesGrid
-    );
+    //console.log(
+    //   "Overview elements initialized traineesGrid:",
+    //   this.traineesGrid
+    // );
   }
 
   buildOverviewContent() {
@@ -92,13 +92,13 @@ export default class overview {
   }
 
   buildCurrentTraineesSection() {
-    console.log("Building current trainees section...");
-    console.log("trainees grid is ", this.traineesGrid);
+    //console.log("Building current trainees section...");
+    //console.log("trainees grid is ", this.traineesGrid);
     if (!this.traineesGrid) return;
 
     const currentTrainees =
       this.tabManager.getTrainingStudentsByDate("current");
-    console.log("about to build trainee cards with ", currentTrainees);
+    //console.log("about to build trainee cards with ", currentTrainees);
     this.buildTraineeCards(currentTrainees);
   }
 
@@ -160,7 +160,7 @@ export default class overview {
     opportunity,
     status
   ) {
-   // console.log("application is ", applicationId, application);
+   // //console.log("application is ", applicationId, application);
     // Your existing createApplicationCard implementation
     const card = document.createElement("div");
     card.className = `bg-white dark:bg-gray-800 rounded-lg p-4 border ${
@@ -294,7 +294,7 @@ export default class overview {
   }
   buildTraineeCards(trainees) {
     // Your trainee cards implementation
-    console.log("training grid is ", this.traineesGrid);
+    //console.log("training grid is ", this.traineesGrid);
     if (!this.traineesGrid) return;
 
     this.traineesGrid.innerHTML = "";
@@ -387,7 +387,7 @@ export default class overview {
 
   // Event handlers
   handleStatsCardClick(e, cardType) {
-    console.log(`Stats card clicked: ${cardType}`);
+    //console.log(`Stats card clicked: ${cardType}`);
     // Handle stats card clicks
   }
 
@@ -400,13 +400,13 @@ export default class overview {
     // Clean up event listeners when tab is switched away
   }
   initializeEventListeners() {
-    console.log("Attaching Overview event listeners...");
+    //console.log("Attaching Overview event listeners...");
 
     const statusFilter = document.getElementById("status-filter");
     if (statusFilter) {
       statusFilter.addEventListener("change", (e) => {
         const selectedStatus = e.target.value;
-        console.log(`Filtering by status: ${selectedStatus}`);
+        //console.log(`Filtering by status: ${selectedStatus}`);
 
         // Rebuild the content based on selected status
         if (selectedStatus === "all") {
@@ -446,7 +446,7 @@ export default class overview {
       // View button
       if (target.classList.contains("view-btn")) {
         const appId = target.dataset.appId;
-        console.log(`View application ${appId}`);
+        //console.log(`View application ${appId}`);
         this.tabManager.openApplicationDetails(appId);
       }
 
@@ -478,7 +478,7 @@ export default class overview {
       if (target.id.startsWith("see-details-btn-")) {
         const parts = target.id.split("-");
         const appId = parts.slice(3).join("-");
-        console.log(`See details for application ${appId}`);
+        //console.log(`See details for application ${appId}`);
 
         // Find the application data
         const applications = this.tabManager.getAllCompanyApplications();
@@ -860,7 +860,7 @@ Best regards`
   const itId = applicationData.opportunityId || 'unknown';
   const appId = application.id || 'unknown';
   
-  console.log('Opening student profile:', { itId, appId, student });
+  //console.log('Opening student profile:', { itId, appId, student });
   if(appId==='unknown'){
     console.error('Application ID is unknown, cannot open profile');
     return;
@@ -878,7 +878,7 @@ Best regards`
       appId
     );
     
-    console.log('Generated URL:', profileUrl);
+    //console.log('Generated URL:', profileUrl);
     window.location.href = profileUrl;
   } else {
     console.error('generateShareableUrl function not found');
@@ -896,20 +896,20 @@ Best regards`
     {
       if(app.application.id === applicationId)
        {
-        //console.log("got a match "+JSON.stringify(app.application));
+        ////console.log("got a match "+JSON.stringify(app.application));
           return app.application;
        }
     }
     );
-    //console.log("applications is "+JSON.stringify(application));
+    ////console.log("applications is "+JSON.stringify(application));
 
     if(!application || !application.application.student)
     {
-      // console.log("application student is"+JSON.stringify(application.application.student));
+      // //console.log("application student is"+JSON.stringify(application.application.student));
       return;
     }
     if (confirm("Are you sure you want to accept this application?")) {
-      console.log(`Accepting application ${applicationId}`);
+      //console.log(`Accepting application ${applicationId}`);
       const success = await this.tabManager.updateApplicationStatus(
         applicationId,
         "accepted"
@@ -931,22 +931,22 @@ Best regards`
     {
       if(app.application.id === applicationId)
        {
-        //console.log("got a match "+JSON.stringify(app.application));
+        ////console.log("got a match "+JSON.stringify(app.application));
           return app.application;
        }
     }
     );
-    //console.log("applications is "+JSON.stringify(application));
+    ////console.log("applications is "+JSON.stringify(application));
 
     if(!application || !application.application.student)
     {
-     //  console.log("application student is"+JSON.stringify(application.application.student));
+     //  //console.log("application student is"+JSON.stringify(application.application.student));
       return;
     }
 
 
     if (confirm("Are you sure you want to reject this application?")) {
-      console.log(`Rejecting application ${applicationId}`);
+      //console.log(`Rejecting application ${applicationId}`);
       const success = this.tabManager.updateApplicationStatus(
         applicationId,
         "rejected"
@@ -964,7 +964,7 @@ Best regards`
 
   handleUndoRejection(applicationId) {
     if (confirm("Are you sure you want to undo the rejection?")) {
-      console.log(`Undoing rejection for ${applicationId}`);
+      //console.log(`Undoing rejection for ${applicationId}`);
       const success = this.tabManager.updateApplicationStatus(
         applicationId,
         "pending"
@@ -1033,7 +1033,7 @@ Best regards`
   //*********************************************** Filtering logic *****************************/
 
   setupFilteringLogic() {
-    console.log("Setting up filtering logic");
+    //console.log("Setting up filtering logic");
 
     // Initialize filter states
     this.currentFilters = {
@@ -1093,7 +1093,7 @@ Best regards`
     this.performFiltering();
   }
   handleSearchModeChange(mode) {
-    console.log(`Search mode changed to: ${mode}`);
+    //console.log(`Search mode changed to: ${mode}`);
     this.currentFilters.searchMode = mode;
 
     // Update search placeholder based on mode
@@ -1124,7 +1124,7 @@ Best regards`
         this.currentFilters.status = "all";
       }
     }
-    console.log("Current filters after mode change:", this.currentFilters);
+    //console.log("Current filters after mode change:", this.currentFilters);
     this.performFiltering();
   }
 
@@ -1142,10 +1142,10 @@ Best regards`
   performFiltering() {
     this.applications = this.tabManager.getAllCompanyApplications();
     if (!this.applications) return;
-    console.log(
-      "Performing filtering with current filters:",
-      this.currentFilters
-    );
+    //console.log(
+    //   "Performing filtering with current filters:",
+    //   this.currentFilters
+    // );
     const filteredData = this.filterApplications();
     this.updateSearchUI(filteredData);
     this.updateActiveFiltersDisplay();
@@ -1169,8 +1169,8 @@ Best regards`
     const { searchMode, searchTerm, institution, course, status } =
       this.currentFilters;
 
-    //console.log("applicationsByStatus:", applicationsByStatus);
-    //console.log("trainingStudentsByDate:", trainingStudentsByDate);
+    ////console.log("applicationsByStatus:", applicationsByStatus);
+    ////console.log("trainingStudentsByDate:", trainingStudentsByDate);
 
     let filteredData = {
       applicationsByStatus: {
@@ -1187,7 +1187,7 @@ Best regards`
       },
     };
 
-    console.log("applicationByStatus.accepted:", applicationsByStatus.accepted);
+    //console.log("applicationByStatus.accepted:", applicationsByStatus.accepted);
     // Focus filtering based on search mode
     switch (searchMode) {
       case "accepted":
@@ -1257,7 +1257,7 @@ Best regards`
   }
 
   filterSection(sectionData, searchTerm, institution, course, status) {
-    console.log("sectionData:", sectionData);
+    //console.log("sectionData:", sectionData);
     return sectionData.filter((applicationData) => {
       const application = applicationData.application;
       const student = application.student || {};
@@ -1312,7 +1312,7 @@ Best regards`
   }
 
   updateSearchUI(filteredData) {
-    console.log("filteredData is ", filteredData);
+    //console.log("filteredData is ", filteredData);
     switch (this.currentFilters.searchMode) {
       case "accepted":
       case "pending":
@@ -1328,7 +1328,7 @@ Best regards`
     this.updateModeStats(filteredData);
   }
   updateUI(filteredData) {
-    console.log("Updating UI with filtered data");
+    //console.log("Updating UI with filtered data");
     this.updateApplicationSections(filteredData.applicationsByStatus);
     this.updateTrainingSections(filteredData.trainingStudentsByDate);
     this.updateStats(filteredData);
@@ -1451,7 +1451,7 @@ Best regards`
 
   updateStats(filteredData) {
     // Update quick stats based on filtered data
-    console.log("Updating stats with filtered data");
+    //console.log("Updating stats with filtered data");
     const totalApplicants = Object.values(
       filteredData.applicationsByStatus
     ).reduce((sum, applications) => sum + applications.length, 0);
@@ -1514,11 +1514,11 @@ Best regards`
   }
 
   updateActiveFiltersDisplay() {
-    console.log("Updating active filters display...");
+    //console.log("Updating active filters display...");
     const activeFiltersContainer = document.getElementById("active-filters");
     if (!activeFiltersContainer) return;
 
-    console.log("Current filters:", this.currentFilters);
+    //console.log("Current filters:", this.currentFilters);
 
     const activeFilters = Object.entries(this.currentFilters).filter(
       ([key, value]) => {
@@ -1527,7 +1527,7 @@ Best regards`
       }
     );
 
-    console.log("Active filters after filtering:", activeFilters);
+    //console.log("Active filters after filtering:", activeFilters);
 
     if (activeFilters.length === 0) {
       activeFiltersContainer.classList.add("hidden");

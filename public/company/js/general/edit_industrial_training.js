@@ -22,7 +22,7 @@ class NewIndustrialTrainingEdit {
   }
 
   init() {
-    //console.log("NewIndustrialTraining initialized");
+    ////console.log("NewIndustrialTraining initialized");
     this.checkEditMode();
     this.showLoadingDialog();
     this.checkAuthState();
@@ -93,7 +93,7 @@ class NewIndustrialTrainingEdit {
 
   // Handle file validation and preview
   handleFiles(files) {
-    //console.log("Files length is " + files.length);
+    ////console.log("Files length is " + files.length);
 
     if (files.length > 0) {
       const radioSection = document.getElementById("radiosection");
@@ -314,7 +314,7 @@ hideProgressDialog() {
     if (itId) {
       this.isEditMode = true;
       this.currentITId = itId;
-      //console.log("Edit mode activated for IT ID:", itId);
+      ////console.log("Edit mode activated for IT ID:", itId);
 
       // Update page title and button text for edit mode
       this.updateUIForEditMode();
@@ -349,7 +349,7 @@ hideProgressDialog() {
         return;
       }
 
-      //console.log("User authenticated:", user.uid);
+      ////console.log("User authenticated:", user.uid);
       await this.loadCompanyData(user.uid);
 
       // If in edit mode, load the existing industrial training data
@@ -370,7 +370,7 @@ hideProgressDialog() {
         throw new Error("Missing IT ID or company data");
       }
 
-      //console.log("Loading industrial training data for ID:", this.currentITId);
+      ////console.log("Loading industrial training data for ID:", this.currentITId);
 
       const industrialTraining =
         await this.companyCloud.getIndustrialTrainingById(
@@ -382,7 +382,7 @@ hideProgressDialog() {
         throw new Error("Industrial training not found");
       }
 
-      //console.log("Industrial training loaded:", industrialTraining);
+      ////console.log("Industrial training loaded:", industrialTraining);
      await this.prefillForm(industrialTraining);
     } catch (error) {
       console.error("Error loading industrial training data:", error);
@@ -397,7 +397,7 @@ hideProgressDialog() {
 
  async prefillForm(industrialTraining) {
     try {
-      //console.log("Prefilling form with data:", industrialTraining);
+      ////console.log("Prefilling form with data:", industrialTraining);
 
       // Basic information
       this.setFieldValue("title", industrialTraining.title);
@@ -417,7 +417,7 @@ hideProgressDialog() {
         this.setFieldValue("status", industrialTraining.status);
       }
 
-      //console.log("it details " + industrialTraining);
+      ////console.log("it details " + industrialTraining);
 
       // Department handling
       this.prefillDepartment(industrialTraining.department);
@@ -427,20 +427,20 @@ hideProgressDialog() {
       let fileUrls ;
       await auth.authStateReady();
       const company = await this.companyCloud.getCompany(auth.currentUser.uid);
-         //console.log("company json "+JSON.stringify(company));
+         ////console.log("company json "+JSON.stringify(company));
         if(company.forms.length != 0)
         {
-            //console.log("industrialTraining.files "+industrialTraining.files);
+            ////console.log("industrialTraining.files "+industrialTraining.files);
       this.prefillAttachedFiles(company.forms);
         }
         else
         {
-            //console.log("industrialTraining.files "+industrialTraining.files);
+            ////console.log("industrialTraining.files "+industrialTraining.files);
       this.prefillAttachedFiles(industrialTraining.files);
         }
     
 
-      //console.log("Form prefilled successfully");
+      ////console.log("Form prefilled successfully");
     } catch (error) {
       console.error("Error prefilling form:", error);
       throw error;
@@ -464,20 +464,20 @@ hideProgressDialog() {
     filePreview.innerHTML = "";
 
     if (!urls) {
-      //console.log("No URLs provided to prefill");
+      ////console.log("No URLs provided to prefill");
       return;
     }
-      //console.log("raw url "+JSON.stringify(urls));
+      ////console.log("raw url "+JSON.stringify(urls));
     // Case 1: urls is a string (single URL)
     if (typeof urls === "string") {
-      //console.log("Prefilling with single URL:", urls);
+      ////console.log("Prefilling with single URL:", urls);
       this.createFilePreviewFromURL(urls);
       return;
     }
 
     // Case 2: urls is an array of URLs
     if (Array.isArray(urls)) {
-      //console.log("Prefilling with URL array:", urls);
+      ////console.log("Prefilling with URL array:", urls);
 
       // Filter out any non-string values and empty URLs
       const validUrls = urls.filter(
@@ -485,7 +485,7 @@ hideProgressDialog() {
       );
 
       if (validUrls.length === 0) {
-        //console.log("No valid URLs in array");
+        ////console.log("No valid URLs in array");
         return;
       }
 
@@ -500,7 +500,7 @@ hideProgressDialog() {
     let company = await itc_firebase_logic.getCompany(auth.currentUser.uid);
 
     if (company && company.forms && company.forms.length !== 0) {
-      //console.log(
+      ////console.log(
       //   "Prefilling attached files from company forms:",
       //   company.forms
       // );
@@ -514,7 +514,7 @@ hideProgressDialog() {
     }
 
     // if (company && company.logoURL) {
-    //   //console.log(
+    //   ////console.log(
     //     "Prefilling attached files with company logo:",
     //     company.logoURL
     //   );
@@ -523,7 +523,7 @@ hideProgressDialog() {
     //   return;
     // }
 
-    //console.log("No files to prefill");
+    ////console.log("No files to prefill");
   }
 
   // Helper method to create file preview from URL
@@ -587,7 +587,7 @@ hideProgressDialog() {
           radioSection.style.display = "none";
         }
       } else {
-        //console.log("File removal cancelled");
+        ////console.log("File removal cancelled");
       }
     });
 
@@ -602,7 +602,7 @@ hideProgressDialog() {
     try {
       // Show loading state
       this.showLoadingDialog("Loading file...");
-     //console.log("url is "+url);
+     ////console.log("url is "+url);
       // Download the file
       const response = await fetch(url);
       if (!response.ok) {
@@ -960,7 +960,7 @@ hideProgressDialog() {
         throw new Error("Company profile not found");
       }
 
-      //console.log("Company loaded:", this.currentCompany.name);
+      ////console.log("Company loaded:", this.currentCompany.name);
     } catch (error) {
       console.error("Error loading company data:", error);
       this.showNotification(
@@ -1148,7 +1148,7 @@ hideProgressDialog() {
 
       // Collect form data
       const formData = await this.collectFormData();
-      //console.log("formData is " + JSON.stringify(formData));
+      ////console.log("formData is " + JSON.stringify(formData));
 
       if (this.isEditMode) {
         // Update existing industrial training
@@ -1233,7 +1233,7 @@ hideProgressDialog() {
 
   validateForm() {
     const requiredFields = document.querySelectorAll("[required]");
-    //console.log("requiredFields " + requiredFields.length);
+    ////console.log("requiredFields " + requiredFields.length);
     let isValid = true;
 
     // First, validate all regular required fields
@@ -1248,7 +1248,7 @@ hideProgressDialog() {
       isValid = false;
     }
 
-    //console.log("isValid is " + isValid);
+    ////console.log("isValid is " + isValid);
     return isValid;
   }
 
@@ -1281,7 +1281,7 @@ hideProgressDialog() {
     }
 
     await auth.authStateReady();
-    //console.log("uploads is null or undefined ?" + this.uploadedFiles);
+    ////console.log("uploads is null or undefined ?" + this.uploadedFiles);
     let uploadResults = await cloudStorage.uploadMultipleFiles(
       this.uploadedFiles,
       auth.currentUser.uid,
@@ -1296,14 +1296,14 @@ hideProgressDialog() {
       .map((result) => result.url) // Get only the URL from each result
       .filter((url) => url !== null); // Remove any failed uploads
 
-    //console.log("Extracted URLs only:", formUrls);
+    ////console.log("Extracted URLs only:", formUrls);
     if (document.getElementById("use-as-universal")) {
-      //console.log("is universal form and form is " + JSON.stringify(formUrls));
+      ////console.log("is universal form and form is " + JSON.stringify(formUrls));
       await auth.authStateReady();
       await this.companyCloud.updateCompanyProfile(auth.currentUser.uid, {
         form: formUrls,
       });
-      //console.log("is universal form added ");
+      ////console.log("is universal form added ");
     }
 
     return {

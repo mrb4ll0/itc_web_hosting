@@ -32,13 +32,13 @@ export class CompanyDashboardManager {
       }
 
       this.companyId = auth.currentUser.uid;
-      //console.log("Authenticated company ID: " + this.companyId);
+      ////console.log("Authenticated company ID: " + this.companyId);
 
       // Load all applications for the company
       this.applications = await it_base_companycloud.getAllCompanyApplications(
         this.companyId
       );
-      //console.log("Loaded applications: ", this.applications);
+      ////console.log("Loaded applications: ", this.applications);
 
       // Process and categorize the applications
       await this.processApplicationsData();
@@ -56,7 +56,7 @@ export class CompanyDashboardManager {
 
   async processApplicationsData() {
     if (!this.applications || this.applications.length === 0) {
-      console.log("No applications found for this company");
+      //console.log("No applications found for this company");
       this.applicationsByStatus = {
         pending: [],
         shortlisted: [],
@@ -125,8 +125,8 @@ export class CompanyDashboardManager {
     // Calculate statistics
     this.calculateApplicationStats();
 
-    console.log("Applications by status:", this.applicationsByStatus);
-    console.log("Training students by date:", this.trainingStudentsByDate);
+    //console.log("Applications by status:", this.applicationsByStatus);
+    //console.log("Training students by date:", this.trainingStudentsByDate);
   }
 
   calculateApplicationStats() {
@@ -148,7 +148,7 @@ export class CompanyDashboardManager {
         total > 0 ? ((acceptedCount / total) * 100).toFixed(1) : 0,
     };
 
-    //console.log("Application statistics:", this.applicationStats);
+    ////console.log("Application statistics:", this.applicationStats);
   }
 
   populateApplicationsUI() {
@@ -276,7 +276,7 @@ export class CompanyDashboardManager {
       const application = applicationData.application;
       const startDate = application.durationStartDate;
       const endDate = application.durationEndDate;
-      //console.log("Application Dates:", startDate, endDate);
+      ////console.log("Application Dates:", startDate, endDate);
 
       // Check if the student is currently on IT (within date range)
       if (
@@ -314,7 +314,7 @@ export class CompanyDashboardManager {
     );
     if (application) {
       // Implement view details logic
-      console.log("Viewing application:", application);
+      //console.log("Viewing application:", application);
       // this.openApplicationModal(application);
     }
   }
@@ -325,7 +325,7 @@ export class CompanyDashboardManager {
     );
     if (application) {
       // Implement action menu logic
-      console.log("Showing actions for:", application);
+      //console.log("Showing actions for:", application);
       // this.openActionMenu(application);
     }
   }
@@ -645,9 +645,9 @@ export class CompanyDashboardManager {
         this.handleFilterChange(e);
       });
     }
-    console.log("Initializing event listeners for course filter");
+    //console.log("Initializing event listeners for course filter");
     if (this.courseFilter) {
-      console.log("Setting up lazy load for courses");
+      //console.log("Setting up lazy load for courses");
       this.courseFilter.addEventListener(
         "focus",
         () => {
@@ -907,7 +907,7 @@ export class CompanyDashboardManager {
   //*********************************************** Filtering logic *****************************/
 
   setupFilteringLogic() {
-    console.log("Setting up filtering logic");
+    //console.log("Setting up filtering logic");
 
     // Initialize filter states
     this.currentFilters = {
@@ -1014,7 +1014,7 @@ export class CompanyDashboardManager {
 
   performFiltering() {
     if (!this.applications) return;
-    console.log(
+    //console.log(
       "Performing filtering with current filters:",
       this.currentFilters
     );
@@ -1166,7 +1166,7 @@ export class CompanyDashboardManager {
   }
 
   updateSearchUI(filteredData) {
-    console.log("filteredData is ",filteredData);
+    //console.log("filteredData is ",filteredData);
     switch (this.currentFilters.searchMode) {
       case "accepted":
       case "pending":
@@ -1180,7 +1180,7 @@ export class CompanyDashboardManager {
    this.updateModeStats(filteredData);
   }
   updateUI(filteredData) {
-    console.log("Updating UI with filtered data");
+    //console.log("Updating UI with filtered data");
     this.updateApplicationSections(filteredData.applicationsByStatus);
     this.updateTrainingSections(filteredData.trainingStudentsByDate);
     this.updateStats(filteredData);
@@ -1304,7 +1304,7 @@ export class CompanyDashboardManager {
 
   updateStats(filteredData) {
     // Update quick stats based on filtered data
-    console.log("Updating stats with filtered data");
+    //console.log("Updating stats with filtered data");
     const totalApplicants = Object.values(
       filteredData.applicationsByStatus
     ).reduce((sum, applications) => sum + applications.length, 0);
@@ -1373,7 +1373,7 @@ updateActiveFiltersDisplay() {
   const activeFiltersContainer = document.getElementById("active-filters");
   if (!activeFiltersContainer) return;
 
-  console.log("Current filters:", this.currentFilters);
+  //console.log("Current filters:", this.currentFilters);
 
   const activeFilters = Object.entries(this.currentFilters).filter(
     ([key, value]) => {
@@ -1382,7 +1382,7 @@ updateActiveFiltersDisplay() {
     }
   );
 
-    console.log("Active filters after filtering:", activeFilters);
+    //console.log("Active filters after filtering:", activeFilters);
 
   if (activeFilters.length === 0) {
     activeFiltersContainer.classList.add("hidden");
@@ -1574,7 +1574,7 @@ attachClearFilterListeners() {
         appData.application?.student?.program ||
         appData.application?.student?.major ||
         appData.application?.student?.fieldOfStudy;
-      console.log("Extracted course:", course);
+      //console.log("Extracted course:", course);
 
       if (course) {
         courses.add(course);
@@ -1637,7 +1637,7 @@ attachClearFilterListeners() {
         institutions.add(institution);
       }
     });
-    console.log("Extracted institutions:", institutions);
+    //console.log("Extracted institutions:", institutions);
 
     return Array.from(institutions).sort();
   }
@@ -1655,7 +1655,7 @@ attachClearFilterListeners() {
 
   handleAddStudent(e) {
     e.preventDefault();
-    console.log("Add Student button clicked");
+    //console.log("Add Student button clicked");
 
     // Show modal or navigate to add student form
     this.showAddStudentModal();
@@ -1705,7 +1705,7 @@ attachClearFilterListeners() {
   }
 
   switchTabContent(tabId) {
-    console.log(`Switching to tab: ${tabId}`);
+    //console.log(`Switching to tab: ${tabId}`);
 
     // Hide all content sections first
     const sections = [
@@ -1753,7 +1753,7 @@ attachClearFilterListeners() {
 
   handleSearch(e) {
     const searchTerm = e.target.value.toLowerCase();
-    console.log(`Searching for: ${searchTerm}`);
+    //console.log(`Searching for: ${searchTerm}`);
 
     // Implement search logic
     this.filterStudents(searchTerm);
@@ -1766,7 +1766,7 @@ attachClearFilterListeners() {
     const course = this.courseFilter ? this.courseFilter.value : "all";
     const status = this.statusFilter ? this.statusFilter.value : "all";
 
-    console.log(
+    //console.log(
       `Filters changed - Institution: ${institution}, Course: ${course}, Status: ${status}`
     );
 
@@ -1776,7 +1776,7 @@ attachClearFilterListeners() {
 
   handleSkillsFilter(e) {
     const skills = e.target.value.toLowerCase();
-    console.log(`Filtering by skills: ${skills}`);
+    //console.log(`Filtering by skills: ${skills}`);
 
     // Filter by skills logic
     this.filterBySkills(skills);
@@ -1786,7 +1786,7 @@ attachClearFilterListeners() {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log(`Viewing application: ${applicationId}`);
+    //console.log(`Viewing application: ${applicationId}`);
 
     // Show application details modal
     this.showApplicationModal(applicationId);
@@ -1796,7 +1796,7 @@ attachClearFilterListeners() {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log(`Shortlisting application: ${applicationId}`);
+    //console.log(`Shortlisting application: ${applicationId}`);
 
     // Update UI to show shortlisted state
     const applicationCard = document.getElementById(
@@ -1823,7 +1823,7 @@ attachClearFilterListeners() {
 
   handleViewProfile(e, traineeId) {
     e.preventDefault();
-    console.log(`Viewing trainee profile: ${traineeId}`);
+    //console.log(`Viewing trainee profile: ${traineeId}`);
 
     // Show trainee profile modal or navigate to profile page
     this.showTraineeProfile(traineeId);
@@ -1831,14 +1831,14 @@ attachClearFilterListeners() {
 
   handleMessageTrainee(e, traineeId) {
     e.preventDefault();
-    console.log(`Messaging trainee: ${traineeId}`);
+    //console.log(`Messaging trainee: ${traineeId}`);
 
     // Open messaging interface
     this.openMessaging(traineeId);
   }
 
   handleStatsCardClick(e, cardType) {
-    console.log(`Stats card clicked: ${cardType}`);
+    //console.log(`Stats card clicked: ${cardType}`);
 
     // Navigate to relevant section or show detailed view
     switch (cardType) {
@@ -1861,7 +1861,7 @@ attachClearFilterListeners() {
 
   showAddStudentModal() {
     // Implementation for showing add student modal
-    console.log("Showing add student modal");
+    //console.log("Showing add student modal");
     // You can create a modal or use an existing one
   }
 
@@ -1976,15 +1976,15 @@ attachClearFilterListeners() {
       ? new Date(application.applicationDate)
       : new Date();
     const timeAgo = this.getTimeAgo(applicationDate);
-    //console.log("Formatted time ago:", timeAgo);
-    //console.log("Application date:", application.applicationDate);
-    //console.log("application object:" + JSON.stringify(application));
+    ////console.log("Formatted time ago:", timeAgo);
+    ////console.log("Application date:", application.applicationDate);
+    ////console.log("application object:" + JSON.stringify(application));
 
     // Get student information with fallbacks
     const studentName = student.name || student.fullName || "Unknown Student";
     const studentCourse =
       student.courseOfStudy || student.program || "Not specified";
-    //console.log("student imageUrl:", student.imageUrl);
+    ////console.log("student imageUrl:", student.imageUrl);
     let avatarUrl = student.imageUrl || "";
     if (
       avatarUrl &&
@@ -2106,7 +2106,7 @@ attachClearFilterListeners() {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log(`Accepting application: ${applicationId}`);
+    //console.log(`Accepting application: ${applicationId}`);
 
     // Find the application
     const applicationData = this.applications.find(
@@ -2137,7 +2137,7 @@ attachClearFilterListeners() {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log(`Rejecting application: ${applicationId}`);
+    //console.log(`Rejecting application: ${applicationId}`);
 
     // Confirm rejection
     if (!confirm("Are you sure you want to reject this application?")) {
@@ -2483,7 +2483,7 @@ attachClearFilterListeners() {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log(`Messaging student for application: ${applicationId}`);
+    //console.log(`Messaging student for application: ${applicationId}`);
 
     // Find the application
     const applicationData = this.applications.find(
@@ -2499,7 +2499,7 @@ attachClearFilterListeners() {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log(`Undoing rejection for application: ${applicationId}`);
+    //console.log(`Undoing rejection for application: ${applicationId}`);
 
     const applicationData = this.applications.find(
       (app) => app.application.id === applicationId
@@ -2681,7 +2681,7 @@ attachClearFilterListeners() {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log(`Viewing accepted application: ${applicationId}`);
+    //console.log(`Viewing accepted application: ${applicationId}`);
 
     // Find the application
     const applicationData = this.applications.find(
@@ -2697,7 +2697,7 @@ attachClearFilterListeners() {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log(`Contacting student for application: ${applicationId}`);
+    //console.log(`Contacting student for application: ${applicationId}`);
 
     // Find the application
     const applicationData = this.applications.find(
@@ -3075,7 +3075,7 @@ attachClearFilterListeners() {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log(`Viewing trainee profile: ${traineeId}`);
+    //console.log(`Viewing trainee profile: ${traineeId}`);
 
     const traineeData = this.trainingStudentsByDate.current.find(
       (trainee) => trainee.application.id === traineeId
@@ -3090,7 +3090,7 @@ attachClearFilterListeners() {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log(`Messaging trainee: ${traineeId}`);
+    //console.log(`Messaging trainee: ${traineeId}`);
 
     const traineeData = this.trainingStudentsByDate.current.find(
       (trainee) => trainee.application.id === traineeId
@@ -3422,18 +3422,18 @@ getApplicationsContent() {
 
 
 async loadApplicationsData() {
-  console.log("loadApplicationsData called");
+  //console.log("loadApplicationsData called");
     const tableBody = document.getElementById('applications-table-body');
     if (!tableBody) return;
     this.updatePaginationInfo();
     // Calculate pagination
     const startIndex = (this.currentApplicationsPage - 1) * this.applicationsPerPage;
     const endIndex = startIndex + this.applicationsPerPage;
-    console.log("Filtered applications size is " + this.applications.length);
-    console.log("Start index: " + startIndex + ", End index: " + endIndex);
+    //console.log("Filtered applications size is " + this.applications.length);
+    //console.log("Start index: " + startIndex + ", End index: " + endIndex);
     const tableApplications = await it_base_companycloud.getAllCompanyApplications(this.companyId);
     const paginatedApplications = tableApplications.slice(startIndex, endIndex);
-    console.log("Paginated applications size is " + paginatedApplications.length);
+    //console.log("Paginated applications size is " + paginatedApplications.length);
 
     // Show loading or empty state
     if (paginatedApplications.length === 0) {
@@ -3472,7 +3472,7 @@ async loadApplicationsData() {
         
         // Get initials for avatar
         const initials = studentName.split(' ').map(n => n[0]).join('').toUpperCase();
-        console.log("initials is "+initials);
+        //console.log("initials is "+initials);
 
         return `
         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
@@ -3583,10 +3583,10 @@ updatePaginationNumbers() {
 
 debugApplicationsData() {
     if (this.applications.length > 0) {
-        console.log("First application object:", this.applications[0]);
-        console.log("All application keys:", Object.keys(this.applications[0]));
+        //console.log("First application object:", this.applications[0]);
+        //console.log("All application keys:", Object.keys(this.applications[0]));
     } else {
-        console.log("No applications data found");
+        //console.log("No applications data found");
     }
 }
 
@@ -3747,7 +3747,7 @@ viewApplication(applicationId) {
     const application = this.applicationsData.find(app => app.id === applicationId);
     if (application) {
         // In a real app, you'd show a modal or navigate to a detail page
-        console.log('Viewing application:', application);
+        //console.log('Viewing application:', application);
         alert(`Viewing application for: ${application.studentName}\nEmail: ${application.email}\nCourse: ${application.course}\nStatus: ${application.status}\nPhone: ${application.phone}\nApplied: ${new Date(application.appliedDate).toLocaleDateString()}`);
     }
 }
@@ -3756,7 +3756,7 @@ editApplication(applicationId) {
     const application = this.applicationsData.find(app => app.id === applicationId);
     if (application) {
         // In a real app, you'd show an edit form/modal
-        console.log('Editing application:', application);
+        //console.log('Editing application:', application);
         alert(`Editing application for: ${application.studentName}\nThis would open an edit form.`);
     }
 }
@@ -3801,7 +3801,7 @@ exportApplications() {
     }
     
     // In a real app, you'd make an API call to export the data
-    console.log('Exporting applications:', applicationsToExport);
+    //console.log('Exporting applications:', applicationsToExport);
     this.showNotification(`Exported ${applicationsToExport.length} applications`, 'success');
     
     // For demo purposes, we'll create a downloadable CSV
@@ -3846,7 +3846,7 @@ showBulkActions() {
     
     // In a real app, you'd show a dropdown menu with bulk actions
     const selectedIds = Array.from(selectedCheckboxes).map(cb => parseInt(cb.getAttribute('data-id')));
-    console.log('Bulk actions for applications:', selectedIds);
+    //console.log('Bulk actions for applications:', selectedIds);
     
     // Simple confirmation for demo
     if (confirm(`Perform bulk actions on ${selectedIds.length} selected applications?`)) {
@@ -4156,7 +4156,7 @@ class SectionReorderManager {
       }
     });
 
-    console.log("Sections rendered in order:", this.sectionOrder);
+    //console.log("Sections rendered in order:", this.sectionOrder);
   }
 
   getSavedSectionOrder() {
@@ -4175,7 +4175,7 @@ class SectionReorderManager {
         "dashboardSectionOrder",
         JSON.stringify(this.sectionOrder)
       );
-      console.log("Section order saved:", this.sectionOrder);
+      //console.log("Section order saved:", this.sectionOrder);
     } catch (error) {
       console.warn("Could not save section order:", error);
     }
@@ -4193,6 +4193,6 @@ class SectionReorderManager {
 
   showNotification(message, type = "info") {
     // Simple notification implementation
-    console.log(`${type}: ${message}`);
+    //console.log(`${type}: ${message}`);
   }
 }

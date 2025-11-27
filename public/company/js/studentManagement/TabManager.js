@@ -68,7 +68,7 @@ class TabManager {
 
   async processApplicationsData() {
     if (!this.applications || this.applications.length === 0) {
-      console.log("No applications found for this company");
+      //console.log("No applications found for this company");
       this.applicationsByStatus = {
         pending: [],
         shortlisted: [],
@@ -113,28 +113,34 @@ class TabManager {
         const endDate = app.application.duration.endDate
           ? new Date(app.application.duration.endDate)
           : null;
-        return startDate <= now && (!endDate || endDate >= now);
+          const isSelected = app.application.id === app.application.student.selectedApplication;
+          console.log("is selected "+isSelected);
+        return startDate <= now && (!endDate || endDate >= now) && isSelected;
       }),
       upcoming: this.applications.filter((app) => {
         if (!app.application.duration.startDate) return false;
         const startDate = new Date(app.application.duration.startDate);
-        return startDate > now;
+        const isSelected = app.application.id === app.application.student.selectedApplication;
+        return startDate > now && isSelected;
       }),
       completed: this.applications.filter((app) => {
         if (!app.application.duration.endDate) return false;
         const endDate = new Date(app.application.duration.endDate);
-        return endDate < now;
+        const isSelected = app.application.id === app.application.student.selectedApplication;
+        return endDate < now && isSelected;
       }),
       notStarted: this.applications.filter((app) => {
-        return !app.application.duration.startDate;
+          const isSelected = app.application.id === app.application.student.selectedApplication;
+
+        return !app.application.duration.startDate  && isSelected;
       }),
     };
 
     // Calculate statistics
     this.calculateApplicationStats();
 
-    //console.log("Applications by status:", this.applicationsByStatus);
-    //console.log("Training students by date:", this.trainingStudentsByDate);
+    ////console.log("Applications by status:", this.applicationsByStatus);
+    ////console.log("Training students by date:", this.trainingStudentsByDate);
   }
 
 
@@ -158,7 +164,7 @@ class TabManager {
         total > 0 ? ((acceptedCount / total) * 100).toFixed(1) : 0,
     };
 
-    console.log("Application statistics:", this.applicationStats);
+    //console.log("Application statistics:", this.applicationStats);
   }
 
   getTotalStudentOnIT() {
@@ -345,7 +351,7 @@ class TabManager {
         await tabInstance.init();
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       console.warn(
         `No JavaScript module found for ${tabId}, continuing without it.`
       );
@@ -504,7 +510,7 @@ class TabManager {
 //************************* Applications Tab Section ******************************/
 
 openApplicationDetails(applicationId) {
-  console.log(`Opening application details for: ${applicationId}`);
+  //console.log(`Opening application details for: ${applicationId}`);
   
   // Find the application
   const applicationData = this.applications.find(
@@ -521,7 +527,7 @@ openApplicationDetails(applicationId) {
 }
 
   async updateApplicationStatus(applicationId, newStatus, notificationMessage = null) {
-  console.log(`Updating application ${applicationId} to status: ${newStatus}`);
+  //console.log(`Updating application ${applicationId} to status: ${newStatus}`);
   
   // Find the application
   const applicationIndex = this.applications.findIndex(
@@ -542,8 +548,8 @@ openApplicationDetails(applicationId) {
   
   // Update the status locally
   application.status = newStatus;
-  console.log(`Local status updated for application ${applicationId}`);
-  console.log(application);
+  //console.log(`Local status updated for application ${applicationId}`);
+  //console.log(application);
 
   try {
     // Update status in the cloud
@@ -569,7 +575,7 @@ openApplicationDetails(applicationId) {
     this.updateSharedStats();
     this.refreshCurrentTab();
     
-    console.log(`Successfully updated application ${applicationId} to ${newStatus}`);
+    //console.log(`Successfully updated application ${applicationId} to ${newStatus}`);
     return true;
 
   } catch (error) {
@@ -602,7 +608,7 @@ async sendStatusNotification(applicationData, newStatus, messageText, companyNam
 
     const title = statusTitles[newStatus] || 'Application Status Updated';
 
-    console.log(`Sending notification to student ${studentUid} about status change to ${newStatus}`);
+    //console.log(`Sending notification to student ${studentUid} about status change to ${newStatus}`);
 
     const result = await it_base_companycloud.sendNotificationToStudent(
       studentUid,
@@ -617,7 +623,7 @@ async sendStatusNotification(applicationData, newStatus, messageText, companyNam
       }
     );
 
-    console.log('Notification sent successfully:', result);
+    //console.log('Notification sent successfully:', result);
     return result;
 
   } catch (error) {
@@ -631,8 +637,8 @@ showApplicationModal(applicationData) {
   // Simple implementation - you can enhance this with a proper modal
   const student = applicationData.application.student || {};
   const opportunity = applicationData.opportunity || {};
-  console.log("application data in modal ", applicationData);
-  console.log("student data in modal ", student);
+  //console.log("application data in modal ", applicationData);
+  //console.log("student data in modal ", student);
   
   const modalContent = `
     <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

@@ -32,7 +32,7 @@ class StudentProfile {
       this.currentStudent = await this.studentCloudDB.getStudentById(
         auth.currentUser.uid
       );
-      //console.log("currentstudent data " + JSON.stringify(this.currentStudent));
+      ////console.log("currentstudent data " + JSON.stringify(this.currentStudent));
 
       if (!this.currentStudent) {
         this.showError("Student profile not found");
@@ -87,7 +87,7 @@ class StudentProfile {
 
     // Load tab-specific data if needed
     if (tabName === "documents") {
-      //console.log("populated tab is document");
+      ////console.log("populated tab is document");
       this.populateDocumentsTab();
     }
   }
@@ -154,7 +154,7 @@ class StudentProfile {
     this.hideLoading();
     this.showContent();
 
-    //console.log(this.currentStudent);
+    ////console.log(this.currentStudent);
 
     // Populate header profile image
     this.setProfileImage("header-profile-image", this.currentStudent.imageUrl);
@@ -170,7 +170,7 @@ class StudentProfile {
       this.currentStudent.matricNumber || "Not Set"
     );
 
-    //console.log("student profile "+JSON.stringify(this.currentStudent))
+    ////console.log("student profile "+JSON.stringify(this.currentStudent))
     // Populate personal information
     this.setTextContent(
       "personal-full-name",
@@ -192,7 +192,7 @@ class StudentProfile {
       "academic-school",
       this.currentStudent.school || this.currentStudent.faculty || "Not Set"
     );
-    //console.log("insitituion "+this.currentStudent.institution+" faculty "+this.currentStudent.faculty);
+    ////console.log("insitituion "+this.currentStudent.institution+" faculty "+this.currentStudent.faculty);
     this.setTextContent(
       "institution",
       this.currentStudent.institution ||
@@ -224,7 +224,7 @@ class StudentProfile {
 
   populateDocumentsTab() {
     // Populate student-id section
-    //console.log("currentStudent id "+this.currentStudent.studentIDCard);
+    ////console.log("currentStudent id "+this.currentStudent.studentIDCard);
     if (this.currentStudent.studentIDCard) {
       this.setTextContent("student-id-file-name", "My studentID.pdf");
       this.setTextContent("student-id-file-size", "2.4 MB");
@@ -457,7 +457,7 @@ class StudentProfile {
   }
 
   viewStudentLetter() {
-    //console.log("student data " + JSON.stringify(this.currentStudent));
+    ////console.log("student data " + JSON.stringify(this.currentStudent));
     if (this.currentStudent.studentITLetter) {
       var itLetterUrl =
         this.currentStudent.studentITLetter[
@@ -566,7 +566,7 @@ class StudentProfile {
   setTextContent(elementId, content) {
     const element = document.getElementById(elementId);
     if (element) {
-      //console.log("if element is true "+elementId);
+      ////console.log("if element is true "+elementId);
       element.textContent = content || "Not Set";
     }
   }
@@ -661,7 +661,7 @@ class StudentProfile {
 
       // Reload student data
       this.currentStudent = await companyCloud.getCurrentStudent();
-      // console.log(
+      // //console.log(
       //   "this.currentStudent is " + JSON.stringify(this.currentStudent)
       // );
 

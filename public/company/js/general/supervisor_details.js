@@ -104,7 +104,7 @@ class SupervisorManagementController {
         const assignedCount = supervisor.students?.length || 0;
         const applicationCount = supervisor.applications?.length || 0;
         const availableSlots = supervisor.availableStudentSlots || 0;
-        console.log("availableSlots is "+availableSlots);
+        //console.log("availableSlots is "+availableSlots);
 
         document.getElementById('assignedStudentsCount').textContent = assignedCount;
         document.getElementById('activeApplicationsCount').textContent = applicationCount;
@@ -207,7 +207,7 @@ renderAvailableStudents() {
         });
     }
 
-    console.log('Assigned student UIDs:', Array.from(assignedStudentUids)); // DEBUG
+    //console.log('Assigned student UIDs:', Array.from(assignedStudentUids)); // DEBUG
 
     // Remove duplicates and filter out already assigned students
     const availableAndUniqueStudents = this.getUniqueStudents(this.availableStudents)
@@ -218,13 +218,13 @@ renderAvailableStudents() {
             const isAlreadyAssigned = assignedStudentUids.has(student.uid);
             
             if (isAlreadyAssigned) {
-                console.log(`Filtering out student ${student.uid} - already assigned to supervisor`); // DEBUG
+                //console.log(`Filtering out student ${student.uid} - already assigned to supervisor`); // DEBUG
             }
             
             return !isAlreadyAssigned;
         });
 
-    console.log(`Available students: ${this.availableStudents.length}, After filtering: ${availableAndUniqueStudents.length}`); // DEBUG
+    //console.log(`Available students: ${this.availableStudents.length}, After filtering: ${availableAndUniqueStudents.length}`); // DEBUG
 
     // Check if we have any students left after filtering
     if (availableAndUniqueStudents.length === 0) {
@@ -305,7 +305,7 @@ getUniqueStudents(students) {
     }
 
     createAvailableStudentElement(student) {
-         console.log('students is '+JSON.stringify(student));
+         //console.log('students is '+JSON.stringify(student));
         const div = document.createElement('div');
         div.className = 'flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700 rounded-lg';
         

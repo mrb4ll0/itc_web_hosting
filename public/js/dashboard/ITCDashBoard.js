@@ -28,7 +28,7 @@ const it_base_company_cloud = new ITBaseCompanyCloud();
 
 export class ITCDashBoard {
   constructor() {
-    //console.log("ITCDashBoard initialized");
+    ////console.log("ITCDashBoard initialized");
 
     this.auth = auth;
     this.db = db;
@@ -40,18 +40,18 @@ export class ITCDashBoard {
   async init() {
     await auth.authStateReady();
     let user = auth.currentUser;
-    //console.log("Auth state changed. User:", user);
+    ////console.log("Auth state changed. User:", user);
     if (user) {
-      //console.log("User is signed in:", user.email);
+      ////console.log("User is signed in:", user.email);
       this.student = await itc_firebase_logic.getStudent(user.uid);
       if (this.student == null) {
-        //console.log("student is null");
+        ////console.log("student is null");
         alert("profile not founds you'll be logout");
         await signOut(auth);
         localStorage.removeItem("student");
         window.location.href = "../index.html";
       }
-      //console.log(this.student.toMap());
+      ////console.log(this.student.toMap());
 
       // Initialize notification ticker with real data
       this.initializeNotificationTicker(user.uid);
@@ -78,7 +78,7 @@ export class ITCDashBoard {
       loadRecommendedCompanies();
 
       var studentName = document.getElementById("studentName");
-      //console.log("studentName", studentName);
+      ////console.log("studentName", studentName);
       if (studentName)
         studentName.textContent = this.student.fullName || "Student Name";
       var studentProfileImage = document.getElementById(
@@ -97,7 +97,7 @@ export class ITCDashBoard {
         }! Here's a summary of your industrial training journey.`;
       }
     } else {
-      //console.log("No user is signed in, redirecting to login.");
+      ////console.log("No user is signed in, redirecting to login.");
       alert("An error occure , you'll be redirect to the login page");
       window.location.replace("../auth/login.html");
     }
@@ -689,7 +689,7 @@ function unifiedNotificationsStream(studentUid, callback) {
     return () => {}; // Return empty cleanup function
   }
 
-  //console.log('Setting up notifications stream for:', studentUid);
+  ////console.log('Setting up notifications stream for:', studentUid);
 
   let privateUnsubscribe = null;
   let generalUnsubscribe = null;
@@ -724,7 +724,7 @@ function unifiedNotificationsStream(studentUid, callback) {
     privateUnsubscribe = onSnapshot(
       privateQuery,
       (snapshot) => {
-        //console.log('Private notifications updated:', snapshot.docs.length);
+        ////console.log('Private notifications updated:', snapshot.docs.length);
         privateNotifications = snapshot.docs.map((doc) => {
           const data = doc.data();
           return {
@@ -746,7 +746,7 @@ function unifiedNotificationsStream(studentUid, callback) {
     generalUnsubscribe = onSnapshot(
       generalQuery,
       (snapshot) => {
-        //console.log('General notifications updated:', snapshot.docs.length);
+        ////console.log('General notifications updated:', snapshot.docs.length);
         generalNotifications = snapshot.docs.map((doc) => {
           const data = doc.data();
           return {
@@ -770,7 +770,7 @@ function unifiedNotificationsStream(studentUid, callback) {
 
   // Return cleanup function
   return () => {
-    //console.log('Cleaning up notifications stream');
+    ////console.log('Cleaning up notifications stream');
     if (privateUnsubscribe) privateUnsubscribe();
     if (generalUnsubscribe) generalUnsubscribe();
   };
@@ -791,7 +791,7 @@ async function loadApplications() {
       console.error("No user is currently logged in");
       return;
     }
-    //console.log("auth " + !auth.currentUser);
+    ////console.log("auth " + !auth.currentUser);
     const applications = await companyCloud.getStudentInternships(
       auth.currentUser.uid
     );
@@ -836,7 +836,7 @@ async function loadApplications() {
 
       const statusClass =
         statusStyles[app.applicationStatus] || "bg-gray-100 text-gray-700";
-      //console.log("application status is " + app.applicationStatus);
+      ////console.log("application status is " + app.applicationStatus);
 
       row.innerHTML = `
         <td class="px-6 py-4 whitespace-nowrap font-medium">
@@ -873,10 +873,10 @@ document
   .addEventListener("click", async (event) => {
     event.preventDefault();
     try {
-      //console.log("user is about to signout");
+      ////console.log("user is about to signout");
       await signOut(auth);
       localStorage.removeItem("student");
-      //console.log("User signed out successfully.");
+      ////console.log("User signed out successfully.");
       window.location.href = "../index.html";
     } catch (error) {
       console.error("Error signing out:", error);
@@ -934,7 +934,7 @@ async function loadRecommendedCompanies() {
 }
 
 function decideAndReturnURL(company) {
-  //console.log("Company ID:", company.id);
+  ////console.log("Company ID:", company.id);
   return `../dashboard/company_profile.html?id=${company.id}`;
 }
 

@@ -287,7 +287,7 @@ class SupervisorDashboardService {
             
             // This would typically update the student's status in the database
             // For now, we'll just log the update
-            console.log(`Updating student ${studentId} status to ${status}`, notes);
+            //console.log(`Updating student ${studentId} status to ${status}`, notes);
             
             return { success: true, message: 'Status updated successfully' };
 
@@ -305,7 +305,7 @@ class SupervisorDashboardService {
         try {
             // This would typically create a message in a messages collection
             // For now, we'll just log the message
-            console.log(`Sending message to student ${studentId}:`, message);
+            //console.log(`Sending message to student ${studentId}:`, message);
             
             return { success: true, message: 'Message sent successfully' };
 

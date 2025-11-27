@@ -766,7 +766,7 @@ class CompanyPostings {
       button.addEventListener("click", (e) => {
         const postingId = e.currentTarget.getAttribute("data-id");
         this.toggleStatus(postingId);
-        //console.log("close id  "+postingId);
+        ////console.log("close id  "+postingId);
       });
     });
 
@@ -774,7 +774,7 @@ class CompanyPostings {
       button.addEventListener("click", (e) => {
         const postingId = e.currentTarget.getAttribute("data-id");
         this.toggleStatus(postingId);
-        //console.log("open id "+postingId);
+        ////console.log("open id "+postingId);
       });
     });
 
@@ -914,13 +914,13 @@ class CompanyPostings {
   }
 
   async editPosting(postingId) {
-    //console.log("Edit posting:", postingId);
+    ////console.log("Edit posting:", postingId);
     // Redirect to edit page or open modal
     window.location.href = `edit_industrial_training.html?id=${postingId}`;
   }
 
   async viewApplications(postingId) {
-    //console.log("View applications for:", postingId);
+    ////console.log("View applications for:", postingId);
     // Redirect to applications page
     window.location.href = `it_post_view.html?id=${postingId}`;
   }
