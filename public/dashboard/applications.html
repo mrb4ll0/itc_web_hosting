@@ -2,8 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IT Connect - My Applications</title>
+    <script>
+      // Immediate theme application to prevent flash
+      (function () {
+        const savedTheme = localStorage.getItem("app-theme");
+        const systemDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+
+        if (savedTheme === "dark" || (!savedTheme && systemDark)) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      })();
+    </script>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <link
@@ -84,7 +99,7 @@
 
             <div class="flex items-center gap-4">
               <div
-                 id="right-image"
+                id="right-image"
                 class="w-10 h-10 rounded-full bg-cover bg-center"
                 style="
                   background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBrU4zzWsmaPvbfnn2-tzTWtRWEdDcH-sE2Iqy924cDUGwqlwVM1m-kOFQMETRvtVq5m3ise3PlhcnMpAW4mtazKJ5-0DIxCBfvDf5KracBV5c2TvMfduWsW5M1pIBxiFSehYhWP7oeF_-HLpkbbd07mjiujNKdbzgYLCx9Hs5womSjt73rVWkKco58twQOMT4XrlHRDlwzO7tTKz0D9bux_t0UCKeBFCiMlh21P3QhVP-QHg3cZA7zdc9heD1rcs9hjvuboUoZAw');
@@ -108,26 +123,56 @@
               Track the status of all your industrial training applications.
             </p>
           </div>
-          
+
           <!-- Desktop Table View (hidden on mobile) -->
-          <div id="table-section" class="hidden lg:block bg-white dark:bg-background-dark/50 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-800">
+          <div
+            id="table-section"
+            class="hidden lg:block bg-white dark:bg-background-dark/50 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-800"
+          >
             <div class="overflow-x-auto">
-              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
+              <table
+                class="min-w-full divide-y divide-gray-200 dark:divide-gray-800"
+              >
                 <thead class="bg-gray-50 dark:bg-background-dark">
                   <tr>
-                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Company</th>
-                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Application Title</th>
-                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Application Date</th>
-                    <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                    <th class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+                    <th
+                      class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                    >
+                      Company
+                    </th>
+                    <th
+                      class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                    >
+                      Application Title
+                    </th>
+                    <th
+                      class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                    >
+                      Application Date
+                    </th>
+                    <th
+                      class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                    >
+                      Status
+                    </th>
+                    <th class="relative px-6 py-3">
+                      <span class="sr-only">Actions</span>
+                    </th>
                   </tr>
                 </thead>
-                <tbody id="tablebody" class="divide-y divide-gray-200 dark:divide-gray-800">
+                <tbody
+                  id="tablebody"
+                  class="divide-y divide-gray-200 dark:divide-gray-800"
+                >
                   <tr id="loaderRow">
                     <td colspan="5" class="text-center py-8">
                       <div class="flex justify-center items-center space-x-3">
-                        <div class="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500 border-solid"></div>
-                        <span class="text-gray-500 dark:text-gray-300 text-sm">Loading applications...</span>
+                        <div
+                          class="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500 border-solid"
+                        ></div>
+                        <span class="text-gray-500 dark:text-gray-300 text-sm"
+                          >Loading applications...</span
+                        >
                       </div>
                     </td>
                   </tr>
@@ -138,11 +183,17 @@
 
           <!-- Mobile List View (hidden on desktop) -->
           <div id="mobile-section" class="block lg:hidden">
-            <div class="bg-white dark:bg-background-dark/50 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4">
+            <div
+              class="bg-white dark:bg-background-dark/50 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-4"
+            >
               <div id="mobile-list-body" class="space-y-4">
                 <div class="flex justify-center items-center space-x-3 py-8">
-                  <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-blue-500 border-solid"></div>
-                  <span class="text-gray-500 dark:text-gray-300 text-sm">Loading applications...</span>
+                  <div
+                    class="animate-spin rounded-full h-6 w-6 border-t-2 border-blue-500 border-solid"
+                  ></div>
+                  <span class="text-gray-500 dark:text-gray-300 text-sm"
+                    >Loading applications...</span
+                  >
                 </div>
               </div>
             </div>

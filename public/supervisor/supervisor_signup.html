@@ -1,186 +1,252 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Supervisor Sign Up</title>
+    <script>
+      // Immediate theme application to prevent flash
+      (function () {
+        const savedTheme = localStorage.getItem("app-theme");
+        const systemDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+
+        if (savedTheme === "dark" || (!savedTheme && systemDark)) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      })();
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <script type="module" src='../supervisor/js/auth/supervisorAuthController.js'></script>
-</head>
-<body class="h-full bg-slate-50 dark:bg-slate-900">
-    <div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8">
-            <!-- Header -->
-            <div class="text-center">
-                <div class="mx-auto w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mb-4">
-                    <span class="material-symbols-outlined text-white text-2xl">supervisor_account</span>
-                </div>
-                <h2 class="text-3xl font-bold text-slate-900 dark:text-white">Supervisor Sign Up</h2>
-                <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                    Create your supervisor account
-                </p>
-            </div>
-
-            <!-- Company Code Form -->
-            <form id="companyCodeForm" class="mt-8 space-y-6">
-                <div>
-                    <label for="companyCode" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        Company Registration Code
-                    </label>
-                    <input 
-                        id="companyCode" 
-                        name="companyCode" 
-                        type="text" 
-                        required 
-                        class="relative block w-full px-3 py-3 border border-slate-300 dark:border-slate-600 placeholder-slate-500 dark:placeholder-slate-400 text-slate-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800"
-                        placeholder="Enter your company code"
-                    >
-                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                        Enter the registration code provided by your company
-                    </p>
-                </div>
-
-                <div>
-                    <button 
-                        type="submit"
-                        class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                    >
-                        Verify Code & Continue
-                    </button>
-                </div>
-            </form>
-
-            <!-- Registration Form -->
-            <form id="registrationForm" class="mt-8 space-y-6 hidden">
-                <div class="space-y-4">
-                    <div>
-                        <label for="displayName" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                            Full Name
-                        </label>
-                        <input 
-                            id="displayName" 
-                            name="displayName" 
-                            type="text" 
-                            required 
-                            class="relative block w-full px-3 py-3 border border-slate-300 dark:border-slate-600 placeholder-slate-500 dark:placeholder-slate-400 text-slate-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800"
-                            placeholder="Enter your full name"
-                        >
-                    </div>
-
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                            Email Address
-                        </label>
-                        <input 
-                            id="email" 
-                            name="email" 
-                            type="email" 
-                            required 
-                            class="relative block w-full px-3 py-3 border border-slate-300 dark:border-slate-600 placeholder-slate-500 dark:placeholder-slate-400 text-slate-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800"
-                            placeholder="Enter your email"
-                        >
-                    </div>
-
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                            Password
-                        </label>
-                        <input 
-                            id="password" 
-                            name="password" 
-                            type="password" 
-                            required 
-                            class="relative block w-full px-3 py-3 border border-slate-300 dark:border-slate-600 placeholder-slate-500 dark:placeholder-slate-400 text-slate-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800"
-                            placeholder="Create a password"
-                        >
-                        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                            Password must be at least 6 characters long
-                        </p>
-                    </div>
-
-                    <div>
-                        <label for="confirmPassword" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                            Confirm Password
-                        </label>
-                        <input 
-                            id="confirmPassword" 
-                            name="confirmPassword" 
-                            type="password" 
-                            required 
-                            class="relative block w-full px-3 py-3 border border-slate-300 dark:border-slate-600 placeholder-slate-500 dark:placeholder-slate-400 text-slate-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800"
-                            placeholder="Confirm your password"
-                        >
-                    </div>
-                </div>
-
-                <div class="flex items-center">
-                    <input 
-                        id="terms" 
-                        name="terms" 
-                        type="checkbox" 
-                        required 
-                        class="h-4 w-4 text-blue-500 focus:ring-blue-500 border-slate-300 dark:border-slate-600 rounded"
-                    >
-                    <label for="terms" class="ml-2 block text-sm text-slate-700 dark:text-slate-300">
-                        I agree to the <a href="#" class="text-blue-500 hover:text-blue-600">Terms and Conditions</a>
-                    </label>
-                </div>
-
-                <div class="flex space-x-3">
-                    <button 
-                        type="button"
-                        id="backToCodeBtn"
-                        class="flex-1 py-3 px-4 border border-slate-300 dark:border-slate-600 text-sm font-medium rounded-lg text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                    >
-                        Back
-                    </button>
-                    <button 
-                        type="submit"
-                        class="flex-1 py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                    >
-                        Create Account
-                    </button>
-                </div>
-            </form>
-
-            <!-- Loading State -->
-            <div id="loadingSection" class="hidden text-center py-8">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-                <p class="mt-4 text-slate-600 dark:text-slate-400">Processing...</p>
-            </div>
-
-            <!-- Success State -->
-            <div id="successSection" class="hidden text-center py-8">
-                <div class="mx-auto w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mb-4">
-                    <span class="material-symbols-outlined text-white text-2xl">check</span>
-                </div>
-                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Account Created Successfully!</h3>
-                <p class="text-slate-600 dark:text-slate-400 mb-6">Your supervisor account has been created.</p>
-                <a href="supervisor_login.html" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-500 hover:bg-blue-600 transition-colors">
-                    Go to Login
-                </a>
-            </div>
-
-            <!-- Login Link -->
-            <div class="text-center">
-                <p class="text-sm text-slate-600 dark:text-slate-400">
-                    Already have an account?
-                    <a href="supervisor_login.html" class="font-medium text-blue-500 hover:text-blue-600 transition-colors">
-                        Sign in here
-                    </a>
-                </p>
-            </div>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
+    <script
+      type="module"
+      src="../supervisor/js/auth/supervisorAuthController.js"
+    ></script>
+  </head>
+  <body class="h-full bg-slate-50 dark:bg-slate-900">
+    <div
+      class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
+    >
+      <div class="max-w-md w-full space-y-8">
+        <!-- Header -->
+        <div class="text-center">
+          <div
+            class="mx-auto w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mb-4"
+          >
+            <span class="material-symbols-outlined text-white text-2xl"
+              >supervisor_account</span
+            >
+          </div>
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-white">
+            Supervisor Sign Up
+          </h2>
+          <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            Create your supervisor account
+          </p>
         </div>
+
+        <!-- Company Code Form -->
+        <form id="companyCodeForm" class="mt-8 space-y-6">
+          <div>
+            <label
+              for="companyCode"
+              class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+            >
+              Company Registration Code
+            </label>
+            <input
+              id="companyCode"
+              name="companyCode"
+              type="text"
+              required
+              class="relative block w-full px-3 py-3 border border-slate-300 dark:border-slate-600 placeholder-slate-500 dark:placeholder-slate-400 text-slate-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800"
+              placeholder="Enter your company code"
+            />
+            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+              Enter the registration code provided by your company
+            </p>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            >
+              Verify Code & Continue
+            </button>
+          </div>
+        </form>
+
+        <!-- Registration Form -->
+        <form id="registrationForm" class="mt-8 space-y-6 hidden">
+          <div class="space-y-4">
+            <div>
+              <label
+                for="displayName"
+                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+              >
+                Full Name
+              </label>
+              <input
+                id="displayName"
+                name="displayName"
+                type="text"
+                required
+                class="relative block w-full px-3 py-3 border border-slate-300 dark:border-slate-600 placeholder-slate-500 dark:placeholder-slate-400 text-slate-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800"
+                placeholder="Enter your full name"
+              />
+            </div>
+
+            <div>
+              <label
+                for="email"
+                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+              >
+                Email Address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                class="relative block w-full px-3 py-3 border border-slate-300 dark:border-slate-600 placeholder-slate-500 dark:placeholder-slate-400 text-slate-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800"
+                placeholder="Enter your email"
+              />
+            </div>
+
+            <div>
+              <label
+                for="password"
+                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+              >
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                class="relative block w-full px-3 py-3 border border-slate-300 dark:border-slate-600 placeholder-slate-500 dark:placeholder-slate-400 text-slate-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800"
+                placeholder="Create a password"
+              />
+              <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                Password must be at least 6 characters long
+              </p>
+            </div>
+
+            <div>
+              <label
+                for="confirmPassword"
+                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+              >
+                Confirm Password
+              </label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                required
+                class="relative block w-full px-3 py-3 border border-slate-300 dark:border-slate-600 placeholder-slate-500 dark:placeholder-slate-400 text-slate-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800"
+                placeholder="Confirm your password"
+              />
+            </div>
+          </div>
+
+          <div class="flex items-center">
+            <input
+              id="terms"
+              name="terms"
+              type="checkbox"
+              required
+              class="h-4 w-4 text-blue-500 focus:ring-blue-500 border-slate-300 dark:border-slate-600 rounded"
+            />
+            <label
+              for="terms"
+              class="ml-2 block text-sm text-slate-700 dark:text-slate-300"
+            >
+              I agree to the
+              <a href="#" class="text-blue-500 hover:text-blue-600"
+                >Terms and Conditions</a
+              >
+            </label>
+          </div>
+
+          <div class="flex space-x-3">
+            <button
+              type="button"
+              id="backToCodeBtn"
+              class="flex-1 py-3 px-4 border border-slate-300 dark:border-slate-600 text-sm font-medium rounded-lg text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            >
+              Back
+            </button>
+            <button
+              type="submit"
+              class="flex-1 py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            >
+              Create Account
+            </button>
+          </div>
+        </form>
+
+        <!-- Loading State -->
+        <div id="loadingSection" class="hidden text-center py-8">
+          <div
+            class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"
+          ></div>
+          <p class="mt-4 text-slate-600 dark:text-slate-400">Processing...</p>
+        </div>
+
+        <!-- Success State -->
+        <div id="successSection" class="hidden text-center py-8">
+          <div
+            class="mx-auto w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mb-4"
+          >
+            <span class="material-symbols-outlined text-white text-2xl"
+              >check</span
+            >
+          </div>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">
+            Account Created Successfully!
+          </h3>
+          <p class="text-slate-600 dark:text-slate-400 mb-6">
+            Your supervisor account has been created.
+          </p>
+          <a
+            href="supervisor_login.html"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-500 hover:bg-blue-600 transition-colors"
+          >
+            Go to Login
+          </a>
+        </div>
+
+        <!-- Login Link -->
+        <div class="text-center">
+          <p class="text-sm text-slate-600 dark:text-slate-400">
+            Already have an account?
+            <a
+              href="supervisor_login.html"
+              class="font-medium text-blue-500 hover:text-blue-600 transition-colors"
+            >
+              Sign in here
+            </a>
+          </p>
+        </div>
+      </div>
     </div>
 
     <script type="module">
-        import { SupervisorAuthController } from '../supervisor/js/auth/supervisorAuthController.js';
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            const authController = new SupervisorAuthController();
-            authController.initSignup();
-        });
+      import { SupervisorAuthController } from "../supervisor/js/auth/supervisorAuthController.js";
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const authController = new SupervisorAuthController();
+        authController.initSignup();
+      });
     </script>
-</body>
+  </body>
 </html>

@@ -2,9 +2,24 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/png" href="images/myicon.png">
+    <link rel="icon" type="image/png" href="images/myicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IT Connect - Company Profile</title>
+    <script>
+      // Immediate theme application to prevent flash
+      (function () {
+        const savedTheme = localStorage.getItem("app-theme");
+        const systemDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+
+        if (savedTheme === "dark" || (!savedTheme && systemDark)) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      })();
+    </script>
     <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect" />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap"
@@ -63,7 +78,8 @@
 
       .stat-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
       }
 
       .status-open {
@@ -195,119 +211,228 @@
                         class="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-400"
                       ></p>
                     </section>
-                    
+
                     <!-- Analytics Section -->
                     <section class="mt-8">
-                      <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-6">
+                      <h3
+                        class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-6"
+                      >
                         Company Analytics
                       </h3>
-                      
+
                       <!-- Status Card -->
                       <div class="mb-6">
-                        <div id="company-status" class="inline-flex items-center px-4 py-2 rounded-full text-white font-semibold text-sm status-open">
-                          <span class="material-symbols-outlined text-sm mr-2">check_circle</span>
+                        <div
+                          id="company-status"
+                          class="inline-flex items-center px-4 py-2 rounded-full text-white font-semibold text-sm status-open"
+                        >
+                          <span class="material-symbols-outlined text-sm mr-2"
+                            >check_circle</span
+                          >
                           Currently Accepting Applications
                         </div>
                       </div>
 
                       <!-- Stats Grid -->
-                      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                      <div
+                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6"
+                      >
                         <!-- Total Students Per Year -->
-                        <div class="stat-card bg-white dark:bg-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
+                        <div
+                          class="stat-card bg-white dark:bg-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-700"
+                        >
                           <div class="flex items-center justify-between">
                             <div>
-                              <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Students Per Year</p>
-                              <p id="students-per-year" class="text-2xl font-bold text-slate-900 dark:text-white mt-1">0</p>
+                              <p
+                                class="text-sm font-medium text-slate-600 dark:text-slate-400"
+                              >
+                                Students Per Year
+                              </p>
+                              <p
+                                id="students-per-year"
+                                class="text-2xl font-bold text-slate-900 dark:text-white mt-1"
+                              >
+                                0
+                              </p>
                             </div>
-                            <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                              <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">school</span>
+                            <div
+                              class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg"
+                            >
+                              <span
+                                class="material-symbols-outlined text-blue-600 dark:text-blue-400"
+                                >school</span
+                              >
                             </div>
                           </div>
                           <div class="mt-2">
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Average annual intake</p>
+                            <p
+                              class="text-xs text-slate-500 dark:text-slate-400"
+                            >
+                              Average annual intake
+                            </p>
                           </div>
                         </div>
 
                         <!-- Current IT Opportunities -->
-                        <div class="stat-card bg-white dark:bg-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
+                        <div
+                          class="stat-card bg-white dark:bg-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-700"
+                        >
                           <div class="flex items-center justify-between">
                             <div>
-                              <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Current IT Roles</p>
-                              <p id="current-opportunities" class="text-2xl font-bold text-slate-900 dark:text-white mt-1">0</p>
+                              <p
+                                class="text-sm font-medium text-slate-600 dark:text-slate-400"
+                              >
+                                Current IT Roles
+                              </p>
+                              <p
+                                id="current-opportunities"
+                                class="text-2xl font-bold text-slate-900 dark:text-white mt-1"
+                              >
+                                0
+                              </p>
                             </div>
-                            <div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                              <span class="material-symbols-outlined text-green-600 dark:text-green-400">computer</span>
+                            <div
+                              class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg"
+                            >
+                              <span
+                                class="material-symbols-outlined text-green-600 dark:text-green-400"
+                                >computer</span
+                              >
                             </div>
                           </div>
                           <div class="mt-2">
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Available positions</p>
+                            <p
+                              class="text-xs text-slate-500 dark:text-slate-400"
+                            >
+                              Available positions
+                            </p>
                           </div>
                         </div>
 
                         <!-- Total Applications -->
-                        <div class="stat-card bg-white dark:bg-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
+                        <div
+                          class="stat-card bg-white dark:bg-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-700"
+                        >
                           <div class="flex items-center justify-between">
                             <div>
-                              <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Total Applications</p>
-                              <p id="total-applications" class="text-2xl font-bold text-slate-900 dark:text-white mt-1">0</p>
+                              <p
+                                class="text-sm font-medium text-slate-600 dark:text-slate-400"
+                              >
+                                Total Applications
+                              </p>
+                              <p
+                                id="total-applications"
+                                class="text-2xl font-bold text-slate-900 dark:text-white mt-1"
+                              >
+                                0
+                              </p>
                             </div>
-                            <div class="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                              <span class="material-symbols-outlined text-purple-600 dark:text-purple-400">assignment</span>
+                            <div
+                              class="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg"
+                            >
+                              <span
+                                class="material-symbols-outlined text-purple-600 dark:text-purple-400"
+                                >assignment</span
+                              >
                             </div>
                           </div>
                           <div class="mt-2">
-                            <p class="text-xs text-slate-500 dark:text-slate-400">All-time received</p>
+                            <p
+                              class="text-xs text-slate-500 dark:text-slate-400"
+                            >
+                              All-time received
+                            </p>
                           </div>
                         </div>
                       </div>
 
                       <!-- Applications by IT Role -->
-                      <div class="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
-                        <h4 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+                      <div
+                        class="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700"
+                      >
+                        <h4
+                          class="text-lg font-semibold text-slate-900 dark:text-white mb-4"
+                        >
                           Applications by IT Role
                         </h4>
                         <div id="applications-by-role" class="space-y-4">
                           <!-- This will be populated dynamically -->
-                          <div class="text-center py-8 text-slate-500 dark:text-slate-400">
-                            <span class="material-symbols-outlined text-4xl mb-2 opacity-50">bar_chart</span>
+                          <div
+                            class="text-center py-8 text-slate-500 dark:text-slate-400"
+                          >
+                            <span
+                              class="material-symbols-outlined text-4xl mb-2 opacity-50"
+                              >bar_chart</span
+                            >
                             <p>Loading application data...</p>
                           </div>
                         </div>
                       </div>
 
                       <!-- Acceptance Rate -->
-                      <div class="mt-6 bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
-                        <h4 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+                      <div
+                        class="mt-6 bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700"
+                      >
+                        <h4
+                          class="text-lg font-semibold text-slate-900 dark:text-white mb-4"
+                        >
                           Acceptance Rate
                         </h4>
                         <div class="flex items-center justify-between mb-2">
-                          <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Overall Acceptance</span>
-                          <span id="acceptance-rate" class="text-lg font-bold text-slate-900 dark:text-white">0%</span>
+                          <span
+                            class="text-sm font-medium text-slate-600 dark:text-slate-400"
+                            >Overall Acceptance</span
+                          >
+                          <span
+                            id="acceptance-rate"
+                            class="text-lg font-bold text-slate-900 dark:text-white"
+                            >0%</span
+                          >
                         </div>
-                        <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
-                          <div id="acceptance-bar" class="bg-green-500 h-3 rounded-full progress-bar" style="width: 0%"></div>
+                        <div
+                          class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3"
+                        >
+                          <div
+                            id="acceptance-bar"
+                            class="bg-green-500 h-3 rounded-full progress-bar"
+                            style="width: 0%"
+                          ></div>
                         </div>
-                        <div class="flex justify-between text-xs text-slate-500 dark:text-slate-400 mt-2">
+                        <div
+                          class="flex justify-between text-xs text-slate-500 dark:text-slate-400 mt-2"
+                        >
                           <span>0%</span>
                           <span>100%</span>
                         </div>
                       </div>
                     </section>
                   </div>
-                  
+
                   <!-- Opportunities Tab -->
                   <div id="view-opportunities" class="hidden">
                     <section>
-                      <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
+                      <h3
+                        class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white"
+                      >
                         Opportunities
                       </h3>
                       <ul id="opportunitieslist" class="mt-4 space-y-4">
-                        <li class="p-4 rounded-lg bg-slate-100 dark:bg-slate-800">
-                          <span class="font-semibold text-primary">Software Engineering Internship</span>
-                          <p class="text-sm text-slate-600 dark:text-slate-400"></p>
+                        <li
+                          class="p-4 rounded-lg bg-slate-100 dark:bg-slate-800"
+                        >
+                          <span class="font-semibold text-primary"
+                            >Software Engineering Internship</span
+                          >
+                          <p
+                            class="text-sm text-slate-600 dark:text-slate-400"
+                          ></p>
                         </li>
-                        <li class="p-4 rounded-lg bg-slate-100 dark:bg-slate-800">
-                          <span class="font-semibold text-primary">Cybersecurity Analyst</span>
+                        <li
+                          class="p-4 rounded-lg bg-slate-100 dark:bg-slate-800"
+                        >
+                          <span class="font-semibold text-primary"
+                            >Cybersecurity Analyst</span
+                          >
                           <p class="text-sm text-slate-600 dark:text-slate-400">
                             Help secure our infrastructure and data.
                           </p>
@@ -316,41 +441,92 @@
                       </ul>
                     </section>
                   </div>
-                  
+
                   <!-- Reviews Tab -->
                   <div id="view-reviews" class="hidden">
                     <section>
-                      <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white" style="margin-bottom: 10px">
+                      <h3
+                        class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white"
+                        style="margin-bottom: 10px"
+                      >
                         Reviews
                       </h3>
 
                       <form id="review-form" class="space-y-4">
                         <div>
-                          <div class="flex items-center gap-1" id="rating-stars">
-                            <button type="button" class="rating-star text-2xl transition-colors" data-rating="1">
-                              <span class="material-symbols-outlined text-slate-300 hover:text-yellow-400">star</span>
+                          <div
+                            class="flex items-center gap-1"
+                            id="rating-stars"
+                          >
+                            <button
+                              type="button"
+                              class="rating-star text-2xl transition-colors"
+                              data-rating="1"
+                            >
+                              <span
+                                class="material-symbols-outlined text-slate-300 hover:text-yellow-400"
+                                >star</span
+                              >
                             </button>
-                            <button type="button" class="rating-star text-2xl transition-colors" data-rating="2">
-                              <span class="material-symbols-outlined text-slate-300 hover:text-yellow-400">star</span>
+                            <button
+                              type="button"
+                              class="rating-star text-2xl transition-colors"
+                              data-rating="2"
+                            >
+                              <span
+                                class="material-symbols-outlined text-slate-300 hover:text-yellow-400"
+                                >star</span
+                              >
                             </button>
-                            <button type="button" class="rating-star text-2xl transition-colors" data-rating="3">
-                              <span class="material-symbols-outlined text-slate-300 hover:text-yellow-400">star</span>
+                            <button
+                              type="button"
+                              class="rating-star text-2xl transition-colors"
+                              data-rating="3"
+                            >
+                              <span
+                                class="material-symbols-outlined text-slate-300 hover:text-yellow-400"
+                                >star</span
+                              >
                             </button>
-                            <button type="button" class="rating-star text-2xl transition-colors" data-rating="4">
-                              <span class="material-symbols-outlined text-slate-300 hover:text-yellow-400">star</span>
+                            <button
+                              type="button"
+                              class="rating-star text-2xl transition-colors"
+                              data-rating="4"
+                            >
+                              <span
+                                class="material-symbols-outlined text-slate-300 hover:text-yellow-400"
+                                >star</span
+                              >
                             </button>
-                            <button type="button" class="rating-star text-2xl transition-colors" data-rating="5">
-                              <span class="material-symbols-outlined text-slate-300 hover:text-yellow-400">star</span>
+                            <button
+                              type="button"
+                              class="rating-star text-2xl transition-colors"
+                              data-rating="5"
+                            >
+                              <span
+                                class="material-symbols-outlined text-slate-300 hover:text-yellow-400"
+                                >star</span
+                              >
                             </button>
                           </div>
                           <div class="flex items-center gap-2 mt-2">
-                            <span id="rating-text" class="text-sm text-slate-500">Select a rating</span>
-                            <span id="selected-rating" class="text-sm font-medium text-yellow-600 hidden"></span>
+                            <span
+                              id="rating-text"
+                              class="text-sm text-slate-500"
+                              >Select a rating</span
+                            >
+                            <span
+                              id="selected-rating"
+                              class="text-sm font-medium text-yellow-600 hidden"
+                            ></span>
                           </div>
                         </div>
 
                         <div>
-                          <label for="review-comment" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                          <label
+                            for="review-comment"
+                            class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+                          >
                             Your Review
                           </label>
                           <textarea
@@ -362,7 +538,9 @@
                             maxlength="500"
                           ></textarea>
                           <div class="flex justify-between items-center mt-1">
-                            <span class="text-xs text-slate-500">Minimum 10 characters</span>
+                            <span class="text-xs text-slate-500"
+                              >Minimum 10 characters</span
+                            >
                             <span class="text-xs text-slate-500">
                               <span id="char-count">0</span>/500
                             </span>
@@ -387,20 +565,34 @@
                           </button>
                         </div>
 
-                        <div id="form-error" class="hidden p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                          <p class="text-red-600 dark:text-red-400 text-sm" id="error-message"></p>
+                        <div
+                          id="form-error"
+                          class="hidden p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg"
+                        >
+                          <p
+                            class="text-red-600 dark:text-red-400 text-sm"
+                            id="error-message"
+                          ></p>
                         </div>
                       </form>
 
                       <ul id="review-list" class="mt-4 space-y-4">
-                        <li class="p-4 rounded-lg bg-slate-100 dark:bg-slate-800">
-                          <span class="font-semibold text-primary">Jane Doe</span>
+                        <li
+                          class="p-4 rounded-lg bg-slate-100 dark:bg-slate-800"
+                        >
+                          <span class="font-semibold text-primary"
+                            >Jane Doe</span
+                          >
                           <p class="text-sm text-slate-600 dark:text-slate-400">
                             Great company culture and learning environment!
                           </p>
                         </li>
-                        <li class="p-4 rounded-lg bg-slate-100 dark:bg-slate-800">
-                          <span class="font-semibold text-primary">John Smith</span>
+                        <li
+                          class="p-4 rounded-lg bg-slate-100 dark:bg-slate-800"
+                        >
+                          <span class="font-semibold text-primary"
+                            >John Smith</span
+                          >
                           <p class="text-sm text-slate-600 dark:text-slate-400">
                             Supportive mentors and exciting projects.
                           </p>
@@ -411,26 +603,58 @@
                 </div>
               </div>
               <aside class="space-y-8">
-                <div class="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark">
+                <div
+                  class="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark"
+                >
                   <dl class="space-y-4">
                     <div>
-                      <dt class="text-sm font-medium text-slate-500 dark:text-slate-400">Industry</dt>
-                      <dd id="industry" class="mt-1 text-sm font-semibold text-slate-900 dark:text-white">Technology</dd>
+                      <dt
+                        class="text-sm font-medium text-slate-500 dark:text-slate-400"
+                      >
+                        Industry
+                      </dt>
+                      <dd
+                        id="industry"
+                        class="mt-1 text-sm font-semibold text-slate-900 dark:text-white"
+                      >
+                        Technology
+                      </dd>
                     </div>
                     <div>
-                      <dt class="text-sm font-medium text-slate-500 dark:text-slate-400">Locations</dt>
-                      <dd id="locations" class="mt-1 text-sm font-semibold text-slate-900 dark:text-white"></dd>
+                      <dt
+                        class="text-sm font-medium text-slate-500 dark:text-slate-400"
+                      >
+                        Locations
+                      </dt>
+                      <dd
+                        id="locations"
+                        class="mt-1 text-sm font-semibold text-slate-900 dark:text-white"
+                      ></dd>
                     </div>
                     <div>
-                      <dt class="text-sm font-medium text-slate-500 dark:text-slate-400">Company Size</dt>
-                      <dd id="size" class="mt-1 text-sm font-semibold text-slate-900 dark:text-white">1000+ employees</dd>
+                      <dt
+                        class="text-sm font-medium text-slate-500 dark:text-slate-400"
+                      >
+                        Company Size
+                      </dt>
+                      <dd
+                        id="size"
+                        class="mt-1 text-sm font-semibold text-slate-900 dark:text-white"
+                      >
+                        1000+ employees
+                      </dd>
                     </div>
                   </dl>
                 </div>
-                <div class="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark">
-                  <h3 class="text-lg font-bold text-slate-900 dark:text-white">Contact Information</h3>
+                <div
+                  class="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-background-dark"
+                >
+                  <h3 class="text-lg font-bold text-slate-900 dark:text-white">
+                    Contact Information
+                  </h3>
                   <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                    For more information about Tech Innovators Inc., please visit our website or contact us directly.
+                    For more information about Tech Innovators Inc., please
+                    visit our website or contact us directly.
                   </p>
                   <div class="mt-4 flex flex-col gap-2">
                     <button
@@ -486,7 +710,9 @@
       id="loading-overlay"
       class="fixed inset-0 bg-white/80 dark:bg-black/70 flex flex-col items-center justify-center z-50 hidden"
     >
-      <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mb-3"></div>
+      <div
+        class="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mb-3"
+      ></div>
       <p class="text-slate-700 dark:text-slate-200 text-sm font-medium">
         Loading company profile...
       </p>
