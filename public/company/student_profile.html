@@ -8,6 +8,22 @@
       id="meta-viewport"
     />
     <title id="page-title">Student Application Details</title>
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      // Immediate theme application to prevent flash
+      (function () {
+        const savedTheme = localStorage.getItem("app-theme");
+        const systemDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+
+        if (savedTheme === "dark" || (!savedTheme && systemDark)) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      })();
+    </script>
     <script
       src="https://cdn.tailwindcss.com?plugins=forms,container-queries"
       id="tailwind-script"

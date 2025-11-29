@@ -4,6 +4,22 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Student Management Dashboard</title>
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      // Immediate theme application to prevent flash
+      (function () {
+        const savedTheme = localStorage.getItem("app-theme");
+        const systemDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+
+        if (savedTheme === "dark" || (!savedTheme && systemDark)) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      })();
+    </script>
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
@@ -199,7 +215,7 @@
     id="dashboard-body"
     class="font-display bg-background-light dark:bg-background-dark text-[#333333] dark:text-gray-200"
   >
-    <div id="mainContainer" style="min-width: 320px;" class="min-h-screen">
+    <div id="mainContainer" style="min-width: 320px" class="min-h-screen">
       <!-- Header -->
       <header
         id="dashboard-header"

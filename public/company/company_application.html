@@ -4,6 +4,22 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title id="page-title">Company Applications</title>
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      // Immediate theme application to prevent flash
+      (function () {
+        const savedTheme = localStorage.getItem("app-theme");
+        const systemDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+
+        if (savedTheme === "dark" || (!savedTheme && systemDark)) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      })();
+    </script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
@@ -99,7 +115,7 @@
                     type="text"
                   />
                 </div>
-                
+
                 <!-- Dynamic Opportunities Dropdown -->
                 <div
                   id="opportunity-filter-container"
@@ -126,7 +142,7 @@
                     id="status-filter"
                     class="w-full h-10 appearance-none rounded-lg bg-background-light dark:bg-background-dark border-gray-300 dark:border-gray-700 focus:ring-primary focus:border-primary text-gray-900 dark:text-white pl-4 pr-10 text-sm sm:text-base"
                   >
-                    <option value="">All Statuses</option>                   
+                    <option value="">All Statuses</option>
                     <option value="accepted">Accepted</option>
                     <option value="rejected">Rejected</option>
                   </select>
@@ -140,29 +156,44 @@
 
             <!-- Desktop Table View (hidden on mobile) -->
             <div id="applications-table-container" class="hidden lg:block mb-6">
-              <div class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+              <div
+                class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
+              >
                 <div class="overflow-x-auto">
                   <table id="applications-table" class="w-full min-w-[800px]">
                     <thead>
                       <tr class="bg-gray-50 dark:bg-gray-800">
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        <th
+                          class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                        >
                           Student Name
                         </th>
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        <th
+                          class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                        >
                           Opportunity
                         </th>
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        <th
+                          class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                        >
                           Application Date
                         </th>
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        <th
+                          class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                        >
                           Status
                         </th>
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        <th
+                          class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                        >
                           Actions
                         </th>
                       </tr>
                     </thead>
-                    <tbody id="applications-table-body" class="divide-y divide-gray-200 dark:divide-gray-800">
+                    <tbody
+                      id="applications-table-body"
+                      class="divide-y divide-gray-200 dark:divide-gray-800"
+                    >
                       <!-- Table rows will be populated dynamically -->
                     </tbody>
                   </table>
@@ -179,7 +210,9 @@
 
             <!-- Loading State -->
             <div id="loading-state" class="text-center py-8">
-              <div class="loading-animation flex justify-center items-center flex-col">
+              <div
+                class="loading-animation flex justify-center items-center flex-col"
+              >
                 <svg width="80" height="40" viewBox="0 0 100 40">
                   <circle cx="20" cy="20" r="8" fill="#3b82f6">
                     <animate
@@ -209,18 +242,31 @@
                     />
                   </circle>
                 </svg>
-                <p class="mt-4 text-gray-500 dark:text-gray-400">Loading applications...</p>
+                <p class="mt-4 text-gray-500 dark:text-gray-400">
+                  Loading applications...
+                </p>
               </div>
             </div>
 
             <!-- Empty State -->
             <div id="empty-state" class="hidden text-center py-12">
               <div class="max-w-md mx-auto">
-                <div class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span class="material-symbols-outlined text-gray-400 text-2xl">inbox</span>
+                <div
+                  class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4"
+                >
+                  <span class="material-symbols-outlined text-gray-400 text-2xl"
+                    >inbox</span
+                  >
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No applications found</h3>
-                <p class="text-gray-500 dark:text-gray-400">Applications will appear here when students apply to your opportunities.</p>
+                <h3
+                  class="text-lg font-semibold text-gray-900 dark:text-white mb-2"
+                >
+                  No applications found
+                </h3>
+                <p class="text-gray-500 dark:text-gray-400">
+                  Applications will appear here when students apply to your
+                  opportunities.
+                </p>
               </div>
             </div>
           </div>

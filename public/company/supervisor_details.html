@@ -4,12 +4,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Supervisor Management - IT Connect</title>
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      // Immediate theme application to prevent flash
+      (function () {
+        const savedTheme = localStorage.getItem("app-theme");
+        const systemDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+
+        if (savedTheme === "dark" || (!savedTheme && systemDark)) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      })();
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
     />
-    <script type="module" src="../company/js/general/supervisor_details.js"></script>
+    <script
+      type="module"
+      src="../company/js/general/supervisor_details.js"
+    ></script>
   </head>
   <body class="h-full bg-slate-50 dark:bg-slate-900">
     <div class="min-h-full">
@@ -29,7 +48,7 @@
               ></span>
               <button
                 id="backToDashboard"
-                class=" hidden px-4 py-2 text-sm bg-slate-500 hover:bg-slate-600 text-white rounded-lg transition-colors"
+                class="hidden px-4 py-2 text-sm bg-slate-500 hover:bg-slate-600 text-white rounded-lg transition-colors"
               >
                 Back to Dashboard
               </button>
@@ -360,6 +379,7 @@
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
+        <p id="dialogError" class="text-red-500 red:text-slate-500 mb-6"></p>
 
         <div class="p-6">
           <div class="mb-6">

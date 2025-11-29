@@ -1,134 +1,933 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Supervisor Management</title>
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      // Immediate theme application to prevent flash
+      (function () {
+        const savedTheme = localStorage.getItem("app-theme");
+        const systemDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+
+        if (savedTheme === "dark" || (!savedTheme && systemDark)) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      })();
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-</head>
-<body class="h-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100">
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
+  </head>
+  <body
+    class="h-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100"
+  >
     <div class="min-h-full">
-        <!-- Main Content -->
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- Code Generation Section -->
-            <div id="codeGenerationSection" class="hidden bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8">
-                <div class="text-center max-w-2xl mx-auto">
-                    <span class="material-symbols-outlined text-6xl text-blue-500 mb-4">vpn_key</span>
-                    <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-4">Generate Supervisor Registration Code</h2>
-                    <p class="text-slate-600 dark:text-slate-300 mb-6">
-                        Create a unique registration code that supervisors will use to register in the system. 
-                        This code will link them to your company.
-                    </p>
-                    <button id="generateCodeBtn" class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors">
-                        Generate Registration Code
-                    </button>
-                </div>
+      <!-- Main Content -->
+      <main class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8">
+        <!-- Code Generation Section -->
+        <div
+          id="codeGenerationSection"
+          class="hidden bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6 mb-6"
+        >
+          <div class="text-center max-w-2xl mx-auto">
+            <span
+              class="material-symbols-outlined text-4xl sm:text-6xl text-blue-500 mb-3 sm:mb-4"
+              >vpn_key</span
+            >
+            <h2
+              class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 mb-3 sm:mb-4"
+            >
+              Generate Supervisor Registration Code
+            </h2>
+            <p
+              class="text-slate-600 dark:text-slate-300 mb-4 sm:mb-6 text-sm sm:text-base"
+            >
+              Create a unique registration code that supervisors will use to
+              register in the system. This code will link them to your company.
+            </p>
+            <button
+              id="generateCodeBtn"
+              class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors"
+            >
+              Generate Registration Code
+            </button>
+          </div>
+        </div>
+
+        <!-- Generated Code Display -->
+        <div
+          id="generatedCodeSection"
+          class="hidden bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg p-4 sm:p-6 mb-6"
+        >
+          <div class="text-center text-white">
+            <h3 class="text-lg sm:text-xl font-bold mb-2">
+              Registration Code Generated Successfully!
+            </h3>
+            <p class="mb-3 sm:mb-4 text-sm sm:text-base">
+              Share this code with your supervisors to allow them to register:
+            </p>
+            <div
+              class="bg-white/20 backdrop-blur-sm rounded-lg p-3 sm:p-4 mb-3 sm:mb-4"
+            >
+              <code
+                id="generatedCode"
+                class="text-xl sm:text-3xl font-mono font-bold tracking-wider break-all"
+              ></code>
+            </div>
+            <p class="text-xs sm:text-sm opacity-90">
+              Supervisors will use this code during registration to be linked to
+              your company.
+            </p>
+          </div>
+        </div>
+
+        <!-- Supervisor Key Display Section -->
+        <div
+          id="supervisorKeySection"
+          class="hidden bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6 mb-6"
+        >
+          <div
+            class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0"
+          >
+            <div class="text-center sm:text-left">
+              <h2
+                class="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100 mb-1 sm:mb-2"
+              >
+                Your Supervisor Registration Code
+              </h2>
+              <p class="text-slate-600 dark:text-slate-300 text-sm">
+                Share this code with supervisors for registration
+              </p>
+            </div>
+            <div
+              class="bg-blue-50 dark:bg-blue-900/30 rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-center"
+            >
+              <code
+                id="supervisorKeyDisplay"
+                class="text-lg sm:text-2xl font-mono font-bold text-blue-600 dark:text-blue-400 break-all"
+              ></code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Supervisors List Section -->
+        <div id="supervisorsSection" class="hidden">
+          <!-- Header Section -->
+          <div
+            class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0 mb-6"
+          >
+            <div class="text-center sm:text-left">
+              <h2
+                class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100"
+              >
+                Supervisors
+              </h2>
+              <p class="text-slate-600 dark:text-slate-400 text-sm mt-1">
+                Manage all supervisor accounts in your organization
+              </p>
             </div>
 
-            <!-- Generated Code Display -->
-            <div id="generatedCodeSection" class="hidden bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg p-6 mb-8">
-                <div class="text-center text-white">
-                    <h3 class="text-xl font-bold mb-2">Registration Code Generated Successfully!</h3>
-                    <p class="mb-4">Share this code with your supervisors to allow them to register:</p>
-                    <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4 mb-4">
-                        <code id="generatedCode" class="text-3xl font-mono font-bold tracking-wider"></code>
-                    </div>
-                    <p class="text-sm opacity-90">
-                        Supervisors will use this code during registration to be linked to your company.
-                    </p>
-                </div>
+            <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+              <button
+                id="assignStudentsBtn"
+                class="px-3 sm:px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors flex items-center justify-center sm:justify-start space-x-2"
+              >
+                <span class="material-symbols-outlined text-sm">group</span>
+                <span class="text-sm sm:text-base">Assign Students</span>
+              </button>
+              <button
+                id="refreshBtn"
+                class="px-3 sm:px-4 py-2 bg-slate-500 hover:bg-slate-600 text-white rounded-lg transition-colors flex items-center justify-center sm:justify-start space-x-2"
+              >
+                <span class="material-symbols-outlined text-sm">refresh</span>
+                <span class="text-sm sm:text-base">Refresh</span>
+              </button>
             </div>
+          </div>
 
-            <!-- Supervisor Key Display Section -->
-            <div id="supervisorKeySection" class="hidden bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8">
-                <div class="flex items-center justify-between">
+          <!-- Mode Selection and Filtering Section -->
+          <div
+            class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6 mb-6"
+          >
+            <div class="flex flex-col lg:flex-row gap-6">
+              <!-- Mode Selection -->
+              <div class="flex-1">
+                <h3
+                  class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3"
+                >
+                  View Mode
+                </h3>
+                <div class="flex flex-wrap gap-2">
+                  <button
+                    data-mode="all"
+                    class="mode-btn px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-medium transition-colors active-mode bg-blue-50 dark:bg-blue-900/30 border-blue-500 text-blue-600 dark:text-blue-400"
+                  >
+                    All Supervisors
+                  </button>
+                  <button
+                    data-mode="active"
+                    class="mode-btn px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-medium transition-colors"
+                  >
+                    <span class="flex items-center space-x-2">
+                      <span
+                        class="material-symbols-outlined text-sm text-green-500"
+                        >check_circle</span
+                      >
+                      <span class="hidden xs:inline">Active</span>
+                    </span>
+                  </button>
+                  <button
+                    data-mode="pending"
+                    class="mode-btn px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-medium transition-colors"
+                  >
+                    <span class="flex items-center space-x-2">
+                      <span
+                        class="material-symbols-outlined text-sm text-amber-500"
+                        >pending</span
+                      >
+                      <span class="hidden xs:inline">Pending</span>
+                    </span>
+                  </button>
+                  <button
+                    data-mode="inactive"
+                    class="mode-btn px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-medium transition-colors"
+                  >
+                    <span class="flex items-center space-x-2">
+                      <span
+                        class="material-symbols-outlined text-sm text-slate-400"
+                        >pause_circle</span
+                      >
+                      <span class="hidden xs:inline">Inactive</span>
+                    </span>
+                  </button>
+                  <button
+                    data-mode="removed"
+                    class="mode-btn px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-medium transition-colors"
+                  >
+                    <span class="flex items-center space-x-2">
+                      <span
+                        class="material-symbols-outlined text-sm text-red-500"
+                        >delete</span
+                      >
+                      <span class="hidden xs:inline">Removed</span>
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Filter Controls -->
+              <div class="flex-1">
+                <h3
+                  class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3"
+                >
+                  Filters
+                </h3>
+                <div class="space-y-3">
+                  <!-- Search by Name -->
+                  <div class="relative">
+                    <span
+                      class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-sm"
+                      >search</span
+                    >
+                    <input
+                      type="text"
+                      id="nameFilter"
+                      placeholder="Search by name..."
+                      class="w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Filter by Student Count -->
+                    <select
+                      id="studentCountFilter"
+                      class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">All student counts</option>
+                      <option value="0">No students</option>
+                      <option value="1-5">1-5 students</option>
+                      <option value="6-10">6-10 students</option>
+                      <option value="11-20">11-20 students</option>
+                      <option value="20+">20+ students</option>
+                      <option value="custom">Custom range...</option>
+                    </select>
+
+                    <!-- Sort Options -->
+                    <select
+                      id="sortFilter"
+                      class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="name-asc">Sort by: Name A-Z</option>
+                      <option value="name-desc">Sort by: Name Z-A</option>
+                      <option value="students-asc">
+                        Sort by: Students (Low to High)
+                      </option>
+                      <option value="students-desc">
+                        Sort by: Students (High to Low)
+                      </option>
+                      <option value="date-newest">Sort by: Newest First</option>
+                      <option value="date-oldest">Sort by: Oldest First</option>
+                    </select>
+                  </div>
+
+                  <!-- Custom Student Count Range -->
+                  <div
+                    id="customRangeFilter"
+                    class="hidden grid grid-cols-1 sm:grid-cols-2 gap-3"
+                  >
                     <div>
-                        <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Your Supervisor Registration Code</h2>
-                        <p class="text-slate-600 dark:text-slate-300">Share this code with supervisors for registration</p>
+                      <label
+                        class="block text-xs text-slate-500 dark:text-slate-400 mb-1"
+                        >Min students</label
+                      >
+                      <input
+                        type="number"
+                        id="minStudents"
+                        placeholder="0"
+                        class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 text-sm"
+                      />
                     </div>
-                    <div class="bg-blue-50 dark:bg-blue-900/30 rounded-lg px-4 py-3">
-                        <code id="supervisorKeyDisplay" class="text-2xl font-mono font-bold text-blue-600 dark:text-blue-400"></code>
+                    <div>
+                      <label
+                        class="block text-xs text-slate-500 dark:text-slate-400 mb-1"
+                        >Max students</label
+                      >
+                      <input
+                        type="number"
+                        id="maxStudents"
+                        placeholder="100"
+                        class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 text-sm"
+                      />
                     </div>
+                  </div>
                 </div>
+              </div>
             </div>
 
-            <!-- Supervisors List Section -->
-            <div id="supervisorsSection" class="hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Supervisors</h2>
-                    <div class="flex space-x-3">
-                        <button id="assignStudentsBtn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
-                            Assign Students
-                        </button>
-                        <button id="refreshBtn" class="px-4 py-2 bg-slate-500 hover:bg-slate-600 text-white rounded-lg transition-colors">
-                            Refresh
-                        </button>
-                    </div>
-                </div>
+            <!-- Quick Actions -->
+            <div
+              class="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-slate-200 dark:border-slate-700"
+            >
+              <button
+                id="clearFiltersBtn"
+                class="px-3 py-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 border border-slate-300 dark:border-slate-600 rounded-lg transition-colors flex items-center space-x-1"
+              >
+                <span class="material-symbols-outlined text-sm">clear_all</span>
+                <span>Clear All</span>
+              </button>
+              <button
+                id="exportBtn"
+                class="px-3 py-1.5 text-xs text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 border border-blue-300 dark:border-blue-600 rounded-lg transition-colors flex items-center space-x-1"
+              >
+                <span class="material-symbols-outlined text-sm">download</span>
+                <span>Export</span>
+              </button>
+              <div
+                class="text-xs text-slate-500 dark:text-slate-400 ml-auto flex items-center space-x-1"
+              >
+                <span class="material-symbols-outlined text-sm"
+                  >filter_list</span
+                >
+                <span id="filteredCount">Showing all supervisors</span>
+              </div>
+            </div>
+          </div>
 
-                <!-- Supervisors Grid -->
-                <div id="supervisorsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Supervisors will be dynamically loaded here -->
+          <!-- Tabs Navigation -->
+          <div
+            class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 mb-6"
+          >
+            <div class="border-b border-slate-200 dark:border-slate-700">
+              <nav
+                class="flex overflow-x-auto scrollbar-hide px-3 sm:px-6"
+                aria-label="Tabs"
+              >
+                <div class="flex space-x-4 sm:space-x-8 min-w-max">
+                  <button
+                    id="activeSupervisorsTab"
+                    class="tab-button border-b-2 border-blue-500 text-blue-600 dark:text-blue-400 whitespace-nowrap py-3 sm:py-4 px-1 text-xs sm:text-sm font-medium flex items-center space-x-1 sm:space-x-2"
+                    data-tab="active"
+                  >
+                    <span class="material-symbols-outlined text-xs sm:text-sm"
+                      >check_circle</span
+                    >
+                    <span class="hidden xs:inline">Active</span>
+                    <span
+                      id="activeCount"
+                      class="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 py-0.5 px-1.5 sm:px-2 rounded-full text-xs font-medium"
+                      >0</span
+                    >
+                  </button>
+                  <button
+                    id="newSupervisorsTab"
+                    class="tab-button border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 whitespace-nowrap py-3 sm:py-4 px-1 text-xs sm:text-sm font-medium flex items-center space-x-1 sm:space-x-2"
+                    data-tab="new"
+                  >
+                    <span class="material-symbols-outlined text-xs sm:text-sm"
+                      >pending</span
+                    >
+                    <span class="hidden xs:inline">Pending</span>
+                    <span
+                      id="newCount"
+                      class="bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400 py-0.5 px-1.5 sm:px-2 rounded-full text-xs font-medium"
+                      >0</span
+                    >
+                  </button>
+                  <button
+                    id="inactiveSupervisorsTab"
+                    class="tab-button border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 whitespace-nowrap py-3 sm:py-4 px-1 text-xs sm:text-sm font-medium flex items-center space-x-1 sm:space-x-2"
+                    data-tab="inactive"
+                  >
+                    <span class="material-symbols-outlined text-xs sm:text-sm"
+                      >pause_circle</span
+                    >
+                    <span class="hidden xs:inline">Inactive</span>
+                    <span
+                      id="inactiveCount"
+                      class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 py-0.5 px-1.5 sm:px-2 rounded-full text-xs font-medium"
+                      >0</span
+                    >
+                  </button>
+                  <button
+                    id="removedSupervisorsTab"
+                    class="tab-button border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 whitespace-nowrap py-3 sm:py-4 px-1 text-xs sm:text-sm font-medium flex items-center space-x-1 sm:space-x-2"
+                    data-tab="removed"
+                  >
+                    <span class="material-symbols-outlined text-xs sm:text-sm"
+                      >delete</span
+                    >
+                    <span class="hidden xs:inline">Removed</span>
+                    <span
+                      id="removedCount"
+                      class="bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 py-0.5 px-1.5 sm:px-2 rounded-full text-xs font-medium"
+                      >0</span
+                    >
+                  </button>
                 </div>
-
-                <!-- Empty State -->
-                <div id="emptyState" class="text-center py-12">
-                    <span class="material-symbols-outlined text-6xl text-slate-400 mb-4">supervisor_account</span>
-                    <h3 class="text-xl font-semibold text-slate-600 dark:text-slate-400 mb-2">No Supervisors Yet</h3>
-                    <p class="text-slate-500 dark:text-slate-500">Supervisors will appear here once they register using your code.</p>
-                </div>
+              </nav>
             </div>
 
-            <!-- Loading State -->
-            <div id="loadingSection" class="text-center py-12">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-                <p class="mt-4 text-slate-600 dark:text-slate-400">Loading...</p>
+            <!-- Tab Content -->
+            <div class="p-4 sm:p-6">
+              <!-- Active Supervisors Tab -->
+              <div id="activeSupervisorsContent" class="tab-content">
+                <div
+                  class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4"
+                >
+                  <h3
+                    class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100 text-center sm:text-left"
+                  >
+                    Active Supervisors
+                  </h3>
+                  <p
+                    class="text-sm text-slate-500 dark:text-slate-400 text-center sm:text-right"
+                  >
+                    <span id="activeSupervisorsCount">0</span> active
+                    supervisors
+                  </p>
+                </div>
+                <div
+                  id="activeSupervisorsGrid"
+                  class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+                >
+                  <!-- Active supervisors will be loaded here -->
+                </div>
+                <div id="activeEmptyState" class="text-center py-8 sm:py-12">
+                  <span
+                    class="material-symbols-outlined text-4xl sm:text-6xl text-slate-400 mb-3 sm:mb-4"
+                    >check_circle</span
+                  >
+                  <h3
+                    class="text-lg sm:text-xl font-semibold text-slate-600 dark:text-slate-400 mb-2"
+                  >
+                    No Active Supervisors
+                  </h3>
+                  <p
+                    class="text-slate-500 dark:text-slate-500 text-sm sm:text-base"
+                  >
+                    Activate supervisors from the pending approval tab to see
+                    them here.
+                  </p>
+                </div>
+              </div>
+
+              <!-- New Supervisors Tab -->
+              <div id="newSupervisorsContent" class="tab-content hidden">
+                <div
+                  class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4"
+                >
+                  <h3
+                    class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100 text-center sm:text-left"
+                  >
+                    Pending Approval
+                  </h3>
+                  <p
+                    class="text-sm text-slate-500 dark:text-slate-400 text-center sm:text-right"
+                  >
+                    <span id="newSupervisorsCount">0</span> supervisors awaiting
+                    approval
+                  </p>
+                </div>
+                <div
+                  id="newSupervisorsGrid"
+                  class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+                >
+                  <!-- New supervisors will be loaded here -->
+                </div>
+                <div id="newEmptyState" class="text-center py-8 sm:py-12">
+                  <span
+                    class="material-symbols-outlined text-4xl sm:text-6xl text-slate-400 mb-3 sm:mb-4"
+                    >pending</span
+                  >
+                  <h3
+                    class="text-lg sm:text-xl font-semibold text-slate-600 dark:text-slate-400 mb-2"
+                  >
+                    No Pending Approvals
+                  </h3>
+                  <p
+                    class="text-slate-500 dark:text-slate-500 text-sm sm:text-base"
+                  >
+                    New supervisors will appear here once they register using
+                    your code.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Inactive Supervisors Tab -->
+              <div id="inactiveSupervisorsContent" class="tab-content hidden">
+                <div
+                  class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4"
+                >
+                  <h3
+                    class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100 text-center sm:text-left"
+                  >
+                    Inactive Supervisors
+                  </h3>
+                  <p
+                    class="text-sm text-slate-500 dark:text-slate-400 text-center sm:text-right"
+                  >
+                    <span id="inactiveSupervisorsCount">0</span> inactive
+                    supervisors
+                  </p>
+                </div>
+                <div
+                  id="inactiveSupervisorsGrid"
+                  class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+                >
+                  <!-- Inactive supervisors will be loaded here -->
+                </div>
+                <div id="inactiveEmptyState" class="text-center py-8 sm:py-12">
+                  <span
+                    class="material-symbols-outlined text-4xl sm:text-6xl text-slate-400 mb-3 sm:mb-4"
+                    >pause_circle</span
+                  >
+                  <h3
+                    class="text-lg sm:text-xl font-semibold text-slate-600 dark:text-slate-400 mb-2"
+                  >
+                    No Inactive Supervisors
+                  </h3>
+                  <p
+                    class="text-slate-500 dark:text-slate-500 text-sm sm:text-base"
+                  >
+                    Deactivated supervisors will appear here.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Removed Supervisors Tab -->
+              <div id="removedSupervisorsContent" class="tab-content hidden">
+                <div
+                  class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4"
+                >
+                  <h3
+                    class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100 text-center sm:text-left"
+                  >
+                    Removed Supervisors
+                  </h3>
+                  <p
+                    class="text-sm text-slate-500 dark:text-slate-400 text-center sm:text-right"
+                  >
+                    <span id="removedSupervisorsCount">0</span> removed
+                    supervisors
+                  </p>
+                </div>
+                <div
+                  id="removedSupervisorsGrid"
+                  class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+                >
+                  <!-- Removed supervisors will be loaded here -->
+                </div>
+                <div id="removedEmptyState" class="text-center py-8 sm:py-12">
+                  <span
+                    class="material-symbols-outlined text-4xl sm:text-6xl text-slate-400 mb-3 sm:mb-4"
+                    >delete</span
+                  >
+                  <h3
+                    class="text-lg sm:text-xl font-semibold text-slate-600 dark:text-slate-400 mb-2"
+                  >
+                    No Removed Supervisors
+                  </h3>
+                  <p
+                    class="text-slate-500 dark:text-slate-500 text-sm sm:text-base"
+                  >
+                    Supervisors that have been removed from the system will
+                    appear here.
+                  </p>
+                </div>
+              </div>
             </div>
-        </main>
+          </div>
+
+          <!-- Summary Cards -->
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6"
+          >
+            <div
+              class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6"
+            >
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <span
+                    class="material-symbols-outlined text-xl sm:text-2xl text-green-500"
+                    >check_circle</span
+                  >
+                </div>
+                <div class="ml-3 sm:ml-5 w-0 flex-1">
+                  <dl>
+                    <dt
+                      class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 truncate"
+                    >
+                      Active Supervisors
+                    </dt>
+                    <dd>
+                      <div
+                        class="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100"
+                        id="summaryActiveCount"
+                      >
+                        0
+                      </div>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6"
+            >
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <span
+                    class="material-symbols-outlined text-xl sm:text-2xl text-amber-500"
+                    >pending</span
+                  >
+                </div>
+                <div class="ml-3 sm:ml-5 w-0 flex-1">
+                  <dl>
+                    <dt
+                      class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 truncate"
+                    >
+                      Pending Approval
+                    </dt>
+                    <dd>
+                      <div
+                        class="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100"
+                        id="summaryNewCount"
+                      >
+                        0
+                      </div>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6"
+            >
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <span
+                    class="material-symbols-outlined text-xl sm:text-2xl text-slate-400"
+                    >pause_circle</span
+                  >
+                </div>
+                <div class="ml-3 sm:ml-5 w-0 flex-1">
+                  <dl>
+                    <dt
+                      class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 truncate"
+                    >
+                      Inactive Supervisors
+                    </dt>
+                    <dd>
+                      <div
+                        class="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100"
+                        id="summaryInactiveCount"
+                      >
+                        0
+                      </div>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6"
+            >
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <span
+                    class="material-symbols-outlined text-xl sm:text-2xl text-red-500"
+                    >delete</span
+                  >
+                </div>
+                <div class="ml-3 sm:ml-5 w-0 flex-1">
+                  <dl>
+                    <dt
+                      class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 truncate"
+                    >
+                      Removed Supervisors
+                    </dt>
+                    <dd>
+                      <div
+                        class="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100"
+                        id="summaryRemovedCount"
+                      >
+                        0
+                      </div>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingSection" class="text-center py-8 sm:py-12">
+          <div
+            class="animate-spin rounded-full h-8 sm:h-12 w-8 sm:w-12 border-b-2 border-blue-500 mx-auto"
+          ></div>
+          <p
+            class="mt-3 sm:mt-4 text-slate-600 dark:text-slate-400 text-sm sm:text-base"
+          >
+            Loading...
+          </p>
+        </div>
+      </main>
     </div>
 
     <!-- Assign Students Modal -->
-    <div id="assignStudentsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
-            <div class="flex justify-between items-center p-6 border-b border-slate-200 dark:border-slate-700">
-                <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100">Assign Students to Supervisors</h3>
-                <button id="closeModalBtn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </div>
-            
-            <div class="p-6">
-                <div class="mb-6">
-                    <label class="flex items-center space-x-3">
-                        <input type="radio" name="assignmentType" value="random" checked class="text-blue-500">
-                        <span class="text-slate-700 dark:text-slate-300">Assign students randomly</span>
-                    </label>
-                    <label class="flex items-center space-x-3 mt-3">
-                        <input type="radio" name="assignmentType" value="manual" class="text-blue-500">
-                        <span class="text-slate-700 dark:text-slate-300">Assign students manually</span>
-                    </label>
-                </div>
-
-                <div id="manualAssignment" class="hidden space-y-4">
-                    <!-- Manual assignment interface would go here -->
-                    <p class="text-slate-600 dark:text-slate-400 text-sm">
-                        Manual assignment interface would be implemented here.
-                    </p>
-                </div>
-
-                <div class="flex justify-end space-x-3 pt-4 border-t border-slate-200 dark:border-slate-700">
-                    <button id="cancelAssignBtn" class="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
-                        Cancel
-                    </button>
-                    <button id="confirmAssignBtn" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors">
-                        Assign Students
-                    </button>
-                </div>
-            </div>
+    <div
+      id="assignStudentsModal"
+      class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-3 sm:p-4 z-50"
+    >
+      <div
+        class="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden mx-2"
+      >
+        <div
+          class="flex justify-between items-center p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700"
+        >
+          <h3
+            class="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100"
+          >
+            Assign Students to Supervisors
+          </h3>
+          <button
+            id="closeModalBtn"
+            class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+          >
+            <span class="material-symbols-outlined text-lg">close</span>
+          </button>
         </div>
+
+        <div class="p-4 sm:p-6">
+          <div class="mb-4 sm:mb-6">
+            <label class="flex items-center space-x-2 sm:space-x-3">
+              <input
+                type="radio"
+                name="assignmentType"
+                value="random"
+                checked
+                class="text-blue-500"
+              />
+              <span
+                class="text-slate-700 dark:text-slate-300 text-sm sm:text-base"
+                >Assign students randomly</span
+              >
+            </label>
+            <label
+              class="flex items-center space-x-2 sm:space-x-3 mt-2 sm:mt-3"
+            >
+              <input
+                type="radio"
+                name="assignmentType"
+                value="manual"
+                class="text-blue-500"
+              />
+              <span
+                class="text-slate-700 dark:text-slate-300 text-sm sm:text-base"
+                >Assign students manually</span
+              >
+            </label>
+          </div>
+
+          <div id="manualAssignment" class="hidden space-y-3 sm:space-y-4">
+            <!-- Loading State -->
+            <div
+              id="manualAssignmentLoading"
+              class="flex flex-col items-center justify-center py-8 sm:py-12"
+            >
+              <div class="csv-loader mb-4">
+                <div class="csv-row"></div>
+                <div class="csv-row"></div>
+                <div class="csv-row"></div>
+                <div class="csv-row"></div>
+                <div class="csv-row"></div>
+              </div>
+              <p
+                class="text-slate-600 dark:text-slate-400 text-sm sm:text-base text-center"
+              >
+                Loading assignment interface...
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="flex flex-col sm:flex-row sm:justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4 border-t border-slate-200 dark:border-slate-700"
+          >
+            <button
+              id="cancelAssignBtn"
+              class="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors order-2 sm:order-1"
+            >
+              Cancel
+            </button>
+            <button
+              id="confirmAssignBtn"
+              class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors order-1 sm:order-2"
+            >
+              Assign Students
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script type="module" src="../company/supervisor_management.js"></script>
-</body>
+
+    <style>
+      /* Hide scrollbar for Chrome, Safari and Opera */
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* Hide scrollbar for IE, Edge and Firefox */
+      .scrollbar-hide {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+      }
+
+      /* Custom breakpoint for extra small screens */
+      @media (min-width: 475px) {
+        .xs\:inline {
+          display: inline !important;
+        }
+      }
+
+      /* Active mode button styles */
+      .mode-btn.active-mode {
+        background-color: rgb(239 246 255);
+        border-color: rgb(59 130 246);
+        color: rgb(37 99 235);
+      }
+
+      .dark .mode-btn.active-mode {
+        background-color: rgb(30 58 138 / 0.3);
+        border-color: rgb(96 165 250);
+        color: rgb(96 165 250);
+      }
+
+      .mode-btn:hover {
+        transform: translateY(-1px);
+      }
+
+      /* CSV Loader Animation */
+      .csv-loader {
+        width: 200px;
+        height: 120px;
+        background: linear-gradient(
+          90deg,
+          #f0f0f0 25%,
+          #e0e0e0 50%,
+          #f0f0f0 75%
+        );
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        padding: 10px;
+      }
+
+      .dark .csv-loader {
+        background: linear-gradient(
+          90deg,
+          #374151 25%,
+          #4b5563 50%,
+          #374151 75%
+        );
+        background-size: 200% 100%;
+      }
+
+      .csv-row {
+        height: 12px;
+        background: #d1d5db;
+        border-radius: 4px;
+        animation: pulse 2s infinite;
+      }
+
+      .dark .csv-row {
+        background: #6b7280;
+      }
+
+      .csv-row:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .csv-row:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      .csv-row:nth-child(4) {
+        animation-delay: 0.6s;
+      }
+      .csv-row:nth-child(5) {
+        animation-delay: 0.8s;
+      }
+
+      @keyframes loading {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+    </style>
+  </body>
 </html>

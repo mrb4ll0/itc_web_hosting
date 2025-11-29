@@ -500,8 +500,7 @@ getTraineeTraining(trainee) {
     if (currentTrainees.length > 0) {
       // Use migrated students
       this.originalTrainees = currentTrainees;
-      console.log("originalTrainees " + JSON.stringify(this.originalTrainees));
-      //console.log(`🎯 Using ${currentStudents.length} migrated students`);
+      
     } else {
       // Use applications (not yet migrated)
       this.originalTrainees = currentStudents;

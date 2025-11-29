@@ -379,6 +379,8 @@ class SupervisorManagementService {
       throw new Error("No user authenticated");
     }
 
+     
+
     try {
       const companyCode = await this.getCompanyCode();
       if (!companyCode) {
@@ -400,7 +402,6 @@ class SupervisorManagementService {
 
       const currentStudents = supervisorDoc.data().students || [];
       const updatedStudents = [...new Set([...currentStudents, ...studentIds])];
-
       await updateDoc(supervisorDocRef, {
         students: updatedStudents,
         updatedAt: new Date(),

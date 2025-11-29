@@ -4,6 +4,22 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Company Notifications - IT Connect</title>
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      // Immediate theme application to prevent flash
+      (function () {
+        const savedTheme = localStorage.getItem("app-theme");
+        const systemDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+
+        if (savedTheme === "dark" || (!savedTheme && systemDark)) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      })();
+    </script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap"
@@ -51,7 +67,10 @@
       id="app-root"
       class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden"
     >
-      <div id="layout-container" class="layout-container flex h-full grow flex-col">
+      <div
+        id="layout-container"
+        class="layout-container flex h-full grow flex-col"
+      >
         <header
           id="main-header"
           class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f1f5] dark:border-b-gray-700 px-10 py-3 bg-white dark:bg-background-dark sticky top-0 z-10"
@@ -60,7 +79,7 @@
             id="logo-container"
             class="flex items-center gap-4 text-text-primary dark:text-white"
           >
-            <div id="logo-icon"  class="w-15 h-8 text-primary animate-bounce">
+            <div id="logo-icon" class="w-15 h-8 text-primary animate-bounce">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -88,7 +107,7 @@
               id="company-logo"
               class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
               data-alt="Company logo"
-              style="background-color: #005A9C;"
+              style="background-color: #005a9c"
             ></div>
           </div>
         </header>
@@ -97,7 +116,10 @@
           class="flex-1 px-4 sm:px-6 lg:px-8 py-8 bg-secondary dark:bg-gray-900"
         >
           <div id="content-container" class="max-w-4xl mx-auto">
-            <div id="page-header" class="flex flex-wrap justify-between items-center gap-4 mb-6">
+            <div
+              id="page-header"
+              class="flex flex-wrap justify-between items-center gap-4 mb-6"
+            >
               <h1
                 id="page-title"
                 class="text-text-primary dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]"
@@ -115,7 +137,10 @@
               id="filter-section"
               class="bg-white dark:bg-background-dark p-4 rounded-lg shadow-sm mb-6"
             >
-              <div id="filter-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div
+                id="filter-grid"
+                class="grid grid-cols-1 md:grid-cols-3 gap-4"
+              >
                 <div id="filter-type-container" class="flex items-center gap-2">
                   <button
                     id="filter-type-btn"
@@ -158,7 +183,10 @@
                   </button>
                 </div>
                 <div id="search-container" class="md:col-span-1">
-                  <label id="search-label" class="flex flex-col min-w-40 h-10 w-full">
+                  <label
+                    id="search-label"
+                    class="flex flex-col min-w-40 h-10 w-full"
+                  >
                     <div
                       id="search-input-wrapper"
                       class="flex w-full flex-1 items-stretch rounded-lg h-full"
@@ -167,7 +195,9 @@
                         id="search-icon-container"
                         class="text-text-secondary dark:text-gray-400 flex border-none bg-secondary dark:bg-gray-800 items-center justify-center pl-3 rounded-l-lg border-r-0"
                       >
-                        <span id="search-icon" class="material-symbols-outlined">search</span>
+                        <span id="search-icon" class="material-symbols-outlined"
+                          >search</span
+                        >
                       </div>
                       <input
                         id="search-input"
@@ -183,11 +213,28 @@
             <div id="notifications-container" class="space-y-4">
               <!-- Empty State -->
               <div id="empty-state" class="text-center py-20">
-                <div id="empty-state-icon-container" class="inline-block bg-secondary dark:bg-gray-800 p-6 rounded-full">
-                  <span id="empty-state-icon" class="material-symbols-outlined text-5xl text-text-secondary dark:text-gray-400">notifications_off</span>
+                <div
+                  id="empty-state-icon-container"
+                  class="inline-block bg-secondary dark:bg-gray-800 p-6 rounded-full"
+                >
+                  <span
+                    id="empty-state-icon"
+                    class="material-symbols-outlined text-5xl text-text-secondary dark:text-gray-400"
+                    >notifications_off</span
+                  >
                 </div>
-                <h3 id="empty-state-title" class="mt-6 text-xl font-semibold text-text-primary dark:text-white">No new notifications</h3>
-                <p id="empty-state-description" class="mt-2 text-text-secondary dark:text-gray-400">When you receive updates, they will appear here.</p>
+                <h3
+                  id="empty-state-title"
+                  class="mt-6 text-xl font-semibold text-text-primary dark:text-white"
+                >
+                  No new notifications
+                </h3>
+                <p
+                  id="empty-state-description"
+                  class="mt-2 text-text-secondary dark:text-gray-400"
+                >
+                  When you receive updates, they will appear here.
+                </p>
               </div>
             </div>
           </div>

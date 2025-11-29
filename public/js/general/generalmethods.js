@@ -1893,7 +1893,16 @@ export default {
   extractFileNameFromUrl,
   viewExistingFile,
   showUploadedFileDialog,
+   show: showLoadingOverlay,
+    hide: hideLoadingOverlay,
+    update: updateLoadingOverlay,
+    forceHide: forceHideLoadingOverlay,
+    progress: {
+        show: showProgressOverlay,
+        update: updateProgressOverlay
+    }
 };
+
 
 
 function messageDialog(hideCancel = true, application , fromEdit=true) {
@@ -2557,6 +2566,79 @@ function safeConvertToTimestamp(timestamp) {
     console.warn('Invalid timestamp format, using current time:', timestamp);
     return new Date().getTime();
 }
+
+/**
+ * Convert various timestamp formats to a formatted date string (e.g., "2025-11-27 09:15:00")
+ * @param {*} timestamp - Can be a Date, Firestore Timestamp, number, or string
+ * @param {string} format - Optional: desired format ('YYYY-MM-DD', 'YYYY-MM-DD HH:mm:ss')
+ * @returns {string} Formatted date string
+ */
+function formatTimestamp(timestamp, format = 'YYYY-MM-DD HH:mm:ss') {
+    let date;
+
+    // Null or undefined: use current date
+    if (!timestamp) {
+        date = new Date();
+    }
+    // Already a Date object
+    else if (timestamp instanceof Date) {
+        date = timestamp;
+    }
+    // Firestore Timestamp with toDate()
+    else if (timestamp.toDate && typeof timestamp.toDate === 'function') {
+        date = timestamp.toDate();
+    }
+    // Firestore-like object with seconds/nanoseconds
+    else if (timestamp.seconds !== undefined) {
+        date = new Date(timestamp.seconds * 1000 + Math.floor(timestamp.nanoseconds / 1000000));
+    }
+    // Number: determine if seconds or milliseconds
+    else if (typeof timestamp === 'number') {
+        if (timestamp < 1e12) {
+            // seconds -> milliseconds
+            date = new Date(timestamp * 1000);
+        } else {
+            date = new Date(timestamp);
+        }
+    }
+    // String: parseable as date
+    else if (typeof timestamp === 'string') {
+        date = new Date(timestamp);
+    } 
+    else {
+        console.warn('Unknown timestamp format, returning current date');
+        date = new Date();
+    }
+
+    // If invalid date, fallback
+    if (isNaN(date.getTime())) {
+        console.warn('Invalid date, using current date');
+        date = new Date();
+    }
+
+    // Helper to pad numbers
+    const pad = (n) => (n < 10 ? '0' + n : n);
+
+    // Build formatted string
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+
+    switch (format) {
+        case 'YYYY-MM-DD':
+            return `${year}-${month}-${day}`;
+        case 'YYYY/MM/DD':
+            return `${year}/${month}/${day}`;
+        case 'YYYY-MM-DD HH:mm:ss':
+        default:
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
+}
+
+
 // Add this method to your class or as a global function
 function showNotification(message, type = 'info', duration = 5000) {
     // Create notification container if it doesn't exist
@@ -2758,6 +2840,218 @@ function removeNotification(notification) {
     }
 }
 
+// loadingOverlay.js - Global Loading Overlay Utility
+
+let overlayInstance = null;
+let overlayCount = 0;
+
+/**
+ * Shows a global loading overlay
+ * @param {string} message - The message to display
+ * @param {Object} options - Additional options
+ * @param {boolean} options.withBlur - Whether to add backdrop blur
+ * @param {string} options.type - Type of loading: 'spinner', 'dots', 'progress'
+ * @param {number} options.progress - Progress percentage (0-100) for progress type
+ */
+export function showLoadingOverlay(message = 'Loading...', options = {}) {
+    // If overlay already exists, just update it and increment counter
+    if (overlayInstance) {
+        overlayCount++;
+        updateLoadingOverlay(message, options);
+        return;
+    }
+
+    overlayCount = 1;
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'globalLoadingOverlay';
+    overlay.className = 'fixed inset-0 flex items-center justify-center transition-all duration-300 z-[9999]';
+    
+    // Background with optional blur
+    const bgClass = options.withBlur ? 'backdrop-blur-sm bg-black/60' : 'bg-black/50';
+    overlay.className += ` ${bgClass}`;
+
+    // Loading content based on type
+    const loadingContent = getLoadingContent(message, options);
+
+    overlay.innerHTML = `
+        <div class="loading-content bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 transform transition-all duration-300 scale-95 animate-fade-in">
+            ${loadingContent}
+        </div>
+    `;
+
+    // Add CSS for animation if not already added
+    addLoadingStyles();
+    
+    document.body.appendChild(overlay);
+    overlayInstance = overlay;
+
+    // Trigger animation
+    setTimeout(() => {
+        const content = overlay.querySelector('.loading-content');
+        if (content) {
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
+        }
+    }, 50);
+}
+
+/**
+ * Updates the existing loading overlay
+ */
+export function updateLoadingOverlay(message = 'Loading...', options = {}) {
+    if (!overlayInstance) return;
+
+    const content = overlayInstance.querySelector('.loading-content');
+    if (content) {
+        const newContent = getLoadingContent(message, options);
+        content.innerHTML = newContent;
+    }
+}
+
+/**
+ * Hides the loading overlay
+ */
+export function hideLoadingOverlay() {
+    overlayCount--;
+    
+    if (overlayCount > 0) {
+        return; // Don't hide if there are still pending operations
+    }
+    
+    if (!overlayInstance) return;
+
+    const content = overlayInstance.querySelector('.loading-content');
+    if (content) {
+        content.classList.remove('scale-100');
+        content.classList.add('scale-95');
+    }
+
+    setTimeout(() => {
+        if (overlayInstance && overlayInstance.parentNode) {
+            overlayInstance.parentNode.removeChild(overlayInstance);
+        }
+        overlayInstance = null;
+        overlayCount = 0;
+    }, 300);
+}
+
+/**
+ * Force hide the loading overlay regardless of counter
+ */
+export function forceHideLoadingOverlay() {
+    if (overlayInstance && overlayInstance.parentNode) {
+        overlayInstance.parentNode.removeChild(overlayInstance);
+    }
+    overlayInstance = null;
+    overlayCount = 0;
+}
+
+/**
+ * Shows a progress-based loading overlay
+ */
+export function showProgressOverlay(message = 'Loading...', progress = 0) {
+    showLoadingOverlay(message, {
+        type: 'progress',
+        progress: Math.max(0, Math.min(100, progress))
+    });
+}
+
+/**
+ * Updates progress on the loading overlay
+ */
+export function updateProgressOverlay(progress, message = null) {
+    if (!overlayInstance) return;
+
+    const progressBar = overlayInstance.querySelector('.progress-bar');
+    const progressText = overlayInstance.querySelector('.progress-text');
+    
+    if (progressBar) {
+        progressBar.style.width = `${Math.max(0, Math.min(100, progress))}%`;
+    }
+    
+    if (message && progressText) {
+        progressText.textContent = message;
+    }
+}
+
+/**
+ * Gets the appropriate loading content based on type
+ */
+function getLoadingContent(message, options = {}) {
+    const type = options.type || 'spinner';
+    
+    switch (type) {
+        case 'dots':
+            return `
+                <div class="flex items-center space-x-4">
+                    <div class="flex space-x-1">
+                        <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                        <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                        <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-slate-800 dark:text-slate-200 font-medium">${message}</p>
+                    </div>
+                </div>
+            `;
+            
+        case 'progress':
+            const progress = options.progress || 0;
+            return `
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <p class="text-slate-800 dark:text-slate-200 font-medium progress-text">${message}</p>
+                        <span class="text-sm text-slate-500 dark:text-slate-400">${progress}%</span>
+                    </div>
+                    <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                        <div class="progress-bar bg-blue-500 h-2 rounded-full transition-all duration-500 ease-out" style="width: ${progress}%"></div>
+                    </div>
+                </div>
+            `;
+            
+        case 'spinner':
+        default:
+            return `
+                <div class="flex items-center space-x-4">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 flex-shrink-0"></div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-slate-800 dark:text-slate-200 font-medium truncate">${message}</p>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm mt-1">Please wait...</p>
+                    </div>
+                </div>
+            `;
+    }
+}
+
+/**
+ * Adds necessary CSS styles for the loading overlay
+ */
+function addLoadingStyles() {
+    if (document.getElementById('loadingOverlayStyles')) return;
+    
+    const style = document.createElement('style');
+    style.id = 'loadingOverlayStyles';
+    style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        /* Backdrop blur support */
+        @supports (backdrop-filter: blur(4px)) {
+            .backdrop-blur-sm {
+                backdrop-filter: blur(4px);
+            }
+        }
+    `;
+    
+    document.head.appendChild(style);
+}
+
 export{validateStoragePath,
   validateStorageUrl,
   getAvatarElement,
@@ -2766,7 +3060,8 @@ export{validateStoragePath,
 safeConvertToTimestamp,
 removeNotification,
 updateNotification,
-showNotification
+showNotification,
+formatTimestamp
 }
 
 
