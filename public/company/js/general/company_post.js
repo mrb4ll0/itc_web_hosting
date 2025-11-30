@@ -1,7 +1,6 @@
-// company-postings.js
-
 import { ITBaseCompanyCloud } from "../../../js/fireabase/ITBaseCompanyCloud.js";
 import { auth } from "../../../js/config/firebaseInit.js";
+import { formatTimestamp, hideLoadingDialog, showLoadingDialog } from "../../../js/general/generalmethods.js";
 
 class CompanyPostings {
   constructor() {
@@ -41,6 +40,24 @@ class CompanyPostings {
         this.applySearchFilter("");
       }
     });
+
+    const searchInputMobile = document.getElementById("search-posting-mobile");
+  if (searchInputMobile) {
+    let searchTimeoutMobile;
+    searchInputMobile.addEventListener("input", (e) => {
+      clearTimeout(searchTimeoutMobile);
+      searchTimeoutMobile = setTimeout(() => {
+        this.applySearchFilter(e.target.value);
+      }, 300);
+    });
+
+    searchInputMobile.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        searchInputMobile.value = "";
+        this.applySearchFilter("");
+      }
+    });
+  }
   }
 
   applySearchFilter(searchTerm) {
@@ -111,6 +128,7 @@ class CompanyPostings {
   }
 
   async init() {
+    showLoadingDialog("loading");
     try {
       // Get current user (you'll need to implement this based on your auth system)
       this.currentUser = await this.getCurrentUser();
@@ -415,7 +433,7 @@ class CompanyPostings {
             this.currentUser.uid,
             it.id
           );
-
+          
           return {
             id: it.id,
             title: it.title || "Untitled Posting",
@@ -426,7 +444,7 @@ class CompanyPostings {
             createdAt: it.postedAt || new Date(),
             applicationStats: stats,
             department: it.department || "General",
-            location: it.location || "Not specified",
+            location: it.address || "Not specified",
             type: it.type || "Full-time",
           };
         })
@@ -494,28 +512,35 @@ class CompanyPostings {
   }
 
   renderTable() {
+    hideLoadingDialog();
     const tbody = document.querySelector("tbody");
     if (!tbody) return;
 
-    const displayPostings = this.filteredPostings.length > 0 ? this.filteredPostings : this.postings;
+    if (tbody) {
+      const displayPostings =
+        this.filteredPostings.length > 0
+          ? this.filteredPostings
+          : this.postings;
 
-    if (displayPostings.length === 0) {
+      if (displayPostings.length === 0) {
         this.showEmptyState();
         return;
-    }
+      }
 
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    const currentItems = displayPostings.slice(startIndex, endIndex);
+      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+      const endIndex = startIndex + this.itemsPerPage;
+      const currentItems = displayPostings.slice(startIndex, endIndex);
 
-    tbody.innerHTML = currentItems
+      tbody.innerHTML = currentItems
         .map(
-            (posting) => `
+          (posting) => `
             <tr class="bg-white dark:bg-background-dark border-b dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                 <td class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                     <div class="flex flex-col">
                         <span class="font-semibold">${posting.title}</span>
-                        <span class="text-xs text-gray-500 dark:text-gray-400 mt-1">${posting.department} • ${posting.location}</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400 mt-1">${
+                          posting.department
+                        } • ${posting.location}</span>
                     </div>
                 </td>
                 <td class="px-6 py-4">
@@ -525,7 +550,9 @@ class CompanyPostings {
                     <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-lg">group</span>
                         <span>${posting.applicants}</span>
-                        ${posting.applicationStats && posting.applicationStats.pending > 0
+                        ${
+                          posting.applicationStats &&
+                          posting.applicationStats.pending > 0
                             ? `
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                                 ${posting.applicationStats.pending} new
@@ -536,7 +563,7 @@ class CompanyPostings {
                     </div>
                 </td>
                 <td class="px-6 py-4 text-gray-700 dark:text-gray-300">
-                    ${TimestampFormatter.toDateTime(posting.createdAt)}
+                    ${formatTimestamp(posting.createdAt)}
                 </td>
                 <td class="px-6 py-4 text-center">
                     <div class="flex items-center justify-center gap-1">
@@ -556,7 +583,8 @@ class CompanyPostings {
                             <span class="material-symbols-outlined text-gray-600 dark:text-gray-400 group-hover:text-red-500 text-lg">delete</span>
                         </button>
 
-                        ${posting.status === 'open' 
+                        ${
+                          posting.status === "open"
                             ? `
                                 <button class="p-2 rounded-full hover:bg-orange-100 dark:hover:bg-orange-900/50 group close-btn" 
                                         data-id="${posting.id}" 
@@ -578,16 +606,232 @@ class CompanyPostings {
         `
         )
         .join("");
+    }
+    this.renderMobileList();
 
     // Show pagination
-    const pagination = document.querySelector('nav[aria-label="Page navigation"]');
+    const pagination = document.querySelector(
+      'nav[aria-label="Page navigation"]'
+    );
     if (pagination) {
-        pagination.style.opacity = "1";
-        this.renderPagination();
+      pagination.style.opacity = "1";
+      this.renderPagination();
     }
 
     this.attachEventListeners();
+  }
+
+
+  // Add this method to render mobile cards
+renderMobileList() {
+  const mobileList = document.getElementById('mobile-postings-list');
+  if (!mobileList) return;
+
+  const displayPostings = this.filteredPostings.length > 0 ? this.filteredPostings : this.postings;
+
+  if (displayPostings.length === 0) {
+    mobileList.innerHTML = this.getMobileEmptyState();
+    return;
+  }
+
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+  const currentItems = displayPostings.slice(startIndex, endIndex);
+  //console.log("currentItems are "+JSON.stringify(currentItems));
+
+  mobileList.innerHTML = currentItems
+    .map(posting => this.createMobilePostingCard(posting))
+    .join('');
+
+  this.attachMobileEventListeners();
 }
+
+// Add this method to create mobile card HTML
+createMobilePostingCard(posting) {
+  //console.log("posting is "+JSON.stringify(posting));
+  return `
+    <div class="posting-card bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+      <div class="flex justify-between items-start mb-3">
+        <h3 class="font-semibold text-gray-900 dark:text-white text-base truncate flex-1 mr-2">
+          ${posting.title}
+        </h3>
+        <span class="status-badge ${this.getStatusClass(posting.status)}">
+          ${posting.status}
+        </span>
+      </div>
+      
+      <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+        <div class="flex justify-between">
+          <span class="font-medium">Applicants:</span>
+          <span class="text-gray-900 dark:text-white">${posting.applicants}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="font-medium">Posted:</span>
+          <span class="text-gray-900 dark:text-white">${formatTimestamp(posting.createdAt)}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="font-medium">Department:</span>
+          <span class="text-gray-900 dark:text-white">${posting.department}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="font-medium">Location:</span>
+          <span class="text-gray-900 dark:text-white">${posting.location}</span>
+        </div>
+      </div>
+      
+      <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+        <div class="flex gap-3">
+          <button class="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1 view-btn-mobile" 
+                  data-id="${posting.id}">
+            <span class="material-symbols-outlined text-lg">visibility</span>
+            View
+          </button>
+          <button class="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1 edit-btn-mobile" 
+                  data-id="${posting.id}">
+            <span class="material-symbols-outlined text-lg">edit</span>
+            Edit
+          </button>
+        </div>
+        <div class="flex gap-3">
+          ${posting.status === 'open' 
+            ? `
+              <button class="text-orange-600 hover:text-orange-800 text-sm font-medium flex items-center gap-1 close-btn-mobile" 
+                      data-id="${posting.id}">
+                <span class="material-symbols-outlined text-lg">lock</span>
+                Close
+              </button>
+            `
+            : `
+              <button class="text-green-600 hover:text-green-800 text-sm font-medium flex items-center gap-1 open-btn-mobile" 
+                      data-id="${posting.id}">
+                <span class="material-symbols-outlined text-lg">lock_open</span>
+                Open
+              </button>
+            `
+          }
+          <button class="text-red-600 hover:text-red-800 text-sm font-medium flex items-center gap-1 delete-btn-mobile" 
+                  data-id="${posting.id}">
+            <span class="material-symbols-outlined text-lg">delete</span>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Add this method for mobile empty state
+getMobileEmptyState() {
+  let emptyMessage = "";
+  let emptyDescription = "";
+
+  if (this.filters.searchTerm || this.filters.status !== "all") {
+    emptyMessage = "No matching postings found";
+    emptyDescription = "Try adjusting your search terms or filters to find what you're looking for.";
+  } else {
+    emptyMessage = "No Postings Yet";
+    emptyDescription = "You haven't created any postings yet. Get started by creating your first one!";
+  }
+
+  return `
+    <div class="text-center py-12">
+      <div class="flex flex-col items-center gap-4">
+        <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600">
+          ${this.filters.searchTerm ? "search_off" : "description"}
+        </span>
+        <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">${emptyMessage}</h3>
+        <p class="text-gray-500 dark:text-gray-400 text-center max-w-md">${emptyDescription}</p>
+        ${
+          this.filters.searchTerm || this.filters.status !== "all"
+            ? `
+            <button class="mt-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm clear-filters-btn-mobile">
+              Clear Filters
+            </button>
+          `
+            : `
+            <button class="mt-2 flex items-center justify-center gap-2 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-bold h-10 px-5 shadow-sm transition-colors create-posting-btn-mobile">
+              <span class="material-symbols-outlined text-xl">add_circle</span>
+              <span class="truncate">Create New Posting</span>
+            </button>
+          `
+        }
+      </div>
+    </div>
+  `;
+}
+
+// Add this method for mobile status classes
+getStatusClass(status) {
+  switch(status.toLowerCase()) {
+    case 'open': return 'status-active';
+    case 'closed': return 'status-closed';
+    case 'draft': return 'status-draft';
+    default: return 'status-draft';
+  }
+}
+
+  // Add this method for mobile event listeners
+  attachMobileEventListeners() {
+    // Edit button - mobile
+    document.querySelectorAll(".edit-btn-mobile").forEach((button) => {
+      button.addEventListener("click", (e) => {
+        const postingId = e.currentTarget.getAttribute("data-id");
+        this.editPosting(postingId);
+      });
+    });
+
+    // View applications button - mobile
+    document.querySelectorAll(".view-btn-mobile").forEach((button) => {
+      button.addEventListener("click", (e) => {
+        const postingId = e.currentTarget.getAttribute("data-id");
+        this.viewApplications(postingId);
+      });
+    });
+
+    // Delete button - mobile
+    document.querySelectorAll(".delete-btn-mobile").forEach((button) => {
+      button.addEventListener("click", (e) => {
+        const postingId = e.currentTarget.getAttribute("data-id");
+        this.deletePosting(postingId);
+      });
+    });
+
+    // Close button - mobile
+    document.querySelectorAll(".close-btn-mobile").forEach((button) => {
+      button.addEventListener("click", (e) => {
+        const postingId = e.currentTarget.getAttribute("data-id");
+        this.toggleStatus(postingId);
+      });
+    });
+
+    // Open button - mobile
+    document.querySelectorAll(".open-btn-mobile").forEach((button) => {
+      button.addEventListener("click", (e) => {
+        const postingId = e.currentTarget.getAttribute("data-id");
+        this.toggleStatus(postingId);
+      });
+    });
+
+    // Create posting button - mobile (empty state)
+    const createBtnMobile = document.querySelector(
+      ".create-posting-btn-mobile"
+    );
+    if (createBtnMobile) {
+      createBtnMobile.addEventListener("click", () => {
+        window.location.href = "new_industrial_training.html";
+      });
+    }
+
+    // Clear filters button - mobile
+    const clearFiltersBtnMobile = document.querySelector(
+      ".clear-filters-btn-mobile"
+    );
+    if (clearFiltersBtnMobile) {
+      clearFiltersBtnMobile.addEventListener("click", () => {
+        this.clearAllFilters();
+      });
+    }
+  }
   getStatusBadge(status) {
     const statusConfig = {
       open: {
@@ -643,23 +887,23 @@ class CompanyPostings {
   showEmptyState() {
     const tbody = document.querySelector("tbody");
     if (!tbody) return;
+    if (tbody) {
+      let emptyMessage = "";
+      let emptyDescription = "";
 
-    let emptyMessage = "";
-    let emptyDescription = "";
+      if (this.filters.searchTerm || this.filters.status !== "all") {
+        // No results for current filters/search
+        emptyMessage = "No matching postings found";
+        emptyDescription =
+          "Try adjusting your search terms or filters to find what you're looking for.";
+      } else {
+        // No postings at all
+        emptyMessage = "No Postings Yet";
+        emptyDescription =
+          "You haven't created any postings yet. Get started by creating your first one!";
+      }
 
-    if (this.filters.searchTerm || this.filters.status !== "all") {
-      // No results for current filters/search
-      emptyMessage = "No matching postings found";
-      emptyDescription =
-        "Try adjusting your search terms or filters to find what you're looking for.";
-    } else {
-      // No postings at all
-      emptyMessage = "No Postings Yet";
-      emptyDescription =
-        "You haven't created any postings yet. Get started by creating your first one!";
-    }
-
-    tbody.innerHTML = `
+      tbody.innerHTML = `
         <tr>
             <td colspan="5" class="text-center py-20">
                 <div class="flex flex-col items-center gap-4">
@@ -688,12 +932,15 @@ class CompanyPostings {
             </td>
         </tr>
     `;
+    }
+    this.renderMobileList();
 
     this.attachEventListeners();
   }
   showError(message) {
     const tbody = document.querySelector("tbody");
     if (!tbody) return;
+    if(tbody){
 
     tbody.innerHTML = `
             <tr>
@@ -709,7 +956,22 @@ class CompanyPostings {
                 </td>
             </tr>
         `;
-
+    }
+     // Also show error in mobile view
+  const mobileList = document.getElementById('mobile-postings-list');
+  if (mobileList) {
+    mobileList.innerHTML = `
+      <div class="text-center py-12">
+        <div class="flex flex-col items-center gap-4">
+          <span class="material-symbols-outlined text-6xl text-red-500">error</span>
+          <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Failed to Load Postings</h3>
+          <p class="text-gray-500 dark:text-gray-400">${message}</p>
+          <button class="mt-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm retry-btn-mobile">
+            Retry
+          </button>
+        </div>
+      </div>
+    `;}
     this.attachEventListeners();
   }
 
@@ -778,9 +1040,6 @@ class CompanyPostings {
       });
     });
 
-   
-
-
     // Create posting button (empty state)
     const createBtn = document.querySelector(".create-posting-btn");
     if (createBtn) {
@@ -816,10 +1075,7 @@ class CompanyPostings {
     this.attachPaginationListeners();
   }
 
-     toggleStatus()
-     {
-
-     }
+  toggleStatus() {}
   updateResultsCounter() {
     const totalResults = this.filteredPostings.length;
     const totalPostings = this.postings.length;
@@ -969,58 +1225,63 @@ class CompanyPostings {
       notification.remove();
     }, 3000);
   }
-/**
- * Toggle IT status between open and closed
- * @param {string} postingId - The industrial training ID
- */
-async toggleStatus(postingId) {
+  /**
+   * Toggle IT status between open and closed
+   * @param {string} postingId - The industrial training ID
+   */
+  async toggleStatus(postingId) {
     if (!postingId) {
-        console.error("Posting ID is required");
-        return;
+      console.error("Posting ID is required");
+      return;
     }
 
     try {
-        // Show loading state on the button
-        const postingRow = document.querySelector(`button[data-id="${postingId}"]`)?.closest('tr');
-        if (postingRow) {
-            postingRow.style.opacity = '0.6';
-            postingRow.style.pointerEvents = 'none';
-        }
+      // Show loading state on the button
+      const postingRow = document
+        .querySelector(`button[data-id="${postingId}"]`)
+        ?.closest("tr");
+      if (postingRow) {
+        postingRow.style.opacity = "0.6";
+        postingRow.style.pointerEvents = "none";
+      }
 
-        // Get the current posting to check its status
-        const posting = this.postings.find(p => p.id === postingId);
-        if (!posting) {
-            throw new Error("Posting not found");
-        }
+      // Get the current posting to check its status
+      const posting = this.postings.find((p) => p.id === postingId);
+      if (!posting) {
+        throw new Error("Posting not found");
+      }
 
-        // Toggle the status using the cloud service
-        const newStatus = await this.cloud.toggleITStatus(this.currentUser.uid, postingId);
-        
-        // Update the local posting data
-        posting.status = newStatus;
-        
-        // Re-render the table to reflect the changes
-        this.renderTable();
-        
-        // Show success notification
-        this.showNotification(
-            `Posting ${newStatus === 'open' ? 'opened' : 'closed'} successfully!`, 
-            "success"
-        );
+      // Toggle the status using the cloud service
+      const newStatus = await this.cloud.toggleITStatus(
+        this.currentUser.uid,
+        postingId
+      );
 
+      // Update the local posting data
+      posting.status = newStatus;
+
+      // Re-render the table to reflect the changes
+      this.renderTable();
+
+      // Show success notification
+      this.showNotification(
+        `Posting ${newStatus === "open" ? "opened" : "closed"} successfully!`,
+        "success"
+      );
     } catch (error) {
-        console.error("Error toggling posting status:", error);
-        this.showNotification("Failed to update posting status", "error");
-        
-        // Reset row state on error
-        const postingRow = document.querySelector(`button[data-id="${postingId}"]`)?.closest('tr');
-        if (postingRow) {
-            postingRow.style.opacity = '1';
-            postingRow.style.pointerEvents = 'auto';
-        }
-    }
-}
+      console.error("Error toggling posting status:", error);
+      this.showNotification("Failed to update posting status", "error");
 
+      // Reset row state on error
+      const postingRow = document
+        .querySelector(`button[data-id="${postingId}"]`)
+        ?.closest("tr");
+      if (postingRow) {
+        postingRow.style.opacity = "1";
+        postingRow.style.pointerEvents = "auto";
+      }
+    }
+  }
 }
 
 // Initialize the application
@@ -1108,19 +1369,60 @@ class TimestampFormatter {
     });
   }
 
-  // Custom format with pattern
-  static format(timestamp, format = "medium") {
-    const formats = {
-      relative: this.toRelativeTime,
-      short: this.toShortDate,
-      medium: this.toMediumDate,
-      long: this.toLongDate,
-      datetime: this.toDateTime,
-      time: this.toTime,
-      input: this.toInputDate,
-    };
 
-    const formatter = formats[format] || this.toMediumDate;
-    return formatter(timestamp);
+  // Add this method for mobile empty state
+  getMobileEmptyState() {
+    let emptyMessage = "";
+    let emptyDescription = "";
+
+    if (this.filters.searchTerm || this.filters.status !== "all") {
+      emptyMessage = "No matching postings found";
+      emptyDescription =
+        "Try adjusting your search terms or filters to find what you're looking for.";
+    } else {
+      emptyMessage = "No Postings Yet";
+      emptyDescription =
+        "You haven't created any postings yet. Get started by creating your first one!";
+    }
+
+    return `
+    <div class="text-center py-12">
+      <div class="flex flex-col items-center gap-4">
+        <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600">
+          ${this.filters.searchTerm ? "search_off" : "description"}
+        </span>
+        <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">${emptyMessage}</h3>
+        <p class="text-gray-500 dark:text-gray-400 text-center max-w-md">${emptyDescription}</p>
+        ${
+          this.filters.searchTerm || this.filters.status !== "all"
+            ? `
+            <button class="mt-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm clear-filters-btn-mobile">
+              Clear Filters
+            </button>
+          `
+            : `
+            <button class="mt-2 flex items-center justify-center gap-2 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-bold h-10 px-5 shadow-sm transition-colors create-posting-btn-mobile">
+              <span class="material-symbols-outlined text-xl">add_circle</span>
+              <span class="truncate">Create New Posting</span>
+            </button>
+          `
+        }
+      </div>
+    </div>
+  `;
+  }
+
+  // Add this method for mobile status classes
+  getStatusClass(status) {
+    switch (status.toLowerCase()) {
+      case "open":
+        return "status-active";
+      case "closed":
+        return "status-closed";
+      case "draft":
+        return "status-draft";
+      default:
+        return "status-draft";
+    }
   }
 }

@@ -92,6 +92,56 @@
       .dark #results-counter {
         color: #9ca3af;
       }
+
+      /* Mobile list styles */
+      .posting-card {
+        transition: all 0.2s ease-in-out;
+      }
+
+      .posting-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: capitalize;
+      }
+
+      .status-active {
+        background-color: #d1fae5;
+        color: #065f46;
+      }
+
+      .status-draft {
+        background-color: #ffedd5;
+        color: #9a3412;
+      }
+
+      .status-closed {
+        background-color: #f3f4f6;
+        color: #374151;
+      }
+
+      .dark .status-active {
+        background-color: #064e3b;
+        color: #6ee7b7;
+      }
+
+      .dark .status-draft {
+        background-color: #7c2d12;
+        color: #fdba74;
+      }
+
+      .dark .status-closed {
+        background-color: #374151;
+        color: #d1d5db;
+      }
     </style>
   </head>
   <body class="bg-background-light dark:bg-background-dark font-display">
@@ -188,8 +238,10 @@
                 </button>
               </div>
             </div>
+
+            <!-- Desktop Table (hidden on mobile) -->
             <div
-              class="bg-white dark:bg-background-dark shadow-sm rounded-xl overflow-hidden"
+              class="bg-white dark:bg-background-dark shadow-sm rounded-xl overflow-hidden hidden md:block"
             >
               <div class="overflow-x-auto">
                 <table
@@ -232,10 +284,99 @@
                 class="flex items-center justify-center p-4 border-t border-gray-200 dark:border-gray-800"
               ></div>
             </div>
+
+            <!-- Mobile List (shown on mobile) -->
+            <div class="md:hidden space-y-4">
+              <!-- Mobile posting cards will be inserted here -->
+              <div id="mobile-postings-list" class="space-y-4"></div>
+              
+              <!-- Mobile search -->
+              <div class="relative mb-4 sm:hidden">
+                <span
+                  class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  >search</span
+                >
+                <input
+                  id="search-posting-mobile"
+                  class="form-input w-full rounded-lg border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 pl-10 pr-4 py-2 text-sm text-gray-900 dark:text-gray-200 focus:ring-primary focus:border-primary"
+                  placeholder="Search postings..."
+                  type="search"
+                />
+              </div>
+            </div>
           </div>
         </main>
       </div>
     </div>
     <script type="module" src="js/general/company_post.js"></script>
+    
+    <script>
+      // Mobile posting card template
+      function createMobilePostingCard(posting) {
+        return `
+          <div class="posting-card bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+            <div class="flex justify-between items-start mb-3">
+              <h3 class="font-semibold text-gray-900 dark:text-white text-base truncate flex-1 mr-2">
+                ${posting.title}
+              </h3>
+              <span class="status-badge ${getStatusClass(posting.status)}">
+                ${posting.status}
+              </span>
+            </div>
+            
+            <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+              <div class="flex justify-between">
+                <span class="font-medium">Applicants:</span>
+                <span class="text-gray-900 dark:text-white">${posting.applicants}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="font-medium">Posted:</span>
+                <span class="text-gray-900 dark:text-white">${posting.date}</span>
+              </div>
+            </div>
+            
+            <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+              <div class="flex gap-2">
+                <button class="text-primary hover:text-primary/80 text-sm font-medium flex items-center gap-1">
+                  <span class="material-symbols-outlined text-lg">visibility</span>
+                  View
+                </button>
+                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1">
+                  <span class="material-symbols-outlined text-lg">edit</span>
+                  Edit
+                </button>
+              </div>
+              <button class="text-red-600 hover:text-red-800 text-sm font-medium flex items-center gap-1">
+                <span class="material-symbols-outlined text-lg">delete</span>
+                Delete
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      function getStatusClass(status) {
+        switch(status.toLowerCase()) {
+          case 'active': return 'status-active';
+          case 'draft': return 'status-draft';
+          case 'closed': return 'status-closed';
+          default: return 'status-draft';
+        }
+      }
+
+      // Example of how to populate mobile view (you'll integrate this with your actual data)
+      document.addEventListener('DOMContentLoaded', function() {
+        // This is just sample data - replace with your actual data loading
+        const samplePostings = [
+        ];
+
+        const mobileList = document.getElementById('mobile-postings-list');
+        if (mobileList) {
+          mobileList.innerHTML = samplePostings.map(posting => 
+            createMobilePostingCard(posting)
+          ).join('');
+        }
+      });
+    </script>
   </body>
 </html>
