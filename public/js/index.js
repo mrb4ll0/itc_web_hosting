@@ -11,14 +11,13 @@ const companyCloud = new CompanyCloud();
 
 document.getElementById("login").addEventListener("click", async (event) => {
   event.preventDefault(); // stop normal link navigation
-
+ console.log("login clicked");
   checkAuthState();
 });
 
 function checkAuthState() {
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      ////console.log("User already logged in:", user.email);
       localStorage.setItem(
         "student",
         JSON.stringify({
@@ -36,7 +35,14 @@ function checkAuthState() {
       }
 
       // Redirect to dashboard
-      window.location.replace("dashboard/itc_dashboard.html");
+      if(student)
+        {
+          window.location.replace("dashboard/itc_dashboard.html");
+        }
+        else 
+        {
+          window.location.href = "auth/login.html"; 
+        }
     } else {
       ////console.log("No user session found — showing login form.");
       window.location.href = "auth/login.html";
@@ -48,6 +54,7 @@ function checkAuthState() {
 
 document.getElementById('company-loginbtn').addEventListener('click',async()=>
 {
+  console.log("login clicked");
     await auth.authStateReady();
      
     

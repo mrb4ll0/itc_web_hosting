@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>IT Connect - Landing Page</title>
+    <title>IT Connect - Industrial Training Platform</title>
     <script>
       // Immediate theme application to prevent flash
       (function () {
@@ -19,11 +19,12 @@
         }
       })();
     </script>
+    <script type="module" src="./js/index.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
     <script>
@@ -32,34 +33,635 @@
         theme: {
           extend: {
             colors: {
-              primary: "#607AFB",
-              "background-light": "#f5f6f8",
-              "background-dark": "#0f1323",
+              primary: {
+                50: "#f0f4ff",
+                100: "#e0e8ff",
+                500: "#607AFB",
+                600: "#4c63f9",
+                700: "#3a4ef8",
+              },
+              background: {
+                light: "#ffffff",
+                dark: "#0f1323",
+                card: {
+                  light: "#f8fafc",
+                  dark: "#1e293b",
+                },
+              },
             },
             fontFamily: {
-              display: "Inter",
+              sans: "Inter, system-ui, sans-serif",
             },
             borderRadius: {
-              DEFAULT: "0.25rem",
-              lg: "0.5rem",
-              xl: "0.75rem",
-              full: "9999px",
+              "4xl": "2rem",
+            },
+            animation: {
+              float: "float 6s ease-in-out infinite",
+              gradient: "gradient 15s ease infinite",
+            },
+            keyframes: {
+              float: {
+                "0%, 100%": { transform: "translateY(0px)" },
+                "50%": { transform: "translateY(-20px)" },
+              },
+              gradient: {
+                "0%, 100%": { backgroundPosition: "0% 50%" },
+                "50%": { backgroundPosition: "100% 50%" },
+              },
             },
           },
         },
       };
     </script>
-    <script type="module" src="js/index.js"></script>
+    <style>
+      .glass {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .dark .glass {
+        background: rgba(15, 19, 35, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .gradient-bg {
+        background: linear-gradient(-45deg, #607afb, #667eea, #764ba2, #667eea);
+        background-size: 400% 400%;
+        animation: gradient 15s ease infinite;
+      }
+    </style>
   </head>
-  <body class="font-display text-gray-800 dark:text-gray-200 relative">
-    <div class="flex flex-col min-h-screen">
-      <header
-        class="bg-background-light dark:bg-background-dark/80 border-b border-gray-200 dark:border-gray-700/50 backdrop-blur-sm sticky top-0 z-20"
-      >
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex items-center justify-between h-16">
-            <div class="flex items-center gap-4">
-              <div class="w-15 h-8 text-primary animate-bounce">
+  <body
+    class="font-sans text-gray-800 dark:text-gray-200 bg-white dark:bg-background-dark transition-colors duration-300"
+  >
+    <!-- Navigation -->
+    <header class="fixed top-0 w-full z-50 glass border-b border-white/10">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16 lg:h-20">
+          <!-- Logo -->
+          <div class="flex items-center gap-3">
+            <div class="w-15 h-8 text-blue-500 text-primary animate-bounce">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                class="size-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h1
+                class="text-xl text-blue-500 font-bold text-gray-900 dark:text-white"
+              >
+                IT Connect
+              </h1>
+              <p class="text-xs text-primary-500 font-medium">
+                Industrial Training Platform
+              </p>
+            </div>
+          </div>
+
+          <!-- Desktop Navigation -->
+          <nav class="hidden lg:flex items-center gap-8">
+            <a
+              href="#features"
+              class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-500 transition-colors duration-200"
+              >Features</a
+            >
+            <a
+              href="#companies"
+              class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-500 transition-colors duration-200"
+              >Companies</a
+            >
+            <a
+              href="#testimonials"
+              class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-500 transition-colors duration-200"
+              >Success Stories</a
+            >
+            <a
+              href="#contact"
+              class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-500 transition-colors duration-200"
+              >Contact</a
+            >
+          </nav>
+
+          <!-- CTA Buttons -->
+          <div class="flex items-center gap-3">
+            <a
+              href="#"
+              id="login"
+              class="hidden sm:inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-500 transition-colors duration-200"
+            >
+              Sign In
+            </a>
+            <a
+              href="./auth/signup.html"
+              id="signup"
+              class="inline-flex items-center px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg shadow-primary-500/25"
+            >
+              Get Started
+              <svg
+                class="w-4 h-4 ml-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section
+      class="pt-32 pb-20 lg:pt-40 lg:pb-28 gradient-bg relative overflow-hidden"
+    >
+      <div class="absolute inset-0 bg-black/20"></div>
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="max-w-4xl mx-auto text-center">
+          <div
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-8"
+          >
+            <span
+              class="w-2 h-2 bg-green-400 rounded-full animate-pulse"
+            ></span>
+            <span class="text-sm text-white/90 font-medium"
+              >Trusted by 500+ Companies & 10,000+ Students</span
+            >
+          </div>
+
+          <h1
+            class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight"
+          >
+            Launch Your Career with
+            <span
+              class="text-transparent bg-clip-text bg-gradient-to-r from-white to-primary-100"
+              >Perfect IT Placements</span
+            >
+          </h1>
+
+          <p
+            class="mt-6 text-xl text-white/80 max-w-2xl mx-auto leading-relaxed"
+          >
+            Connect directly with top companies for industrial training.
+            Streamlined applications, real-time tracking, and career-defining
+            opportunities.
+          </p>
+
+          <div
+            class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
+            <a
+              href="auth/signup.html"
+              class="group inline-flex items-center justify-center px-8 py-4 bg-white text-primary-600 font-bold rounded-2xl text-lg transition-all duration-200 transform hover:scale-105 shadow-2xl"
+            >
+              Start Your Journey
+              <svg
+                class="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
+              </svg>
+            </a>
+            <a
+              href="#features"
+              class="inline-flex items-center justify-center px-8 py-4 glass text-white font-semibold rounded-2xl text-lg transition-all duration-200 hover:bg-white/20"
+            >
+              <svg
+                class="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Watch Demo
+            </a>
+          </div>
+
+          <!-- Stats -->
+          <div
+            class="mt-16 grid grid-cols-2 lg:grid-cols-4 gap-8 max-w-2xl mx-auto"
+          >
+            <div class="text-center">
+              <div class="text-3xl font-bold text-white">500+</div>
+              <div class="text-white/70 text-sm mt-1">Partner Companies</div>
+            </div>
+            <div class="text-center">
+              <div class="text-3xl font-bold text-white">10K+</div>
+              <div class="text-white/70 text-sm mt-1">Students Placed</div>
+            </div>
+            <div class="text-center">
+              <div class="text-3xl font-bold text-white">95%</div>
+              <div class="text-white/70 text-sm mt-1">Success Rate</div>
+            </div>
+            <div class="text-center">
+              <div class="text-3xl font-bold text-white">24/7</div>
+              <div class="text-white/70 text-sm mt-1">Support</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating Elements -->
+      <div
+        class="absolute top-1/4 left-10 w-4 h-4 bg-white/30 rounded-full animate-float"
+      ></div>
+      <div
+        class="absolute top-1/3 right-20 w-6 h-6 bg-primary-300/40 rounded-full animate-float"
+        style="animation-delay: -2s"
+      ></div>
+      <div
+        class="absolute bottom-1/4 left-1/4 w-3 h-3 bg-white/20 rounded-full animate-float"
+        style="animation-delay: -4s"
+      ></div>
+    </section>
+
+    <!-- Features Section -->
+    <section
+      id="features"
+      class="py-20 lg:py-28 bg-background-card-light dark:bg-background-card-dark"
+    >
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <h2
+            class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6"
+          >
+            Everything You Need for
+            <span class="text-primary-500">Successful IT Placements</span>
+          </h2>
+          <p class="text-lg text-gray-600 dark:text-gray-400">
+            From application to placement, we provide the tools and connections
+            to launch your career
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Feature 1 -->
+          <div
+            class="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-primary-500/20"
+          >
+            <div
+              class="w-14 h-14 bg-primary-50 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
+            >
+              <svg
+                class="w-7 h-7 text-primary-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
+              Smart Matching
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+              AI-powered matching connects you with companies that align with
+              your skills and career goals
+            </p>
+          </div>
+
+          <!-- Feature 2 -->
+          <div
+            class="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-primary-500/20"
+          >
+            <div
+              class="w-14 h-14 bg-primary-50 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
+            >
+              <svg
+                class="w-7 h-7 text-primary-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
+              Real-time Tracking
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+              Track your application status in real-time with instant
+              notifications and updates
+            </p>
+          </div>
+
+          <!-- Feature 3 -->
+          <div
+            class="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-primary-500/20"
+          >
+            <div
+              class="w-14 h-14 bg-primary-50 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
+            >
+              <svg
+                class="w-7 h-7 text-primary-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
+              Direct Company Access
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+              Connect directly with hiring managers and company representatives
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Web App Showcase -->
+    <section class="py-20 lg:py-28">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+          <div class="lg:w-1/2">
+            <h2
+              class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6"
+            >
+              Modern Platform,
+              <span class="text-primary-500">Exceptional Experience</span>
+            </h2>
+            <p
+              class="text-lg text-gray-600 dark:text-gray-400 mb-8 leading-relaxed"
+            >
+              Our intuitive web application provides a seamless experience for
+              both students and companies. Apply, track, and manage your
+              industrial training journey from any device.
+            </p>
+
+            <div class="space-y-4">
+              <div class="flex items-center gap-4">
+                <div
+                  class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center"
+                >
+                  <svg
+                    class="w-4 h-4 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+                <span class="text-gray-700 dark:text-gray-300"
+                  >One-click applications</span
+                >
+              </div>
+              <div class="flex items-center gap-4">
+                <div
+                  class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center"
+                >
+                  <svg
+                    class="w-4 h-4 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+                <span class="text-gray-700 dark:text-gray-300"
+                  >Real-time status updates</span
+                >
+              </div>
+              <div class="flex items-center gap-4">
+                <div
+                  class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center"
+                >
+                  <svg
+                    class="w-4 h-4 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+                <span class="text-gray-700 dark:text-gray-300"
+                  >Mobile-friendly interface</span
+                >
+              </div>
+            </div>
+
+            <div class="mt-8 flex gap-4">
+              <a
+                href="auth/login.html"
+                class="px-8 py-4 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
+              >
+                Launch App
+              </a>
+              <a
+                href="#"
+                class="px-8 py-4 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:border-primary-500 transition-colors duration-200"
+              >
+                View Demo
+              </a>
+            </div>
+          </div>
+
+          <div class="lg:w-1/2 relative">
+            <div class="relative">
+              <img
+                id="slideshow-image"
+                alt="IT Connect Platform Interface"
+                class="rounded-2xl shadow-2xl w-full transition-opacity duration-500"
+                src="images/its1.jpg"
+              />
+              <div
+                class="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/20 to-transparent"
+              ></div>
+            </div>
+
+            <!-- Floating cards -->
+            <div
+              class="absolute -bottom-6 -left-6 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700"
+            >
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center"
+                >
+                  <svg
+                    class="w-5 h-5 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-semibold text-gray-900 dark:text-white">
+                    Application Sent!
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    Google - Software Engineer
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Companies Section -->
+    <section
+      id="companies"
+      class="py-20 lg:py-28 bg-background-card-light dark:bg-background-card-dark"
+    >
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <h2
+            class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6"
+          >
+            Trusted by Leading
+            <span class="text-primary-500">Companies</span>
+          </h2>
+          <p class="text-lg text-gray-600 dark:text-gray-400">
+            Join hundreds of companies that trust IT Connect for their
+            industrial training programs
+          </p>
+        </div>
+
+        <!-- Company Logos Grid -->
+        <div
+          class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center opacity-60"
+        >
+          <!-- Add company logos here -->
+          <div class="flex items-center justify-center h-16">
+            <div class="text-2xl font-bold text-gray-400">Google</div>
+          </div>
+          <div class="flex items-center justify-center h-16">
+            <div class="text-2xl font-bold text-gray-400">Microsoft</div>
+          </div>
+          <div class="flex items-center justify-center h-16">
+            <div class="text-2xl font-bold text-gray-400">Amazon</div>
+          </div>
+          <div class="flex items-center justify-center h-16">
+            <div class="text-2xl font-bold text-gray-400">Apple</div>
+          </div>
+          <div class="flex items-center justify-center h-16">
+            <div class="text-2xl font-bold text-gray-400">Meta</div>
+          </div>
+          <div class="flex items-center justify-center h-16">
+            <div class="text-2xl font-bold text-gray-400">Netflix</div>
+          </div>
+        </div>
+
+        <!-- CTA for Companies -->
+        <div class="mt-16 text-center">
+          <div
+            class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700 max-w-2xl mx-auto"
+          >
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              Ready to Hire Talent?
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-6">
+              Join our network of partner companies and connect with the next
+              generation of tech talent
+            </p>
+            <a
+              href="#"
+              id="company-loginbtn"
+              class="inline-flex items-center px-8 py-4 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all duration-200 transform hover:scale-105"
+            >
+              Register Your Company
+              <svg
+                class="w-4 h-4 ml-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-16">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div class="md:col-span-2">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-15 h-8 text-blue-500 text-primary animate-bounce">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -75,370 +677,130 @@
                   />
                 </svg>
               </div>
-              <h2 class="text-xl font-bold text-gray-900 dark:text-white">
-                IT Connect
-              </h2>
+              <div>
+                <h1 class="text-xl font-bold">IT Connect</h1>
+                <p class="text-primary-400 text-sm font-medium">
+                  Industrial Training Platform
+                </p>
+              </div>
             </div>
-            <nav class="hidden md:flex items-center gap-8">
-              <a
-                class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
-                href="#about"
-                >About</a
-              >
-              <a
-                class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
-                href="#partners"
-                >Partner Companies</a
-              >
-              <a
-                class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
-                href="#contact"
-                >Contact</a
-              >
-            </nav>
-            <div class="flex items-center gap-4">
-              <a
-                id="login"
-                href="#"
-                class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
-                >Login</a
-              >
+            <p class="text-gray-400 max-w-md leading-relaxed">
+              Connecting students with industry leaders for meaningful
+              industrial training experiences that launch careers.
+            </p>
+          </div>
 
-              <a
-                id="signup"
-                class="bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors"
-                href="auth/signup.html"
-                >Sign Up</a
-              >
-            </div>
+          <div>
+            <h3 class="font-semibold text-white mb-4">For Students</h3>
+            <ul class="space-y-2 text-gray-400">
+              <li>
+                <a href="#" class="hover:text-white transition-colors"
+                  >Find Placements</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-white transition-colors"
+                  >Application Guide</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-white transition-colors"
+                  >Success Stories</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-white transition-colors"
+                  >Help Center</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-white mb-4">For Companies</h3>
+            <ul class="space-y-2 text-gray-400">
+              <li>
+                <a href="#" class="hover:text-white transition-colors"
+                  >Post Opportunities</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-white transition-colors"
+                  >Talent Pool</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-white transition-colors"
+                  >Partnership</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-white transition-colors"
+                  >Contact Sales</a
+                >
+              </li>
+            </ul>
           </div>
         </div>
-      </header>
-      <main class="flex-grow">
-        <section class="py-20 sm:py-24 lg:py-32 relative overflow-hidden">
-          <!-- Background image only for this section -->
-          <div
-            class="absolute inset-0 -z-10"
-            style="
-              background-image: url('images/background.jpg');
-              background-size: cover;
-              background-position: center;
-              background-repeat: no-repeat;
-              filter: blur(8px) brightness(0.7);
-            "
-          ></div>
-          <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1
-              class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight"
-            >
-              Find Your Perfect Industrial Training Placement
-            </h1>
-            <p class="mt-4 max-w-2xl mx-auto text-lg sm:text-xl text-white">
-              Connect with top companies for your industrial training. Your
-              journey to a successful career starts here.
-            </p>
-            <div
-              class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4"
-            >
-              <a
-                class="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-xl text-lg transition-transform transform hover:scale-105"
-                href="#"
-              >
-                <svg
-                  class="h-6 w-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  ></path>
-                </svg>
-                <span>Download Application</span>
-              </a>
-              <a id="company-loginbtn"
-                 href="#"
-                class="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-xl text-lg transition-colors"
-              >
-                <span>Company/Organization</span>
-              </a>
-            </div>
-          </div>
-        </section>
-        <section class="py-16 sm:py-20" id="webapp">
-          <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col lg:flex-row items-center gap-12">
-              <div class="lg:w-1/2">
-                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
-                  Use Our Web Application
-                </h2>
-                <p class="mt-4 text-gray-600 dark:text-gray-400">
-                  Apply for industrial training, track your application status,
-                  and connect with companies directly from your browser. Our web
-                  app makes your IT placement search seamless.
-                </p>
-                <div class="mt-6 flex gap-4">
-                  <a
-                    class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105"
-                    href="auth/login.html"
-                    >Launch Web App</a
-                  >
-                  <a
-                    class="bg-transparent border border-primary text-primary hover:bg-primary hover:text-white font-bold py-3 px-6 rounded-lg transition-colors"
-                    href="learnmore.html"
-                    >Learn More</a
-                  >
-                </div>
-              </div>
-              <style>
-                .fade-img {
-                  opacity: 1;
-                  transition: opacity 0.7s;
-                }
-                .fade-img.hide {
-                  opacity: 0;
-                }
-              </style>
-              <div class="lg:w-1/2 flex justify-center items-center">
-                <img
-                  id="slideshow-image"
-                  alt="Web Application Screenshot"
-                  class="rounded-xl shadow-2xl w-full max-w-md fade-img"
-                  src="images/its1.jpg"
-                />
-              </div>
-              <script>
-                const images = [
-                  "images/its1.jpg",
-                  "images/its2.jpg",
-                  "images/its3.jpg",
-                  "images/its4.jpg",
-                  "images/its5.jpg",
-                  "images/its6.jpg",
-                  "images/its7.jpg",
-                  "images/its8.jpg",
-                  "images/its9.jpg",
-                  "images/its10.jpg",
-                ];
-                let current = 0;
-                const img = document.getElementById("slideshow-image");
 
-                setInterval(() => {
-                  // Fade out
-                  img.classList.add("hide");
-                  setTimeout(() => {
-                    // Change image after fade out
-                    current = (current + 1) % images.length;
-                    img.src = images[current];
-                    // Fade in
-                    img.classList.remove("hide");
-                  }, 700); // Match transition duration
-                }, 5000); // Change image every 5 seconds (slower)
-              </script>
-            </div>
-          </div>
-        </section>
-        <section class="py-16 sm:py-20" id="about">
-          <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center">
-              <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
-                About IT Connect
-              </h2>
-              <p
-                class="mt-4 max-w-3xl mx-auto text-gray-600 dark:text-gray-400"
-              >
-                IT Connect is a dedicated portal designed to bridge the gap
-                between students seeking industrial training and companies
-                looking for fresh talent. Our platform simplifies the process of
-                finding and securing valuable IT placements.
-              </p>
-            </div>
-          </div>
-        </section>
-        <section class="py-16 sm:py-20" id="partners">
-          <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-              <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
-                For Our Partner Companies
-              </h2>
-              <p
-                class="mt-4 max-w-2xl mx-auto text-gray-600 dark:text-gray-400"
-              >
-                Showcase your company to a pool of talented and motivated
-                students. Register with us to be featured.
-              </p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div
-                class="bg-background-light dark:bg-background-dark p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700/50"
-              >
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white">
-                  Company Registration
-                </h3>
-                <p class="mt-2 text-gray-600 dark:text-gray-400">
-                  Register your company to connect with aspiring students for
-                  industrial training.
-                </p>
-              </div>
-              <div
-                class="bg-background-light dark:bg-background-dark p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700/50"
-              >
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white">
-                  Access to Talent
-                </h3>
-                <p class="mt-2 text-gray-600 dark:text-gray-400">
-                  Find the best candidates for your industrial training
-                  programs.
-                </p>
-              </div>
-              <div
-                class="bg-background-light dark:bg-background-dark p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700/50"
-              >
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white">
-                  Post Opportunities
-                </h3>
-                <p class="mt-2 text-gray-600 dark:text-gray-400">
-                  Easily post and manage your industrial training openings on
-                  our platform.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-        <section class="py-16 sm:py-20" id="contact">
-          <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-              <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
-                Contact Us
-              </h2>
-              <p
-                class="mt-4 max-w-2xl mx-auto text-gray-600 dark:text-gray-400"
-              >
-                Have questions? Whether you are a student or a company, we're
-                here to help. Reach out to us.
-              </p>
-            </div>
-            <div class="max-w-xl mx-auto">
-              <form class="space-y-6">
-                <div>
-                  <label class="sr-only" for="name">Name</label>
-                  <input
-                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-background-light dark:bg-background-dark focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                    id="name"
-                    name="name"
-                    placeholder="Your Name"
-                    type="text"
-                  />
-                </div>
-                <div>
-                  <label class="sr-only" for="email">Email</label>
-                  <input
-                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-background-light dark:bg-background-dark focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                    id="email"
-                    name="email"
-                    placeholder="Your Email"
-                    type="email"
-                  />
-                </div>
-                <div>
-                  <label class="sr-only" for="message">Message</label>
-                  <textarea
-                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-background-light dark:bg-background-dark focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                    id="message"
-                    name="message"
-                    placeholder="Your Message"
-                    rows="4"
-                  ></textarea>
-                </div>
-                <div>
-                  <button
-                    class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105"
-                    type="submit"
-                  >
-                    Send Message
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </section>
-      </main>
-      <footer
-        class="bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-gray-700/50"
-      >
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div class="flex flex-col md:flex-row justify-between items-center">
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              © 2025 IT Connect. All rights reserved.
-            </p>
-            <div class="flex gap-4 mt-4 md:mt-0">
-              <a
-                class="text-gray-600 dark:text-gray-400 hover:text-primary"
-                href="#"
-                ><svg
-                  class="feather feather-twitter"
-                  fill="none"
-                  height="24"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"
-                  ></path></svg
-              ></a>
-              <a
-                class="text-gray-600 dark:text-gray-400 hover:text-primary"
-                href="#"
-                ><svg
-                  class="feather feather-linkedin"
-                  fill="none"
-                  height="24"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"
-                  ></path>
-                  <rect height="12" width="4" x="2" y="9"></rect>
-                  <circle cx="4" cy="4" r="2"></circle></svg
-              ></a>
-              <a
-                class="text-gray-600 dark:text-gray-400 hover:text-primary"
-                href="https://web.facebook.com/itconnect.496553"
-                ><svg
-                  class="feather feather-facebook"
-                  fill="none"
-                  height="24"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
-                  ></path></svg
-              ></a>
-            </div>
+        <div
+          class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center"
+        >
+          <p class="text-gray-400 text-sm">
+            © 2025 IT Connect. All rights reserved.
+          </p>
+          <div class="flex gap-6 mt-4 md:mt-0">
+            <a
+              href="#"
+              class="text-gray-400 hover:text-white transition-colors"
+            >
+              <span class="sr-only">Twitter</span>
+              <!-- Twitter icon -->
+            </a>
+            <a
+              href="#"
+              class="text-gray-400 hover:text-white transition-colors"
+            >
+              <span class="sr-only">LinkedIn</span>
+              <!-- LinkedIn icon -->
+            </a>
+            <a
+              href="#"
+              class="text-gray-400 hover:text-white transition-colors"
+            >
+              <span class="sr-only">Facebook</span>
+              <!-- Facebook icon -->
+            </a>
           </div>
         </div>
-      </footer>
-    </div>
+      </div>
+    </footer>
+
+    <script>
+      // Slideshow functionality
+      const images = [
+        "images/its1.jpg",
+        "images/its2.jpg",
+        "images/its3.jpg",
+        "images/its4.jpg",
+        "images/its5.jpg",
+        "images/its6.jpg",
+        "images/its7.jpg",
+        "images/its8.jpg",
+        "images/its9.jpg",
+        "images/its10.jpg",
+      ];
+      let current = 0;
+      const img = document.getElementById("slideshow-image");
+
+      setInterval(() => {
+        current = (current + 1) % images.length;
+        img.style.opacity = 0;
+        setTimeout(() => {
+          img.src = images[current];
+          img.style.opacity = 1;
+        }, 500);
+      }, 4000);
+    </script>
   </body>
 </html>
