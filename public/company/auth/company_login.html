@@ -145,31 +145,65 @@
 
             <!-- Navigation and Theme Toggle -->
             <div class="flex items-center gap-4">
-              <div
-                class="flex items-center gap-2 bg-white dark:bg-gray-800/80 p-1 rounded-xl shadow-sm"
-              >
-                <a
-                  class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-all duration-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-                  href="../../auth/login.html"
+              <div class="flex items-center gap-4">
+                <div
+                  class="flex items-center gap-1 bg-white dark:bg-gray-800/80 p-1 rounded-xl shadow-sm"
                 >
-                  Student Login
-                </a>
+                  <!-- Student Login -->
+                  <a
+                    class="group relative flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-all duration-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                    href="../../auth/login.html"
+                  >
+                    <span class="material-symbols-outlined text-lg">
+                      school
+                    </span>
+                    <span class="hidden md:inline ml-2">Student Login</span>
 
-                <a
-                  class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-all duration-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-                  href="../../index.html"
-                >
-                  Home
-                </a>
+                    <!-- Mobile tooltip -->
+                    <span
+                      class="md:hidden absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50"
+                    >
+                      Student Login
+                    </span>
+                  </a>
 
-                <a
-                  class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-all duration-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-                  href="../../supervisor/supervisor_login.html"
-                >
-                  Supervisor
-                </a>
+                  <!-- Home -->
+                  <a
+                    class="group relative flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-all duration-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                    href="../../index.html"
+                  >
+                    <span class="material-symbols-outlined text-lg">
+                      home
+                    </span>
+                    <span class="hidden md:inline ml-2">Home</span>
+
+                    <!-- Mobile tooltip -->
+                    <span
+                      class="md:hidden absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50"
+                    >
+                      Home
+                    </span>
+                  </a>
+
+                  <!-- Supervisor -->
+                  <a
+                    class="group relative flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-all duration-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                    href="../../supervisor/supervisor_login.html"
+                  >
+                    <span class="material-symbols-outlined text-lg">
+                      supervisor_account
+                    </span>
+                    <span class="hidden md:inline ml-2">Supervisor</span>
+
+                    <!-- Mobile tooltip -->
+                    <span
+                      class="md:hidden absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50"
+                    >
+                      Supervisor
+                    </span>
+                  </a>
+                </div>
               </div>
-
               <!-- Theme Toggle -->
               <button
                 id="theme-toggle"
@@ -373,7 +407,7 @@
         <!-- Footer -->
         <footer class="py-6 px-6 text-center">
           <p class="text-sm text-secondary">
-            &copy; 2023 IT Connect. Connecting companies with IT talent.
+            &copy; 2025 IT Connect. Connecting companies with IT talent.
           </p>
         </footer>
       </div>

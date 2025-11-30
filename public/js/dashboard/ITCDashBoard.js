@@ -97,7 +97,6 @@ export class ITCDashBoard {
         }! Here's a summary of your industrial training journey.`;
       }
     } else {
-      ////console.log("No user is signed in, redirecting to login.");
       alert("An error occure , you'll be redirect to the login page");
       window.location.replace("../auth/login.html");
     }
@@ -873,11 +872,10 @@ document
   .addEventListener("click", async (event) => {
     event.preventDefault();
     try {
-      ////console.log("user is about to signout");
       await signOut(auth);
       localStorage.removeItem("student");
-      ////console.log("User signed out successfully.");
-      window.location.href = "../index.html";
+      //window.location.replace("../dashboard/itc_dashboard.html");
+      window.location.replace("../auth/login.html");
     } catch (error) {
       console.error("Error signing out:", error);
       alert("Logout failed. Please try again.");

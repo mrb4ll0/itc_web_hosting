@@ -157,18 +157,27 @@
           </div>
 
           <!-- Navigation -->
-          <div class="flex items-center gap-4">
+          <div class="flex items-center gap-1 md:gap-4">
+            <!-- Back to Home -->
             <a
-              class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-colors duration-200"
+              class="flex items-center justify-center w-8 h-8 md:w-auto md:h-auto text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-colors duration-200 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
               href="../index.html"
+              title="Back to Home"
             >
-              ← Back to Home
+              <span class="material-symbols-outlined text-lg">arrow_back</span>
+              <span class="hidden md:inline ml-1">Back to Home</span>
             </a>
+
+            <!-- Sign Up Button -->
             <button
               onclick="window.location.href='signup.html'"
-              class="px-6 py-2.5 text-sm font-semibold rounded-xl bg-primary-500 text-white hover:bg-primary-600 transition-all duration-200 transform hover:scale-105 shadow-lg shadow-primary-500/25"
+              class="flex items-center justify-center w-8 h-8 md:w-auto md:h-auto px-2 md:px-6 py-2 md:py-2.5 text-sm font-semibold rounded-full md:rounded-xl bg-primary-500 text-white hover:bg-primary-600 transition-all duration-200 transform hover:scale-105 shadow-lg shadow-primary-500/25"
+              title="Sign Up"
             >
-              Sign Up
+              <span class="material-symbols-outlined text-sm md:hidden"
+                >person_add</span
+              >
+              <span class="hidden md:inline">Sign Up</span>
             </button>
           </div>
         </div>

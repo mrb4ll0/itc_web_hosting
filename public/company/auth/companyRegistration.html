@@ -182,35 +182,43 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-1 md:gap-4">
+              <!-- Company Login -->
               <button
-                class="bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded-xl text-sm transition-all btn-hover flex items-center gap-2"
+                class="bg-primary hover:bg-primary/90 text-white font-bold py-2 px-3 rounded-xl text-sm transition-all btn-hover flex items-center justify-center md:justify-start gap-1 md:gap-2 min-w-10 md:min-w-auto"
                 onclick="window.location.href='company_login.html'"
+                title="Company Login"
               >
                 <span class="material-symbols-outlined text-sm">login</span>
-                Company Login
+                <span class="hidden md:inline">Company Login</span>
               </button>
 
+              <!-- Home -->
               <button
-                class="bg-white dark:bg-gray-800 text-primary border border-primary hover:bg-primary/5 font-bold py-2 px-4 rounded-xl text-sm transition-all btn-hover flex items-center gap-2"
+                class="bg-white dark:bg-gray-800 text-primary border border-primary hover:bg-primary/5 font-bold py-2 px-3 rounded-xl text-sm transition-all btn-hover flex items-center justify-center md:justify-start gap-1 md:gap-2 min-w-10 md:min-w-auto"
                 onclick="window.location.href='../index.html'"
+                title="Home"
               >
                 <span class="material-symbols-outlined text-sm">home</span>
-                Home
+                <span class="hidden md:inline">Home</span>
               </button>
 
               <!-- Theme Toggle -->
               <button
                 id="theme-toggle"
-                class="hidden theme-toggle w-10 h-10 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-700"
+                class="hidden theme-toggle w-8 h-8 md:w-10 md:h-10 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-700"
+                title="Toggle theme"
               >
-                <span class="material-symbols-outlined text-lg dark:hidden"
-                  >dark_mode</span
-                >
                 <span
-                  class="material-symbols-outlined text-lg hidden dark:block"
-                  >light_mode</span
+                  class="material-symbols-outlined text-base md:text-lg dark:hidden"
                 >
+                  dark_mode
+                </span>
+                <span
+                  class="material-symbols-outlined text-base md:text-lg hidden dark:block"
+                >
+                  light_mode
+                </span>
               </button>
             </div>
           </div>
