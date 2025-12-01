@@ -1086,13 +1086,13 @@ class ITFormSubmission {
     if (it.rawInternship.intakeCapacity && currentApplicationsCount >= it.rawInternship.intakeCapacity) {
       appStatus = "closed";
       internship.status = "closed";
-      //console.log(
-        `Application count (${currentApplicationsCount}) reached intake capacity (${it.rawInternship.intakeCapacity}). Status set to: ${appStatus}`
-      );
+      // //console.log(
+      //   `Application count (${currentApplicationsCount}) reached intake capacity (${it.rawInternship.intakeCapacity}). Status set to: ${appStatus}`
+      // );
     } else {
-      //console.log(
-        `Application count (${currentApplicationsCount}) is below intake capacity (${it.rawInternship.intakeCapacity}). Current status: ${appStatus}`
-      );
+      // //console.log(
+      //   `Application count (${currentApplicationsCount}) is below intake capacity (${it.rawInternship.intakeCapacity}). Current status: ${appStatus}`
+      // );
     }
 
      //console.log("app status is "+appStatus);
@@ -1236,8 +1236,8 @@ class ITFormSubmission {
         );
 
         //console.log(
-          "application json is " + JSON.stringify(application.toMap())
-        );
+        //   "application json is " + JSON.stringify(application.toMap())
+        // );
 
         // Set the existing file URLs directly
         if (useExistingIdCard && hasExistingIdCard) {

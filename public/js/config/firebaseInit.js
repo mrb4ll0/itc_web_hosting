@@ -58,6 +58,8 @@ const firebaseConfig = {
       measurementId: "G-DK5EYRLFNS",
     };
 
+
+
 // Initialize only if no app exists
 let app;
 if (!getApps().length) {

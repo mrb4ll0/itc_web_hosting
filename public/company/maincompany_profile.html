@@ -103,6 +103,21 @@
       .gallery-item:hover .remove-btn {
         opacity: 1;
       }
+      
+      /* Expandable text styles */
+      .expandable-text {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: all 0.3s ease;
+      }
+
+      .expandable-text.expanded {
+        -webkit-line-clamp: unset;
+        display: block;
+      }
     </style>
   </head>
 
@@ -130,7 +145,7 @@
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+                d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.98 14.98 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.98 14.98 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
               />
             </svg>
           </div>
@@ -187,12 +202,6 @@
           >
             Innovatech Solutions Inc.
           </h2>
-          <p
-            id="companyTagline"
-            class="text-gray-600 dark:text-gray-400 text-sm md:text-base"
-          >
-            Pioneering the future of technology.
-          </p>
           <div class="mt-3 flex justify-center md:justify-start gap-4">
             <a
               id="companyWebsite"
@@ -251,19 +260,26 @@
         </div>
       </section>
 
-      <!-- About Section -->
+      <!-- About Section with Expandable Text -->
       <section
         id="companyAbout"
         class="bg-white dark:bg-[#1a202c] rounded-xl shadow-soft p-6"
       >
         <h3 class="text-lg font-bold mb-3">About Us</h3>
-        <p
-          class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base"
-        >
-          IT Connect celebrates companies that embrace innovation and progress.
-          Our goal is to support your journey toward digital excellence and
-          connect you with opportunities that drive success.
-        </p>
+        <div>
+          <p
+            id="companyTagline"
+            class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm md:text-base expandable-text"
+          >
+            IT Connect celebrates companies that embrace innovation and progress. Our goal is to support your journey toward digital excellence and connect you with opportunities that drive success. We specialize in creating cutting-edge software solutions that transform businesses. With over 10 years of experience in the tech industry, our team of dedicated professionals works tirelessly to deliver exceptional results. Our commitment to quality, innovation, and customer satisfaction sets us apart from the competition. We believe in building lasting partnerships with our clients and helping them achieve their digital transformation goals.
+          </p>
+          <button
+            id="readMoreButton"
+            class="text-primary hover:text-primary/80 text-sm font-medium mt-2 hidden"
+          >
+            Read More
+          </button>
+        </div>
       </section>
 
       <!-- Image Gallery -->
@@ -321,5 +337,52 @@
     </main>
 
     <script type="module" src="js/general/maincompany_profile.js"></script>
+    <script>
+      // Wait for DOM to be fully loaded
+      document.addEventListener('DOMContentLoaded', function() {
+        const textElement = document.getElementById('companyTagline');
+        const readMoreButton = document.getElementById('readMoreButton');
+        let isExpanded = false;
+        
+        // Function to check if text is truncated
+        function isTextTruncated() {
+          return textElement.scrollHeight > textElement.clientHeight + 5; // 5px buffer
+        }
+        
+        // Function to update button visibility and text
+        function updateReadMoreButton() {
+          const isTruncated = isTextTruncated();
+          
+          if (isTruncated) {
+            readMoreButton.classList.remove('hidden');
+            readMoreButton.textContent = isExpanded ? 'Read Less' : 'Read More';
+          } else {
+            readMoreButton.classList.add('hidden');
+          }
+        }
+        
+        // Toggle expand/collapse
+        readMoreButton.addEventListener('click', function() {
+          isExpanded = !isExpanded;
+          
+          if (isExpanded) {
+            textElement.classList.add('expanded');
+            readMoreButton.textContent = 'Read Less';
+          } else {
+            textElement.classList.remove('expanded');
+            readMoreButton.textContent = 'Read More';
+          }
+        });
+        
+        // Check on load
+        updateReadMoreButton();
+        
+        // Also check on window resize (in case text wrapping changes)
+        window.addEventListener('resize', updateReadMoreButton);
+        
+        // Set a small delay to ensure all images are loaded and layout is stable
+        setTimeout(updateReadMoreButton, 300);
+      });
+    </script>
   </body>
 </html>
