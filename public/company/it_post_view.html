@@ -652,100 +652,11 @@
                       <div
                         class="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 border-b border-gray-200 dark:border-gray-700"
                       >
-                        <div
-                          class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4"
-                        >
-                          <div class="flex items-center gap-3">
-                            <span
-                              class="material-symbols-outlined text-blue-600 dark:text-blue-400"
-                              >groups</span
-                            >
-                            <div>
-                              <p
-                                class="text-2xl font-bold text-blue-900 dark:text-blue-100"
-                                id="total-applications"
-                              >
-                                0
-                              </p>
-                              <p
-                                class="text-sm text-blue-700 dark:text-blue-300"
-                              >
-                                Total Applications
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4"
-                        >
-                          <div class="flex items-center gap-3">
-                            <span
-                              class="material-symbols-outlined text-yellow-600 dark:text-yellow-400"
-                              >schedule</span
-                            >
-                            <div>
-                              <p
-                                class="text-2xl font-bold text-yellow-900 dark:text-yellow-100"
-                                id="pending-applications"
-                              >
-                                0
-                              </p>
-                              <p
-                                class="text-sm text-yellow-700 dark:text-yellow-300"
-                              >
-                                Pending Review
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4"
-                        >
-                          <div class="flex items-center gap-3">
-                            <span
-                              class="material-symbols-outlined text-green-600 dark:text-green-400"
-                              >check_circle</span
-                            >
-                            <div>
-                              <p
-                                class="text-2xl font-bold text-green-900 dark:text-green-100"
-                                id="accepted-applications"
-                              >
-                                0
-                              </p>
-                              <p
-                                class="text-sm text-green-700 dark:text-green-300"
-                              >
-                                Accepted
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4"
-                        >
-                          <div class="flex items-center gap-3">
-                            <span
-                              class="material-symbols-outlined text-red-600 dark:text-red-400"
-                              >cancel</span
-                            >
-                            <div>
-                              <p
-                                class="text-2xl font-bold text-red-900 dark:text-red-100"
-                                id="rejected-applications"
-                              >
-                                0
-                              </p>
-                              <p class="text-sm text-red-700 dark:text-red-300">
-                                Rejected
-                              </p>
-                            </div>
-                          </div>
-                        </div>
+                        <!-- ... your overview cards ... -->
                       </div>
 
-                      <!-- Applications Table -->
-                      <div class="overflow-x-auto">
+                      <!-- Desktop Applications Table (hidden on mobile) -->
+                      <div class="overflow-x-auto hidden md:block">
                         <table class="w-full">
                           <thead class="bg-gray-50 dark:bg-gray-700">
                             <tr>
@@ -789,9 +700,16 @@
                           </tbody>
                         </table>
                       </div>
+
+                      <!-- Mobile Applications List (shown on mobile) -->
+                      <div
+                        id="mobile-applications-list"
+                        class="md:hidden space-y-4 p-6"
+                      >
+                        <!-- Mobile application cards will be populated here -->
+                      </div>
                     </div>
                   </div>
-
                   <!-- Analytics Tab Content -->
                   <div id="analytics-content" data-tab-content class="hidden">
                     <div
