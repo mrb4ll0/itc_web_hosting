@@ -213,6 +213,8 @@ class SupervisorAuthController {
         if (registrationForm && successSection) {
             registrationForm.classList.add('hidden');
             successSection.classList.remove('hidden');
+
+            window.location.href="./supervisor_login.html";
         }
     }
 

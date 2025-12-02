@@ -50,13 +50,13 @@ class ITFormSubmission {
 
   async setupNewOrExistingFile() {
     try {
-      // Get the student's existing files from the database
+      
       const existingFiles = await studentCloudDB.getStudentExistingFile(
         auth.currentUser.uid
       );
-
+     
       // Handle ID Card
-      if (existingFiles.studentIdCard && existingFiles.studentIdCard !== "") {
+      if (existingFiles.studentIdCard && existingFiles.studentIdCard !== "" && existingFiles.studentIdCard.startsWith('https://')) {
         // Show existing ID card option and hide upload area
         document.getElementById("id-card-existing").checked = true;
         document.getElementById("id-card-upload-area").classList.add("hidden");
@@ -80,7 +80,7 @@ class ITFormSubmission {
         // Set upload date if available, otherwise use a default
         if (existingFiles.studentIdCardUploadDate) {
           uploadDateElement.textContent = `Uploaded on ${new Date(
-            existingFiles.studentIdCardUploadDate
+            existingFiles.uploadedAt
           ).toLocaleDateString()}`;
         } else {
           uploadDateElement.textContent = "Previously uploaded";
@@ -100,11 +100,17 @@ class ITFormSubmission {
           .classList.remove("hidden");
         document
           .getElementById("id-card-existing-display")
+          .classList.add("hidden"); //id-card-existing
+           document
+          .getElementById("id-card-existing")
+          .classList.add("hidden");
+            document
+          .getElementById("id-card-existing-label")
           .classList.add("hidden");
       }
 
       // Handle Training Letter
-      if (existingFiles.itLetter && existingFiles.itLetter !== "") {
+      if (existingFiles.itLetter && existingFiles.itLetter !== "" && existingFiles.itLetter.startsWith('https://')) {
         // Show existing training letter option and hide upload area
         document.getElementById("training-letter-existing").checked = true;
         document
@@ -151,6 +157,12 @@ class ITFormSubmission {
           .classList.remove("hidden");
         document
           .getElementById("training-letter-existing-display")
+          .classList.add("hidden");
+          document
+          .getElementById("training-letter-existing")
+          .classList.add("hidden");
+          document
+          .getElementById("training-letter-existing-label")
           .classList.add("hidden");
       }
 
@@ -277,7 +289,6 @@ class ITFormSubmission {
   }
 
   async init() {
-    ////console.log("DocumentUploadManager initialized");
     await this.checkInternships();
     this.setupEventListeners();
     this.setupDragAndDrop();
@@ -285,21 +296,21 @@ class ITFormSubmission {
 
   async checkInternships() {
     try {
-      ////console.log("Checking for internships...");
+      
       const internships = await this.fetchInternships();
 
       if (internships && internships.length > 0) {
-        ////console.log("Internships found:", internships);
+        
         this.currentInternship = internships[0];
         this.studentData = await itc_firebase_logic.getStudent(
           auth.currentUser.uid
         );
-        ////console.log("Student data:", this.studentData.toMap());
+       
         await this.setupNewOrExistingFile();
         this.showUploadWidget();
         this.displayInternshipInfo();
       } else {
-        ////console.log("No internships found");
+       
         await this.setupNewOrExistingFile();
         this.hideUploadWidget();
         this.showNoInternshipsMessage();
@@ -993,11 +1004,11 @@ class ITFormSubmission {
       // Show alert to user
       alert(message);
 
-      // Optionally, redirect to profile edit page or highlight missing fields
+      window.location.href = '../../dashboard/student_profile.html';
       this.highlightMissingFields(profileResult.missingFieldDetails);
       submitBtn.innerHTML = originalText;
       submitBtn.disabled = false;
-      return false; // Prevent form submission
+      return false; 
     }
 
     // If profile is complete, proceed with the application
@@ -1067,35 +1078,28 @@ class ITFormSubmission {
       submitBtn.disabled = false;
       return false;
     }
-        //console.log("it is "+JSON.stringify(it));
+        
     let appStatus;
     appStatus = it.rawInternship.status;
 
-    // Determine the greater number between internship.applicationsCount and this.applicationsCount
+    
     const currentApplicationsCount = Math.max(
       it.rawInternship.applicationsCount || 0,
       this.applicationsCount || 0
     );
 
-    //console.log("Using application count: " + currentApplicationsCount);
-
-    // Update application count (you might want to save this back to your database)
     this.applicationsCount = currentApplicationsCount;
 
     // Check if the new applications count equals or exceeds the intake capacity
     if (it.rawInternship.intakeCapacity && currentApplicationsCount >= it.rawInternship.intakeCapacity) {
       appStatus = "closed";
       internship.status = "closed";
-      // //console.log(
-      //   `Application count (${currentApplicationsCount}) reached intake capacity (${it.rawInternship.intakeCapacity}). Status set to: ${appStatus}`
-      // );
+     
     } else {
-      // //console.log(
-      //   `Application count (${currentApplicationsCount}) is below intake capacity (${it.rawInternship.intakeCapacity}). Current status: ${appStatus}`
-      // );
+     
     }
 
-     //console.log("app status is "+appStatus);
+     
     const isITClosed = appStatus == "closed";
     if (isITClosed) {
       alert(title + " from " + company + " is closed");
@@ -1196,7 +1200,7 @@ class ITFormSubmission {
         (hasForm && this.uploadedFiles.applicationForms.length > 0);
 
       if (hasNewFilesToUpload) {
-        // //console.log(' Uploading new documents...');
+       
         const uploadResult = await this.uploadDocuments(
           useExistingIdCard,
           useExistingTrainingLetter
@@ -1228,16 +1232,11 @@ class ITFormSubmission {
 
         application = uploadResult.app;
       } else {
-        ////console.log('Using existing files only - no upload needed');
         // Create application directly using existing files
         application = StudentApplication.createNewApplication(
           this.studentData,
           this.currentInternship
         );
-
-        //console.log(
-        //   "application json is " + JSON.stringify(application.toMap())
-        // );
 
         // Set the existing file URLs directly
         if (useExistingIdCard && hasExistingIdCard) {
@@ -1259,7 +1258,13 @@ class ITFormSubmission {
         submitBtn.disabled = false;
         return false;
       }
+      
+      if(!application.student.uid || application.student.uid === '')
+        {
+          application.student.uid = await auth.currentUser.uid;
+        }
 
+     
       // Submit application to Firestore
       const durationData = getDurationData();
       application.setDuration(durationData.duration);
@@ -1284,6 +1289,7 @@ class ITFormSubmission {
       this.showNotification("Application submitted successfully!", "success");
       submitBtn.innerHTML = originalText;
       submitBtn.disabled = false;
+      window.location.replace('../../dashboard/opportunities.html');
       return true;
     } catch (error) {
       this.showNotification(

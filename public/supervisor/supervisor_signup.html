@@ -127,14 +127,29 @@
               >
                 Password
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                class="relative block w-full px-3 py-3 border border-slate-300 dark:border-slate-600 placeholder-slate-500 dark:placeholder-slate-400 text-slate-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800"
-                placeholder="Create a password"
-              />
+              <div class="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  class="relative block w-full px-3 py-3 pr-10 border border-slate-300 dark:border-slate-600 placeholder-slate-500 dark:placeholder-slate-400 text-slate-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800"
+                  placeholder="Create a password"
+                />
+                <button
+                  type="button"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center password-toggle"
+                  id="togglePassword"
+                  aria-label="Toggle password visibility"
+                >
+                  <span
+                    class="material-symbols-outlined text-slate-400 dark:text-slate-500"
+                    id="passwordIcon"
+                  >
+                    visibility_off
+                  </span>
+                </button>
+              </div>
               <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
                 Password must be at least 6 characters long
               </p>
@@ -147,14 +162,29 @@
               >
                 Confirm Password
               </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                required
-                class="relative block w-full px-3 py-3 border border-slate-300 dark:border-slate-600 placeholder-slate-500 dark:placeholder-slate-400 text-slate-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800"
-                placeholder="Confirm your password"
-              />
+              <div class="relative">
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  required
+                  class="relative block w-full px-3 py-3 pr-10 border border-slate-300 dark:border-slate-600 placeholder-slate-500 dark:placeholder-slate-400 text-slate-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-800"
+                  placeholder="Confirm your password"
+                />
+                <button
+                  type="button"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center password-toggle"
+                  id="toggleConfirmPassword"
+                  aria-label="Toggle confirm password visibility"
+                >
+                  <span
+                    class="material-symbols-outlined text-slate-400 dark:text-slate-500"
+                    id="confirmPasswordIcon"
+                  >
+                    visibility_off
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -246,6 +276,55 @@
       document.addEventListener("DOMContentLoaded", () => {
         const authController = new SupervisorAuthController();
         authController.initSignup();
+
+        const togglePassword = document.getElementById("togglePassword");
+        const toggleConfirmPassword = document.getElementById(
+          "toggleConfirmPassword"
+        );
+        const passwordInput = document.getElementById("password");
+        const confirmPasswordInput = document.getElementById("confirmPassword");
+        const passwordIcon = document.getElementById("passwordIcon");
+        const confirmPasswordIcon = document.getElementById(
+          "confirmPasswordIcon"
+        );
+
+        function togglePasswordVisibility(input, icon) {
+          const isPassword = input.type === "password";
+          input.type = isPassword ? "text" : "password";
+          icon.textContent = isPassword ? "visibility" : "visibility_off";
+
+          // Optional: Change color when password is visible
+          if (isPassword) {
+            icon.classList.remove("text-slate-400", "dark:text-slate-500");
+            icon.classList.add("text-blue-500");
+          } else {
+            icon.classList.remove("text-blue-500");
+            icon.classList.add("text-slate-400", "dark:text-slate-500");
+          }
+        }
+
+        togglePassword.addEventListener("click", () => {
+          togglePasswordVisibility(passwordInput, passwordIcon);
+        });
+
+        toggleConfirmPassword.addEventListener("click", () => {
+          togglePasswordVisibility(confirmPasswordInput, confirmPasswordIcon);
+        });
+
+        // Optional: Add keyboard support for accessibility
+        togglePassword.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            togglePasswordVisibility(passwordInput, passwordIcon);
+          }
+        });
+
+        toggleConfirmPassword.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            togglePasswordVisibility(confirmPasswordInput, confirmPasswordIcon);
+          }
+        });
       });
     </script>
   </body>

@@ -13,6 +13,7 @@ import {
 } from "../config/firebaseInit.js";
 import { StudentCloudDB } from "../fireabase/StudentCloud.js";
 import {
+  getAvatarElement,
   getNigerianIndustryDescription,
   hideLoadingDialog,
   showLoadingDialog,
@@ -87,7 +88,7 @@ export class ITCDashBoard {
       if (studentProfileImage) {
         const imageUrl =
           this.student.imageUrl ||
-          getAvatarInitials(this.student.fullName, this.student.imageUrl);
+          getAvatarElement(this.student.fullName, this.student.imageUrl);
         studentProfileImage.style.backgroundImage = `url('${imageUrl}')`;
       }
       var nameLabel = document.getElementById("welcomeMessage");

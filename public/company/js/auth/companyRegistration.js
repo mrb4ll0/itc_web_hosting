@@ -958,7 +958,7 @@ isValidPasswordForFirebase(password) {
       logoFile: document.getElementById("file-upload").files[0],
     };
 
-      ////console.log("password is "+formData.get("password"));
+      console.log("password is "+formData.get("password"));
     try {
       // Create auth user
       const userCredential = await createUserWithEmailAndPassword(
@@ -994,30 +994,26 @@ isValidPasswordForFirebase(password) {
       // Upload logo if provided
       if (companyData.logoFile) {
         try {
-          ////console.log("Starting logo upload...");
 
-          // Create CloudStorage instance
           const cloudStorage = new CloudStorage();
 
           // Upload the logo file
           const logoURL = await cloudStorage.uploadFile(
             companyData.logoFile,
             userId,
-            "company-logos" // category for organization
+            "company-logos" 
           );
 
           if (logoURL) {
             company.logoURL = logoURL;
-            ////console.log("Logo uploaded successfully:", logoURL);
+            
           } else {
             console.warn("Logo upload failed, continuing without logo");
-            // Continue registration even if logo upload fails
-            company.logoURL = ""; // or set a default logo URL
+            company.logoURL = ""; 
           }
         } catch (uploadError) {
           console.error("Error during logo upload:", uploadError);
-          // Continue registration even if logo upload fails
-          company.logoURL = ""; // or set a default logo URL
+          company.logoURL = ""; 
           this.showNotification(
             "Company registered but logo upload failed. You can update it later.",
             "warning"
@@ -1025,8 +1021,8 @@ isValidPasswordForFirebase(password) {
         }
       }
 
-      // Register company in database
-      ////console.log("Registering company in database...");
+      
+      console.log("Registering company in database...");
       await this.itc_firebaselogic.addCompany(company);
 
       // Show success message

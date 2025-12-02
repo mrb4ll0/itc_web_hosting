@@ -1,6 +1,10 @@
 import { ITBaseCompanyCloud } from "../../../js/fireabase/ITBaseCompanyCloud.js";
 import { auth } from "../../../js/config/firebaseInit.js";
-import { formatTimestamp, hideLoadingDialog, showLoadingDialog } from "../../../js/general/generalmethods.js";
+import {
+  formatTimestamp,
+  hideLoadingDialog,
+  showLoadingDialog,
+} from "../../../js/general/generalmethods.js";
 
 class CompanyPostings {
   constructor() {
@@ -42,22 +46,22 @@ class CompanyPostings {
     });
 
     const searchInputMobile = document.getElementById("search-posting-mobile");
-  if (searchInputMobile) {
-    let searchTimeoutMobile;
-    searchInputMobile.addEventListener("input", (e) => {
-      clearTimeout(searchTimeoutMobile);
-      searchTimeoutMobile = setTimeout(() => {
-        this.applySearchFilter(e.target.value);
-      }, 300);
-    });
+    if (searchInputMobile) {
+      let searchTimeoutMobile;
+      searchInputMobile.addEventListener("input", (e) => {
+        clearTimeout(searchTimeoutMobile);
+        searchTimeoutMobile = setTimeout(() => {
+          this.applySearchFilter(e.target.value);
+        }, 300);
+      });
 
-    searchInputMobile.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        searchInputMobile.value = "";
-        this.applySearchFilter("");
-      }
-    });
-  }
+      searchInputMobile.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          searchInputMobile.value = "";
+          this.applySearchFilter("");
+        }
+      });
+    }
   }
 
   applySearchFilter(searchTerm) {
@@ -433,7 +437,7 @@ class CompanyPostings {
             this.currentUser.uid,
             it.id
           );
-          
+
           return {
             id: it.id,
             title: it.title || "Untitled Posting",
@@ -621,35 +625,35 @@ class CompanyPostings {
     this.attachEventListeners();
   }
 
-
   // Add this method to render mobile cards
-renderMobileList() {
-  const mobileList = document.getElementById('mobile-postings-list');
-  if (!mobileList) return;
+  renderMobileList() {
+    const mobileList = document.getElementById("mobile-postings-list");
+    if (!mobileList) return;
 
-  const displayPostings = this.filteredPostings.length > 0 ? this.filteredPostings : this.postings;
+    const displayPostings =
+      this.filteredPostings.length > 0 ? this.filteredPostings : this.postings;
 
-  if (displayPostings.length === 0) {
-    mobileList.innerHTML = this.getMobileEmptyState();
-    return;
+    if (displayPostings.length === 0) {
+      mobileList.innerHTML = this.getMobileEmptyState();
+      return;
+    }
+
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    const currentItems = displayPostings.slice(startIndex, endIndex);
+    //console.log("currentItems are "+JSON.stringify(currentItems));
+
+    mobileList.innerHTML = currentItems
+      .map((posting) => this.createMobilePostingCard(posting))
+      .join("");
+
+    this.attachMobileEventListeners();
   }
 
-  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-  const endIndex = startIndex + this.itemsPerPage;
-  const currentItems = displayPostings.slice(startIndex, endIndex);
-  //console.log("currentItems are "+JSON.stringify(currentItems));
-
-  mobileList.innerHTML = currentItems
-    .map(posting => this.createMobilePostingCard(posting))
-    .join('');
-
-  this.attachMobileEventListeners();
-}
-
-// Add this method to create mobile card HTML
-createMobilePostingCard(posting) {
-  //console.log("posting is "+JSON.stringify(posting));
-  return `
+  // Add this method to create mobile card HTML
+  createMobilePostingCard(posting) {
+    //console.log("posting is "+JSON.stringify(posting));
+    return `
     <div class="posting-card bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
       <div class="flex justify-between items-start mb-3">
         <h3 class="font-semibold text-gray-900 dark:text-white text-base truncate flex-1 mr-2">
@@ -663,15 +667,21 @@ createMobilePostingCard(posting) {
       <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
         <div class="flex justify-between">
           <span class="font-medium">Applicants:</span>
-          <span class="text-gray-900 dark:text-white">${posting.applicants}</span>
+          <span class="text-gray-900 dark:text-white">${
+            posting.applicants
+          }</span>
         </div>
         <div class="flex justify-between">
           <span class="font-medium">Posted:</span>
-          <span class="text-gray-900 dark:text-white">${formatTimestamp(posting.createdAt)}</span>
+          <span class="text-gray-900 dark:text-white">${formatTimestamp(
+            posting.createdAt
+          )}</span>
         </div>
         <div class="flex justify-between">
           <span class="font-medium">Department:</span>
-          <span class="text-gray-900 dark:text-white">${posting.department}</span>
+          <span class="text-gray-900 dark:text-white">${
+            posting.department
+          }</span>
         </div>
         <div class="flex justify-between">
           <span class="font-medium">Location:</span>
@@ -693,15 +703,16 @@ createMobilePostingCard(posting) {
           </button>
         </div>
         <div class="flex gap-3">
-          ${posting.status === 'open' 
-            ? `
+          ${
+            posting.status === "open"
+              ? `
               <button class="text-orange-600 hover:text-orange-800 text-sm font-medium flex items-center gap-1 close-btn-mobile" 
                       data-id="${posting.id}">
                 <span class="material-symbols-outlined text-lg">lock</span>
                 Close
               </button>
             `
-            : `
+              : `
               <button class="text-green-600 hover:text-green-800 text-sm font-medium flex items-center gap-1 open-btn-mobile" 
                       data-id="${posting.id}">
                 <span class="material-symbols-outlined text-lg">lock_open</span>
@@ -718,22 +729,24 @@ createMobilePostingCard(posting) {
       </div>
     </div>
   `;
-}
-
-// Add this method for mobile empty state
-getMobileEmptyState() {
-  let emptyMessage = "";
-  let emptyDescription = "";
-
-  if (this.filters.searchTerm || this.filters.status !== "all") {
-    emptyMessage = "No matching postings found";
-    emptyDescription = "Try adjusting your search terms or filters to find what you're looking for.";
-  } else {
-    emptyMessage = "No Postings Yet";
-    emptyDescription = "You haven't created any postings yet. Get started by creating your first one!";
   }
 
-  return `
+  // Add this method for mobile empty state
+  getMobileEmptyState() {
+    let emptyMessage = "";
+    let emptyDescription = "";
+
+    if (this.filters.searchTerm || this.filters.status !== "all") {
+      emptyMessage = "No matching postings found";
+      emptyDescription =
+        "Try adjusting your search terms or filters to find what you're looking for.";
+    } else {
+      emptyMessage = "No Postings Yet";
+      emptyDescription =
+        "You haven't created any postings yet. Get started by creating your first one!";
+    }
+
+    return `
     <div class="text-center py-12">
       <div class="flex flex-col items-center gap-4">
         <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600">
@@ -741,34 +754,27 @@ getMobileEmptyState() {
         </span>
         <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">${emptyMessage}</h3>
         <p class="text-gray-500 dark:text-gray-400 text-center max-w-md">${emptyDescription}</p>
-        ${
-          this.filters.searchTerm || this.filters.status !== "all"
-            ? `
-            <button class="mt-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm clear-filters-btn-mobile">
-              Clear Filters
-            </button>
-          `
-            : `
-            <button class="mt-2 flex items-center justify-center gap-2 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-bold h-10 px-5 shadow-sm transition-colors create-posting-btn-mobile">
-              <span class="material-symbols-outlined text-xl">add_circle</span>
-              <span class="truncate">Create New Posting</span>
-            </button>
-          `
+
+          
         }
       </div>
     </div>
   `;
-}
-
-// Add this method for mobile status classes
-getStatusClass(status) {
-  switch(status.toLowerCase()) {
-    case 'open': return 'status-active';
-    case 'closed': return 'status-closed';
-    case 'draft': return 'status-draft';
-    default: return 'status-draft';
   }
-}
+
+  // Add this method for mobile status classes
+  getStatusClass(status) {
+    switch (status.toLowerCase()) {
+      case "open":
+        return "status-active";
+      case "closed":
+        return "status-closed";
+      case "draft":
+        return "status-draft";
+      default:
+        return "status-draft";
+    }
+  }
 
   // Add this method for mobile event listeners
   attachMobileEventListeners() {
@@ -940,9 +946,8 @@ getStatusClass(status) {
   showError(message) {
     const tbody = document.querySelector("tbody");
     if (!tbody) return;
-    if(tbody){
-
-    tbody.innerHTML = `
+    if (tbody) {
+      tbody.innerHTML = `
             <tr>
                 <td colspan="5" class="text-center py-20">
                     <div class="flex flex-col items-center gap-4">
@@ -957,10 +962,10 @@ getStatusClass(status) {
             </tr>
         `;
     }
-     // Also show error in mobile view
-  const mobileList = document.getElementById('mobile-postings-list');
-  if (mobileList) {
-    mobileList.innerHTML = `
+    // Also show error in mobile view
+    const mobileList = document.getElementById("mobile-postings-list");
+    if (mobileList) {
+      mobileList.innerHTML = `
       <div class="text-center py-12">
         <div class="flex flex-col items-center gap-4">
           <span class="material-symbols-outlined text-6xl text-red-500">error</span>
@@ -971,7 +976,8 @@ getStatusClass(status) {
           </button>
         </div>
       </div>
-    `;}
+    `;
+    }
     this.attachEventListeners();
   }
 
@@ -999,14 +1005,6 @@ getStatusClass(status) {
         this.editPosting(postingId);
       });
     });
-
-    // // Duplicate button
-    // document.querySelectorAll(".duplicate-btn").forEach((button) => {
-    //   button.addEventListener("click", (e) => {
-    //     const postingId = e.currentTarget.getAttribute("data-id");
-    //     //this.duplicatePosting(postingId);
-    //   });
-    // });
 
     // View applications button
     document.querySelectorAll(".view-btn").forEach((button) => {
@@ -1369,7 +1367,6 @@ class TimestampFormatter {
     });
   }
 
-
   // Add this method for mobile empty state
   getMobileEmptyState() {
     let emptyMessage = "";
@@ -1393,19 +1390,10 @@ class TimestampFormatter {
         </span>
         <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">${emptyMessage}</h3>
         <p class="text-gray-500 dark:text-gray-400 text-center max-w-md">${emptyDescription}</p>
-        ${
-          this.filters.searchTerm || this.filters.status !== "all"
-            ? `
+        
             <button class="mt-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm clear-filters-btn-mobile">
               Clear Filters
             </button>
-          `
-            : `
-            <button class="mt-2 flex items-center justify-center gap-2 rounded-lg bg-primary hover:bg-primary/90 text-white text-sm font-bold h-10 px-5 shadow-sm transition-colors create-posting-btn-mobile">
-              <span class="material-symbols-outlined text-xl">add_circle</span>
-              <span class="truncate">Create New Posting</span>
-            </button>
-          `
         }
       </div>
     </div>

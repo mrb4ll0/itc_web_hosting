@@ -1,7 +1,12 @@
 // application_details.js
 import { ITBaseCompanyCloud } from "../../js/fireabase/ITBaseCompanyCloud.js";
 import { auth } from "../../js/config/firebaseInit.js";
-import { validateStorageUrl, viewExistingFile } from "../../js/general/generalmethods.js";
+import {
+  createAvatarElement,
+  getAvatarElement,
+  validateStorageUrl,
+  viewExistingFile,
+} from "../../js/general/generalmethods.js";
 
 class StudentApplication {
   constructor() {
@@ -159,14 +164,11 @@ class StudentApplication {
     const student = app.student;
 
     // Avatar (only set if URL exists)
-    if (student.imageUrl) {
-      document.getElementById(
-        "applicant-avatar"
-      ).style.backgroundImage = `url('${student.imageUrl}')`;
-    } else {
-      document.getElementById("applicant-avatar").style.backgroundImage =
-        "none";
-    }
+    const avater = createAvatarElement(student.fullName, student.imageUrl,100);
+    const container = document.getElementById("applicant-avatar");
+    container.innerHTML = avater; // Replace content
+    container.classList.remove("bg-center", "bg-no-repeat", "bg-cover");
+    container.classList.add("flex", "items-center", "justify-center");
 
     // Full Name (fallback if missing)
     document.getElementById("applicant-full-name").textContent =
@@ -206,13 +208,12 @@ class StudentApplication {
     // ////console.log("applicant Education " + app.student.institution);
 
     // Populate applicant details
-     ////console.log("student profile "+JSON.stringify(app.student));
+    ////console.log("student profile "+JSON.stringify(app.student));
     document.getElementById("full-name-value").textContent =
       app.student.fullName;
     document.getElementById("university-value").textContent =
       app.student.institution;
-    document.getElementById("major-value").textContent =
-      app.student.major;
+    document.getElementById("major-value").textContent = app.student.major;
     document.getElementById("gpa-value").textContent =
       app.student.matricNumber || "Not specified";
 
@@ -247,7 +248,7 @@ class StudentApplication {
       app.companyName || "Not specified"
     );
 
-      this.setTextContent(
+    this.setTextContent(
       "internship-department-value",
       app.internship.department || "Not specified"
     );
@@ -256,10 +257,9 @@ class StudentApplication {
       app.internship.address || "Not specified"
     );
 
-
     // Handle dates
-    const startDate = app.duration.startDate ;
-    const endDate = app.duration.endDate ;
+    const startDate = app.duration.startDate;
+    const endDate = app.duration.endDate;
     // //console.log("start Date "+startDate);
     // //console.log(" end Date "+endDate);
     // //console.log("duratios is "+JSON.stringify(app.duration));
@@ -283,10 +283,7 @@ class StudentApplication {
     } else if (startDate && endDate) {
       // Calculate duration from dates
       const durationText = this.calculateDuration(startDate, endDate);
-      this.setTextContent(
-        "internship-duration-value",
-        durationText
-      );
+      this.setTextContent("internship-duration-value", durationText);
     }
 
     // Update page title
@@ -298,18 +295,18 @@ class StudentApplication {
 
   formatInternshipDate(dateString) {
     if (!dateString) return null;
-    
+
     try {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return null;
-      
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
+
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       });
     } catch (error) {
-      console.warn('Error formatting date:', error);
+      console.warn("Error formatting date:", error);
       return null;
     }
   }
@@ -318,22 +315,22 @@ class StudentApplication {
     try {
       const start = new Date(startDate);
       const end = new Date(endDate);
-      
+
       if (isNaN(start.getTime()) || isNaN(end.getTime())) {
         return "Not specified";
       }
-      
+
       const diffTime = Math.abs(end - start);
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       const diffMonths = Math.floor(diffDays / 30);
-      
+
       if (diffMonths > 0) {
-        return `${diffMonths} month${diffMonths !== 1 ? 's' : ''}`;
+        return `${diffMonths} month${diffMonths !== 1 ? "s" : ""}`;
       } else {
-        return `${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+        return `${diffDays} day${diffDays !== 1 ? "s" : ""}`;
       }
     } catch (error) {
-      console.warn('Error calculating duration:', error);
+      console.warn("Error calculating duration:", error);
       return "Not specified";
     }
   }
@@ -377,28 +374,18 @@ class StudentApplication {
     }
   }
 
-  /**
-   * Populate documents section with file URLs
-   */
-  /**
-   * Populate documents section with file URLs
-   */
- async populateDocuments(application) {
+  async populateDocuments(application) {
     const files = application.applicationFiles || {};
-    ////console.log("applicationFiles " + JSON.stringify(files));
 
     // ID Card
-     var idCard = files.idCard ?? application.student.studentIDCard
-     var itLetter = files.trainingLetter ?? application.student.studentITLetter;
+    var idCard = files.idCard ?? application.student.studentIDCard;
+    var itLetter = files.trainingLetter ?? application.student.studentITLetter;
     if (idCard) {
       var ifIDCard = await validateStorageUrl(idCard);
       ////console.log("if ID card "+ifIDCard);
-      if(ifIDCard)
-      {
-      this.setupDocumentButtons("id-card", idCard);
-      }
-      else
-      {
+      if (ifIDCard) {
+        this.setupDocumentButtons("id-card", idCard);
+      } else {
         document.getElementById("id-card-document").style.display = "none";
       }
     } else {
@@ -407,17 +394,14 @@ class StudentApplication {
 
     // Training Letter (Application Letter)
     if (itLetter) {
-      var   ifITLetter = await validateStorageUrl(itLetter);
-       //console.log("itLetter validation "+ifITLetter);
-       if(ifITLetter)
-       {
-      this.setupDocumentButtons("application-letter", itLetter);
-       }
-       else
-       {
+      var ifITLetter = await validateStorageUrl(itLetter);
+      //console.log("itLetter validation "+ifITLetter);
+      if (ifITLetter) {
+        this.setupDocumentButtons("application-letter", itLetter);
+      } else {
         document.getElementById("application-letter-document").style.display =
-        "none";
-       }
+          "none";
+      }
     } else {
       document.getElementById("application-letter-document").style.display =
         "none";
@@ -506,14 +490,14 @@ class StudentApplication {
     // Ensure fileUrl is a string
     const urlString = String(fileUrl);
     //console.log("fileUrl is", urlString);
-    
+
     const link = document.createElement("a");
     link.href = urlString;
     link.download = urlString.split("/").pop() || "document";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-}
+  }
   /**
    * Setup event listeners for action buttons
    */
@@ -801,7 +785,7 @@ ${companyName} Team`;
     );
   }
 
- messageDialog(hideCancel = true) {
+  messageDialog(hideCancel = true) {
     const modalOverlay = document.createElement("div");
     modalOverlay.style.cssText = `
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -817,13 +801,13 @@ ${companyName} Team`;
 
     // Conditionally render the buttons based on hideCancel parameter
     const buttonsHTML = hideCancel
-        ? `<div style="display: flex; justify-content: flex-end;">
+      ? `<div style="display: flex; justify-content: flex-end;">
             <button id="send-message" style="padding: 8px 16px; border: none; border-radius: 4px; background: #007bff; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px;">
                 <span id="send-text">Send Message</span>
                 <span id="send-loading" style="display: none;">Sending...</span>
             </button>
         </div>`
-        : `<div style="display: flex; gap: 12px; justify-content: flex-end;">
+      : `<div style="display: flex; gap: 12px; justify-content: flex-end;">
             <button id="cancel-message" style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; background: white; cursor: pointer;">
                 Cancel
             </button>
@@ -839,7 +823,7 @@ ${companyName} Team`;
         <div style="margin-bottom: 16px;">
             <label style="display: block; margin-bottom: 6px; font-weight: 500;">Student Name</label>
             <input type="text" id="student-name" placeholder="Enter student name" 
-                value="${this.currentApplication.student.fullName || ''}"
+                value="${this.currentApplication.student.fullName || ""}"
                 style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;">
         </div>
 
@@ -847,7 +831,7 @@ ${companyName} Team`;
             <label style="display: block; margin-bottom: 6px; font-weight: 500;">Message</label>
             <textarea id="message-text" rows="6" placeholder="Type your message to the student..."
                     style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; font-family: inherit;">
-Hello ${this.currentApplication.student.fullName || 'Student'},
+Hello ${this.currentApplication.student.fullName || "Student"},
 
 I'd like to schedule a time to discuss your industrial training progress.
 
@@ -875,88 +859,90 @@ Best regards
 
     // Function to set loading state
     const setLoadingState = (isLoading) => {
-        if (isLoading) {
-            sendButton.disabled = true;
-            sendButton.style.opacity = "0.6";
-            sendButton.style.cursor = "not-allowed";
-            sendText.style.display = "none";
-            sendLoading.style.display = "inline";
-            
-            // Also disable inputs during loading
-            studentNameInput.disabled = true;
-            messageTextarea.disabled = true;
-        } else {
-            sendButton.disabled = false;
-            sendButton.style.opacity = "1";
-            sendButton.style.cursor = "pointer";
-            sendText.style.display = "inline";
-            sendLoading.style.display = "none";
-            
-            // Re-enable inputs
-            studentNameInput.disabled = false;
-            messageTextarea.disabled = false;
-        }
+      if (isLoading) {
+        sendButton.disabled = true;
+        sendButton.style.opacity = "0.6";
+        sendButton.style.cursor = "not-allowed";
+        sendText.style.display = "none";
+        sendLoading.style.display = "inline";
+
+        // Also disable inputs during loading
+        studentNameInput.disabled = true;
+        messageTextarea.disabled = true;
+      } else {
+        sendButton.disabled = false;
+        sendButton.style.opacity = "1";
+        sendButton.style.cursor = "pointer";
+        sendText.style.display = "inline";
+        sendLoading.style.display = "none";
+
+        // Re-enable inputs
+        studentNameInput.disabled = false;
+        messageTextarea.disabled = false;
+      }
     };
 
     // Only add cancel event listener if cancel button exists
     if (!hideCancel) {
-        modal.querySelector("#cancel-message").addEventListener("click", closeModal);
+      modal
+        .querySelector("#cancel-message")
+        .addEventListener("click", closeModal);
     }
 
     sendButton.addEventListener("click", async () => {
-        const studentName = studentNameInput.value;
-        const messageText = messageTextarea.value;
+      const studentName = studentNameInput.value;
+      const messageText = messageTextarea.value;
 
-        if (!studentName || !messageText) {
-            alert("Please enter student name and message");
-            return;
+      if (!studentName || !messageText) {
+        alert("Please enter student name and message");
+        return;
+      }
+
+      // Set loading state
+      setLoadingState(true);
+
+      try {
+        const studentUid = this.currentApplication.student.uid;
+        const companyName = this.currentApplication.companyName;
+
+        if (!studentUid || !companyName) {
+          alert("Student information is missing");
+          setLoadingState(false);
+          return;
         }
 
-        // Set loading state
-        setLoadingState(true);
+        const result = await this.itBaseCompanyCloud.sendNotificationToStudent(
+          studentUid,
+          {
+            title: "New Message from " + companyName,
+            message: messageText.replace("{name}", studentName),
+            type: "message",
+          }
+        );
 
-        try {
-            const studentUid = this.currentApplication.student.uid;
-            const companyName = this.currentApplication.companyName;
-
-            if (!studentUid || !companyName) {
-                alert("Student information is missing");
-                setLoadingState(false);
-                return;
-            }
-
-            const result = await this.itBaseCompanyCloud.sendNotificationToStudent(
-                studentUid,
-                {
-                    title: "New Message from " + companyName,
-                    message: messageText.replace("{name}", studentName),
-                    type: "message",
-                }
-            );
-
-            if (result.success) {
-                // Success - close modal after a brief delay to show success state
-                setTimeout(() => {
-                    alert(`Message sent to ${studentName}`);
-                    closeModal();
-                }, 500);
-            } else {
-                alert("Failed to send message: " + result.error);
-                setLoadingState(false);
-            }
-        } catch (error) {
-            alert("Error sending message: " + error.message);
-            setLoadingState(false);
+        if (result.success) {
+          // Success - close modal after a brief delay to show success state
+          setTimeout(() => {
+            alert(`Message sent to ${studentName}`);
+            closeModal();
+          }, 500);
+        } else {
+          alert("Failed to send message: " + result.error);
+          setLoadingState(false);
         }
+      } catch (error) {
+        alert("Error sending message: " + error.message);
+        setLoadingState(false);
+      }
     });
 
     // Only allow clicking outside to close if cancel button is visible
     if (!hideCancel) {
-        modalOverlay.addEventListener("click", (e) => {
-            if (e.target === modalOverlay) closeModal();
-        });
+      modalOverlay.addEventListener("click", (e) => {
+        if (e.target === modalOverlay) closeModal();
+      });
     }
-}
+  }
   /**
    * Update application status
    */

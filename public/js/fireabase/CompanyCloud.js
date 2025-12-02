@@ -654,9 +654,7 @@ export class CompanyCloud {
           "applications"
         );
 
-        ////console.log("Checking applications for student ID:", studentUid);
-
-        // Query 1: top-level uid
+        
         const queryByUid = query(
           applicationsCol,
           where("uid", "==", studentUid)
@@ -692,6 +690,7 @@ export class CompanyCloud {
                 applicationData.appliedAt || applicationData.updatedAt || null,
               applicationId: appId,
               companyId: companyDoc.id,
+              duration: applicationData.duration
             });
           }
         }

@@ -534,54 +534,129 @@ export class StudentCloudDB {
    * @param {string} userId - The user ID to look up
    * @returns {Promise<Object>} Object containing file URLs and metadata
    */
-  async getStudentExistingFile(userId) {
+  async getFileMetadata(fileUrl) {
     try {
-      const studentDocRef = doc(db, "users", "students", "students", userId);
-      const studentDoc = await getDoc(studentDocRef);
-
-      if (!studentDoc.exists()) {
-        return this.getEmptyFileResponse();
+      // Check if fileUrl is valid
+      if (!fileUrl || typeof fileUrl !== "string") {
+        console.warn("Invalid fileUrl provided:", fileUrl);
+        return null;
       }
 
-      const studentData = studentDoc.data();
-      const studentIdCardUrl = studentData.studentIDCard;
-      const itLetterUrl = studentData.studentITLetter;
-      ////console.log("studentIdCardUrl:", studentIdCardUrl);
-      ////console.log("itLetterUrl:", itLetterUrl);
-
-      // Get file metadata from storage if needed
-      let studentIdCardMetadata = null;
-      let itLetterMetadata = null;
-
-      if (studentIdCardUrl) {
-        studentIdCardMetadata = await this.getFileMetadata(studentIdCardUrl);
+      // Extract the file path from the URL
+      const matches = fileUrl.match(/o\/(.+?)\?alt=media/);
+      if (!matches) {
+        console.warn("Could not extract file path from URL:", fileUrl);
+        return null;
       }
 
-      if (itLetterUrl) {
-        itLetterMetadata = await this.getFileMetadata(itLetterUrl);
-      }
+      const filePath = decodeURIComponent(matches[1]);
+      const storageRef = ref(storage, filePath);
+      const metadata = await getMetadata(storageRef);
 
       return {
-        studentIdCard: studentIdCardUrl,
-        itLetter: itLetterUrl,
-        studentIdCardFileName:
-          studentIdCardMetadata?.name ||
-          this.extractFileNameFromUrl(studentIdCardUrl) ||
-          "student_id_card.pdf",
-        itLetterFileName:
-          itLetterMetadata?.name ||
-          this.extractFileNameFromUrl(itLetterUrl) ||
-          "training_letter.pdf",
-        studentIdCardUploadDate:
-          studentIdCardMetadata?.timeCreated || studentData.updatedAt,
-        itLetterUploadDate:
-          itLetterMetadata?.timeCreated || studentData.updatedAt,
-        studentIdCardSize: studentIdCardMetadata?.size,
-        itLetterSize: itLetterMetadata?.size,
+        name: metadata.name,
+        size: metadata.size,
+        timeCreated: metadata.timeCreated,
+        contentType: metadata.contentType,
       };
     } catch (error) {
-      console.error("Error getting student existing files:", error);
-      return this.getEmptyFileResponse();
+      console.error("Error getting file metadata:", error);
+      return null;
+    }
+  }
+
+  // Add this missing function
+  extractFileNameFromUrl(fileUrl) {
+    if (!fileUrl || typeof fileUrl !== "string") {
+      return null;
+    }
+
+    try {
+      // Try to extract filename from Firebase Storage URL
+      const matches = fileUrl.match(/o\/(.+?)\?alt=media/);
+      if (matches) {
+        const filePath = decodeURIComponent(matches[1]);
+        // Extract just the filename from the path
+        const pathParts = filePath.split("/");
+        return pathParts[pathParts.length - 1];
+      }
+
+      // If it's not a Firebase URL, try to get from URL
+      const url = new URL(fileUrl);
+      const pathParts = url.pathname.split("/");
+      return pathParts[pathParts.length - 1];
+    } catch (error) {
+      console.warn("Could not extract filename from URL:", fileUrl, error);
+      // Fallback: return a generic name
+      return "file";
+    }
+  }
+
+  async getStudentExistingFile(studentId, fileType) {
+    try {
+      const docRef = doc(
+        this._firebaseFirestore,
+        "users",
+        "students",
+        "students",
+        studentId
+      );
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        // Check if fileUrl exists and is valid
+        if (
+          data.fileUrl &&
+          typeof data.fileUrl === "string" &&
+          data.fileUrl.trim() !== "" &&
+          data.fileUrl !== undefined
+        ) {
+          try {
+            const metadata = await this.getFileMetadata(data.fileUrl);
+            if (metadata) {
+              return {
+                fileUrl: data.fileUrl,
+                fileName:
+                  this.extractFileNameFromUrl(data.fileUrl) || metadata.name,
+                fileSize: metadata.size,
+                uploadedAt: metadata.timeCreated || data.uploadedAt,
+                studentIdCard: data.studentIDCard,
+                idName: this.extractFileNameFromUrl(data.studentIDCard),
+                itLetter: data.studentITLetter,
+                itLetterName: this.extractFileNameFromUrl(data.studentITLetter),
+              };
+            }
+          } catch (metadataError) {
+            console.warn(
+              `Error getting metadata for ${fileType}:`,
+              metadataError
+            );
+            // Fallback to basic data
+          }
+        }
+
+        // Return basic file info if metadata fetch failed
+        return {
+          fileUrl: data.fileUrl || "",
+          fileName:
+            data.fileName ||
+            this.extractFileNameFromUrl(data.fileUrl) ||
+            "file",
+          fileSize: data.fileSize || 0,
+          uploadedAt: data.uploadedAt || new Date().toISOString(),
+          studentIdCard: data.studentIDCard,
+          idName: this.extractFileNameFromUrl(data.studentIDCard),
+          itLetter: data.studentITLetter,
+          itLetterName: this.extractFileNameFromUrl(data.studentITLetter),
+        };
+      } else {
+        console.log(`No ${fileType} found for student ${studentId}`);
+        return null;
+      }
+    } catch (error) {
+      console.error(`Error getting student existing ${fileType}:`, error);
+      return null;
     }
   }
 
@@ -630,34 +705,92 @@ export class StudentCloudDB {
   }
 
   /**
- * Set selectedApplication for a student
- * @param {string} studentId
- * @param {Object} applicationData
- * @returns {Promise<void>}
- */
-async setSelectedApplication(studentId, applicationData) {
-  try {
-    if (!studentId) throw new Error("Student ID is required");
-    if (!applicationData) throw new Error("Application data is required");
+   * Set selectedApplication for a student
+   * @param {string} studentId
+   * @param {Object} applicationData
+   * @returns {Promise<void>}
+   */
+  async setSelectedApplication(studentId, applicationData) {
+    try {
+      if (!studentId) throw new Error("Student ID is required");
+      if (!applicationData) throw new Error("Application data is required");
 
-    const ref = doc(
-      this._firebaseFirestore,
-      "users",
-      "students",
-      "students",
-      studentId
-    );
+      const ref = doc(
+        this._firebaseFirestore,
+        "users",
+        "students",
+        "students",
+        studentId
+      );
 
-    await updateDoc(ref, {
-      selectedApplication: applicationData,
-      updatedAt: new Date(),
-    });
+      await updateDoc(ref, {
+        selectedApplication: applicationData,
+        updatedAt: new Date(),
+      });
 
-    ////console.log("selectedApplication updated for student:", studentId);
-  } catch (error) {
-    console.error("Error setting selectedApplication:", error);
-    throw error;
+      ////console.log("selectedApplication updated for student:", studentId);
+    } catch (error) {
+      console.error("Error setting selectedApplication:", error);
+      throw error;
+    }
   }
-}
 
+  /**
+   * Get student's file info from student document or files subcollection
+   * @param {string} studentId - The student ID
+   * @param {string} fileType - Type of file ('student_id_card' or 'it_letter')
+   * @returns {Promise<Object|null>} File information
+   */
+  async getStudentFileInfo(studentId, fileType) {
+    try {
+      // First try the new files subcollection structure
+      const fileFromSubcollection = await this.getStudentExistingFile(
+        studentId,
+        fileType
+      );
+      if (fileFromSubcollection) {
+        return fileFromSubcollection;
+      }
+
+      const student = await this.getStudentById(studentId);
+
+      if (!student) {
+        console.log(`Student ${studentId} not found`);
+        return null;
+      }
+
+      // Check for file URLs in student document
+      let fileUrl, fileName;
+
+      if (fileType === "student_id_card") {
+        fileUrl = student.studentIDCard;
+        fileName = "student_id_card";
+      } else if (fileType === "it_letter") {
+        // Check if studentITLetter is an array or string
+        if (
+          Array.isArray(student.studentITLetter) &&
+          student.studentITLetter.length > 0
+        ) {
+          fileUrl = student.studentITLetter[0]; // Get first IT letter
+        } else if (typeof student.studentITLetter === "string") {
+          fileUrl = student.studentITLetter;
+        }
+        fileName = "it_letter";
+      }
+
+      if (fileUrl) {
+        return {
+          fileUrl: fileUrl,
+          fileName: this.extractFileNameFromUrl(fileUrl) || fileName,
+          fileSize: 0, // Unknown size
+          uploadedAt: student.updatedAt || new Date().toISOString(),
+        };
+      }
+
+      return null;
+    } catch (error) {
+      console.error(`Error getting student file info for ${fileType}:`, error);
+      return null;
+    }
+  }
 }

@@ -140,13 +140,9 @@ class InternshipDetails {
     ) {
       appStatus = "closed";
       internship.status = "closed";
-      //console.log(
-        `Application count (${currentApplicationsCount}) reached intake capacity (${internship.intakeCapacity}). Status set to: ${appStatus}`
-      );
+     
     } else {
-      //console.log(
-        `Application count (${currentApplicationsCount}) is below intake capacity (${internship.intakeCapacity}). Current status: ${appStatus}`
-      );
+     
     }
 
     container.innerHTML = `

@@ -44,14 +44,13 @@ class StudentApplicationView {
       const applications = await companyCloud.getStudentInternships(
         currentUser.uid
       );
-      //////console.log("Applications:", applications);
-      var student = await  itc_firebase_logic.getStudent(currentUser.uid);
-      
-        if(student){
-          const top_right_image = document.getElementById("right-image"); 
-          top_right_image.style.backgroundImage = `url('${student.imageUrl}')`;      
-        }
-       
+
+      var student = await itc_firebase_logic.getStudent(currentUser.uid);
+
+      if (student) {
+        const top_right_image = document.getElementById("right-image");
+        top_right_image.style.backgroundImage = `url('${student.imageUrl}')`;
+      }
 
       // Render applications in both table and mobile views
       ////console.log("Rendering applications:", applications);
@@ -65,7 +64,6 @@ class StudentApplicationView {
   renderApplications(applications) {
     const tableBody = document.getElementById("tablebody");
     const mobileListBody = document.getElementById("mobile-list-body");
-    
 
     if (!tableBody || !mobileListBody) {
       console.error("Table body or mobile list body element not found");
@@ -111,9 +109,9 @@ class StudentApplicationView {
       // Try to parse as string or use current date as fallback
       appDate = new Date(application.appliedAt);
     }
-    
+
     const formattedDate = appDate.toLocaleDateString("en-CA"); // YYYY-MM-DD format
-    
+
     // Get status badge HTML
     const statusBadge = this.getStatusBadge(application.applicationStatus);
 
@@ -162,7 +160,7 @@ class StudentApplicationView {
     } else {
       appDate = new Date(application.appliedAt);
     }
-    
+
     const formattedDate = appDate.toLocaleDateString("en-CA");
     const statusBadge = this.getStatusBadge(application.applicationStatus);
 
@@ -185,7 +183,9 @@ class StudentApplicationView {
       </div>
       <div class="flex justify-end">
         <button class="text-primary hover:text-primary/80 font-medium text-sm view-details-btn"
-                data-application='${this.escapeHtml(JSON.stringify(application))}'>
+                data-application='${this.escapeHtml(
+                  JSON.stringify(application)
+                )}'>
           View Details →
         </button>
       </div>
@@ -207,22 +207,27 @@ class StudentApplicationView {
 
     switch (statusLower) {
       case "pending":
-        badgeClass = "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
+        badgeClass =
+          "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
         break;
       case "accepted":
       case "approved":
-        badgeClass = "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
+        badgeClass =
+          "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
         break;
       case "rejected":
       case "declined":
-        badgeClass = "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
+        badgeClass =
+          "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
         break;
       case "reviewed":
       case "under review":
-        badgeClass = "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
+        badgeClass =
+          "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
         break;
       default:
-        badgeClass = "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300";
+        badgeClass =
+          "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300";
     }
 
     return `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${badgeClass}">${badgeText}</span>`;
@@ -258,25 +263,27 @@ class StudentApplicationView {
 
   showApplicationDetails(application) {
     // Format date for display
-    const appDate = application.appliedAt?.toDate ? application.appliedAt.toDate() : new Date(application.appliedAt);
+    const appDate = application.appliedAt?.toDate
+      ? application.appliedAt.toDate()
+      : new Date(application.appliedAt);
     const formattedDate = appDate.toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
     });
 
-    // Create modal or alert with application details
-     ////console.log("Showing details for application:"+JSON.stringify(application));
     const details = `
 Company: ${application.internship.company.name}
 Position: ${application.internship.title}
 Application Date: ${formattedDate}
 Status: ${application.applicationStatus.toUpperCase()}
-Location: ${application.internship.address}, ${application.internship.company.localGovernment}, ${application.internship.company.state}
-Start Date: ${application.internship.duration.startDate}
-End Date: ${application.internship.duration.endDate}
-Duration : ${application.internship.duration.duration} days
-Time: ${application.internship.duration.time}
+Location: ${application.internship.address}, ${
+      application.internship.company.localGovernment
+    }, ${application.internship.company.state}
+Start Date: ${application.duration.startDate}
+End Date: ${application.duration.endDate}
+Duration : ${application.duration.totalDays} days
+Time: ${application.duration.time}
     `.trim();
 
     alert(details); // You can replace this with a proper modal

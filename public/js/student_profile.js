@@ -32,7 +32,7 @@ class StudentProfile {
       this.currentStudent = await this.studentCloudDB.getStudentById(
         auth.currentUser.uid
       );
-      ////console.log("currentstudent data " + JSON.stringify(this.currentStudent));
+      
 
       if (!this.currentStudent) {
         this.showError("Student profile not found");

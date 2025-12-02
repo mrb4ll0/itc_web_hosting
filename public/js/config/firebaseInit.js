@@ -48,15 +48,15 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js";
 
 const firebaseConfig = {
-      apiKey: "AIzaSyBW2DIp-3tlsOZIHtBhKKdxDRtwI6zLvvo",
-      authDomain: "it-connect-77048.firebaseapp.com",
-      databaseURL: "https://it-connect-77048-default-rtdb.firebaseio.com",
-      projectId: "it-connect-77048",
-      storageBucket: "it-connect-77048.firebasestorage.app",
-      messagingSenderId: "469455600641",
-      appId: "1:469455600641:web:bcd8b67ebde5b475b79400",
-      measurementId: "G-DK5EYRLFNS",
-    };
+  apiKey: "AIzaSyBO_RrqRNm-Oq72X4Sz24MonqzLokMxKK0",
+  authDomain: "itconnectweb-eea87.firebaseapp.com",
+  databaseURL: "https://itconnectweb-eea87-default-rtdb.firebaseio.com",
+  projectId: "itconnectweb-eea87",
+  storageBucket: "itconnectweb-eea87.firebasestorage.app",
+  messagingSenderId: "635582656637",
+  appId: "1:635582656637:web:7d7ca55fbd1f35fa828114",
+  measurementId: "G-72RCYC8P7S"
+};
 
 
 

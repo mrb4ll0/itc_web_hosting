@@ -59,11 +59,11 @@ export class Student {
   this.selectedApplication = selectedApplication
 }
 
-  static fromFirestore(data) {
+  static fromFirestore(data,uid) {
     //console("fromFirestore data "+JSON.stringify(data));
     return new Student({
       phoneNumber: data.phoneNumber ?? "",
-      uid: data.uid ?? "",
+      uid: uid ?? "",
       fullName: data.fullName ?? "",
       email: data.email ?? "",
       bio: data.bio ?? "",
