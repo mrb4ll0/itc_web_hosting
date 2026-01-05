@@ -5,6 +5,7 @@ import { db, auth, onAuthStateChanged } from "../config/firebaseInit.js";
 import { StudentCloudDB } from "../fireabase/StudentCloud.js";
 import { getNigerianIndustryDescription, safeConvertToTimestamp } from "./generalmethods.js";
 import { ITBaseCompanyCloud } from "../fireabase/ITBaseCompanyCloud.js";
+import PaymentUI from "../../company/js/paymentSystem/paymentUi.js";
 const itc_firebase_logic = new ITCFirebaseLogic();
 const it_base_company_cloud = new ITBaseCompanyCloud();
 /** @type {import('../fireabase/CompanyCloud.js').CompanyCloud} */
@@ -58,17 +59,23 @@ class InternshipDetails {
       const internship = await companyCloud.getInternshipById(
         this.internshipId
       );
-      const applications =
-        await it_base_company_cloud.getApplicationsForIndustrialTraining(
-          internship.company.id,
-          internship.id
-        );
+      await auth.authStateReady();
+      this.student = await studentCloudDB.getStudentById(auth.currentUser.uid);
+      
+      // const applications =
+      //   await it_base_company_cloud.getApplicationsForIndustrialTraining(
+      //     internship.company.id,
+      //     internship.id
+      //   );
+        
       ////console.log("applications is "+JSON.stringify(applications));
-      this.applicationsCount = applications.length;
+      this.applicationsCount = await it_base_company_cloud.getTotalAcceptedApplications(internship.company.id,internship.id);
       if (!internship) {
         this.showError("Internship not found");
         return;
       }
+      internship.applicationsCount = this.applicationsCount;
+      console.log("internship status is "+internship.status);
 
       this.renderInternshipDetails(internship);
     } catch (error) {
@@ -112,19 +119,17 @@ class InternshipDetails {
   }
 
   renderInternshipDetails(internship) {
-    ////console.log("main internship "+JSON.stringify(internship));
+    
     const container = document.getElementById("internship-details-container");
     if (!container) return;
-    //console.log("internship " + JSON.stringify(internship.eligibilityCriteria));
-    //console.log("postedAt is " + internship.postedAt);
-    //console.log("global application counts is " + this.applicationsCount);
+
 
     let appStatus;
     appStatus = internship.status;
 
     // Determine the greater number between internship.applicationsCount and this.applicationsCount
+    console.log("application count is "+this.applicationsCount);
     const currentApplicationsCount = Math.max(
-      internship.applicationsCount || 0,
       this.applicationsCount || 0
     );
 
@@ -134,6 +139,7 @@ class InternshipDetails {
     this.applicationsCount = currentApplicationsCount;
 
     // Check if the new applications count equals or exceeds the intake capacity
+    console.log("current application count is "+currentApplicationsCount+" intakeCapacity is "+internship.intakeCapacity);
     if (
       internship.intakeCapacity &&
       currentApplicationsCount >= internship.intakeCapacity
@@ -231,6 +237,10 @@ class InternshipDetails {
                 }')" 
                         class="px-8 py-3 border border-gray-300 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition font-medium">
                   💾 Save for Later
+                </button>
+                <button onclick="" 
+                        class="px-8 py-3 border border-gray-300 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition font-medium">
+                  Slot Balance: ${this.student.slotBalance/200|| 0}
                 </button>
               </div>
             </div>
@@ -470,23 +480,28 @@ class InternshipDetails {
 }
 
   async applyForInternship(status, title, company, id, compid) {
-    // Implement application logic
-    ////console.log("Applying for status:"+JSON.stringify(status));
-    ////console.log("Applying for title:"+JSON.stringify(title));
-    ////console.log("Applying for company:"+JSON.stringify(company));
-
-    // alert('Application feature coming soon!');
+    
+    
     try {
       const user = auth.currentUser;
       if (user) {
         // Check if the user is a student
         const isStudent = await studentCloudDB.isStudent(user.uid);
+         const student = await studentCloudDB.getStudentById(user.uid);
+         console.log("student slot balance is "+student.slotBalance);
+         
         const isITClosed = status.toLocaleLowerCase() == "closed";
         if (isITClosed) {
           alert(title + " from " + company + " is closed");
           await it_base_company_cloud.updateInternshipStatus(compid, id);
           return;
         }
+
+        const canApply = await PaymentUI.checkCanApply(user.uid);
+    if (!canApply) {
+        return; // Payment modal will be shown automatically
+    }
+
         if (isStudent) {
           window.location.href = `it_form_submission.html?id=${id}`;
         } else {

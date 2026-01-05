@@ -1,7 +1,7 @@
 import { auth, db } from "../../../js/config/firebaseInit.js";
 import { ITBaseCompanyCloud } from "../../../js/fireabase/ITBaseCompanyCloud.js";
 import { IndustrialTraining } from "../../../js/model/internship_model.js";
-
+ const it_base_company_cloud = new ITBaseCompanyCloud();
 class ITPostView {
   constructor() {
     this.companyCloud = new ITBaseCompanyCloud();
@@ -748,6 +748,7 @@ class ITPostView {
   // NEW METHOD: Attach mobile application event listeners
   attachMobileApplicationEventListeners(applications) {
     // View application buttons - mobile
+    this.currentApplication = applications;
     document
       .querySelectorAll(".view-application-btn-mobile")
       .forEach((button) => {
@@ -895,6 +896,7 @@ class ITPostView {
   }
 
   attachApplicationEventListeners(applications) {
+    this.currentApplication = applications;
     // View application buttons
     document.querySelectorAll(".view-application-btn").forEach((button) => {
       button.addEventListener("click", (e) => {
@@ -1405,6 +1407,8 @@ class ITPostView {
   }
 
   async updateApplicationStatus(applicationId, newStatus) {
+
+     this.currentApplication = this.currentApplication.find((app) => app.id === applicationId);
     try {
       this.showLoadingDialog("Updating application status...");
 
@@ -1413,10 +1417,13 @@ class ITPostView {
         auth.currentUser.uid,
         this.trainingId,
         applicationId,
-        newStatus
+        newStatus,
+        this.currentApplication.student.uid
       );
 
-      // Reload applications to reflect the change
+      this.messageDialog(true);
+      
+
       await this.showApplicationsTab();
 
       this.hideLoadingDialog();
@@ -1427,6 +1434,173 @@ class ITPostView {
       this.showNotification("Failed to update application status", "error");
     }
   }
+
+messageDialog(hideCancel = true) {
+
+  this.backupApplication = this.currentApplication;
+    const modalOverlay = document.createElement("div");
+    modalOverlay.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; 
+        align-items: center; z-index: 1000; font-family: sans-serif;
+    `;
+
+    const modal = document.createElement("div");
+    modal.style.cssText = `
+        background: white; padding: 24px; border-radius: 8px; 
+        width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+    `;
+
+    // Conditionally render the buttons based on hideCancel parameter
+    const buttonsHTML = hideCancel
+      ? `<div style="display: flex; justify-content: flex-end;">
+            <button id="send-message" style="padding: 8px 16px; border: none; border-radius: 4px; background: #007bff; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <span id="send-text">Send Message</span>
+                <span id="send-loading" style="display: none;">Sending...</span>
+            </button>
+        </div>`
+      : `<div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <button id="cancel-message" style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; background: white; cursor: pointer;">
+                Cancel
+            </button>
+            <button id="send-message" style="padding: 8px 16px; border: none; border-radius: 4px; background: #007bff; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <span id="send-text">Send Message</span>
+                <span id="send-loading" style="display: none;">Sending...</span>
+            </button>
+        </div>`;
+
+    modal.innerHTML = `
+        <h2 style="margin: 0 0 20px 0; color: #333;">Send Message to Student</h2>
+        
+        <div style="margin-bottom: 16px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: 500;">Student Name</label>
+            <input type="text" id="student-name" placeholder="Enter student name" 
+                value="${this.currentApplication.student.fullName || ""}"
+                style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: 500;">Message</label>
+            <textarea id="message-text" rows="6" placeholder="Type your message to the student..."
+                    style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; font-family: inherit;">
+Hello ${this.currentApplication.student.fullName || "Student"},
+
+I'd like to schedule a time to discuss your industrial training progress.
+
+Are you available sometime this week?
+
+Best regards
+            </textarea>
+        </div>
+
+        ${buttonsHTML}
+    `;
+
+    modalOverlay.appendChild(modal);
+    document.body.appendChild(modalOverlay);
+
+    // Get references to elements
+    const sendButton = modal.querySelector("#send-message");
+    const sendText = modal.querySelector("#send-text");
+    const sendLoading = modal.querySelector("#send-loading");
+    const studentNameInput = modal.querySelector("#student-name");
+    const messageTextarea = modal.querySelector("#message-text");
+
+    // Event handlers
+    const closeModal = () => document.body.removeChild(modalOverlay);
+
+    // Function to set loading state
+    const setLoadingState = (isLoading) => {
+      if (isLoading) {
+        sendButton.disabled = true;
+        sendButton.style.opacity = "0.6";
+        sendButton.style.cursor = "not-allowed";
+        sendText.style.display = "none";
+        sendLoading.style.display = "inline";
+
+        // Also disable inputs during loading
+        studentNameInput.disabled = true;
+        messageTextarea.disabled = true;
+      } else {
+        sendButton.disabled = false;
+        sendButton.style.opacity = "1";
+        sendButton.style.cursor = "pointer";
+        sendText.style.display = "inline";
+        sendLoading.style.display = "none";
+
+        // Re-enable inputs
+        studentNameInput.disabled = false;
+        messageTextarea.disabled = false;
+      }
+    };
+
+    // Only add cancel event listener if cancel button exists
+    if (!hideCancel) {
+      modal
+        .querySelector("#cancel-message")
+        .addEventListener("click", closeModal);
+    }
+
+    sendButton.addEventListener("click", async () => {
+      const studentName = studentNameInput.value;
+      const messageText = messageTextarea.value;
+
+      if (!studentName || !messageText) {
+        alert("Please enter student name and message");
+        return;
+      }
+
+      // Set loading state
+      setLoadingState(true);
+
+      try {
+        
+        this.currentApplication = this.backupApplication;
+        const studentUid = this.currentApplication.student.uid;
+        
+        const companyName = this.currentApplication.internship.company.name;
+        
+
+        if (!studentUid || !companyName) {
+          alert("Student information is missing");
+          setLoadingState(false);
+          return;
+        }
+
+        const result = await it_base_company_cloud.sendNotificationToStudent(
+          studentUid,
+          {
+            title: "New Message from " + companyName,
+            message: messageText.replace("{name}", studentName),
+            type: "message",
+          }
+        );
+
+        if (result.success) {
+          // Success - close modal after a brief delay to show success state
+          setTimeout(() => {
+            alert(`Message sent to ${studentName}`);
+            closeModal();
+          }, 500);
+        } else {
+          alert("Failed to send message: " + result.error);
+          setLoadingState(false);
+        }
+      } catch (error) {
+        alert("Error sending message: " + error.message);
+        console.error(error);
+        setLoadingState(false);
+      }
+    });
+
+    // Only allow clicking outside to close if cancel button is visible
+    if (!hideCancel) {
+      modalOverlay.addEventListener("click", (e) => {
+        if (e.target === modalOverlay) closeModal();
+      });
+    }
+  }
+
 
   updateApplicationsOverviewWithData(applications) {
     if (!applications) return;

@@ -258,8 +258,9 @@ class StudentApplication {
     );
 
     // Handle dates
-    const startDate = app.duration.startDate;
-    const endDate = app.duration.endDate;
+    console.log("app to string is "+app.toMap());
+    const startDate = app.durationDetails.startDate;
+    const endDate = app.durationDetails.endDate;
     // //console.log("start Date "+startDate);
     // //console.log(" end Date "+endDate);
     // //console.log("duratios is "+JSON.stringify(app.duration));
@@ -375,11 +376,11 @@ class StudentApplication {
   }
 
   async populateDocuments(application) {
-    const files = application.applicationFiles || {};
+    
 
     // ID Card
-    var idCard = files.idCard ?? application.student.studentIDCard;
-    var itLetter = files.trainingLetter ?? application.student.studentITLetter;
+    var idCard = application.idCardUrl ;
+    var itLetter = application.itLetterUrl;
     if (idCard) {
       var ifIDCard = await validateStorageUrl(idCard);
       ////console.log("if ID card "+ifIDCard);
@@ -408,21 +409,19 @@ class StudentApplication {
     }
 
     // Resume (Academic Transcript)
-    if (files.resume) {
-      this.setupDocumentButtons("transcript", files.resume);
-    } else {
+    
       document.getElementById("transcript-document").style.display = "none";
-    }
+  
 
     // Application Forms - FIXED VERSION
     ////console.log("files is " + JSON.stringify(files));
 
     if (
-      files.applicationForms &&
-      Array.isArray(files.applicationForms) &&
-      files.applicationForms.length > 0
+      application.attachedFormUrls &&
+      Array.isArray(application.attachedFormUrls) &&
+      application.attachedFormUrls.length > 0
     ) {
-      this.setupMultipleDocuments("application-forms", files.applicationForms);
+      this.setupMultipleDocuments("application-forms", application.attachedFormUrls);
     } else {
       // Hide the application forms section when no forms exist
       const applicationFormsSection = document.getElementById(
@@ -434,13 +433,7 @@ class StudentApplication {
     }
 
     // Other Documents - FIXED VERSION
-    if (
-      files.otherDocuments &&
-      Array.isArray(files.otherDocuments) &&
-      files.otherDocuments.length > 0
-    ) {
-      this.setupMultipleDocuments("other-documents", files.otherDocuments);
-    } else {
+    
       // Hide the other documents section when no documents exist
       const otherDocumentsSection = document.getElementById(
         "other-documents-document"
@@ -449,7 +442,7 @@ class StudentApplication {
         otherDocumentsSection.style.display = "none";
       }
     }
-  }
+  
   /**
    * Setup view/download buttons for a single document
    */
@@ -577,7 +570,7 @@ class StudentApplication {
 
       // Handle result
       if (result.success) {
-        ////console.log(`Status notification sent to student: ${status}`);
+        
         alert(` ${this.getSuccessMessage(status)}`);
 
         // Close modal if exists in current context
@@ -949,12 +942,13 @@ Best regards
   async updateApplicationStatus(newStatus) {
     try {
       if (!this.currentApplication) return;
-
+     
       await this.itBaseCompanyCloud.updateApplicationStatus(
         this.companyId,
         this.itId,
         this.applicationId,
-        newStatus
+        newStatus,
+        this.currentApplication.student.uid
       );
 
       // Update local application object

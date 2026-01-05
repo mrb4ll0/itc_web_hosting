@@ -1014,10 +1014,6 @@ export class CompanyDashboardManager {
 
   performFiltering() {
     if (!this.applications) return;
-    //console.log(
-      "Performing filtering with current filters:",
-      this.currentFilters
-    );
     const filteredData = this.filterApplications();
     this.updateSearchUI(filteredData);
     this.updateActiveFiltersDisplay();
@@ -1766,10 +1762,6 @@ attachClearFilterListeners() {
     const course = this.courseFilter ? this.courseFilter.value : "all";
     const status = this.statusFilter ? this.statusFilter.value : "all";
 
-    //console.log(
-      `Filters changed - Institution: ${institution}, Course: ${course}, Status: ${status}`
-    );
-
     // Apply filters
     this.applyFilters(institution, course, status);
   }
@@ -2106,8 +2098,6 @@ attachClearFilterListeners() {
     e.preventDefault();
     e.stopPropagation();
 
-    //console.log(`Accepting application: ${applicationId}`);
-
     // Find the application
     const applicationData = this.applications.find(
       (app) => app.application.id === applicationId
@@ -2117,7 +2107,7 @@ attachClearFilterListeners() {
     // Update status in your database
     this.updateApplicationStatus(applicationId, "accepted")
       .then(() => {
-        // Remove from pending and add to accepted
+        
         this.moveApplicationToStatus(applicationId, "pending", "accepted");
 
         // Update UI
@@ -2173,7 +2163,8 @@ attachClearFilterListeners() {
     // Update the application status in Firestore
     return await it_base_companycloud.updateApplicationStatus(
       applicationId,
-      newStatus
+      newStatus,
+      
     );
   }
 
@@ -3422,18 +3413,17 @@ getApplicationsContent() {
 
 
 async loadApplicationsData() {
-  //console.log("loadApplicationsData called");
+  
     const tableBody = document.getElementById('applications-table-body');
     if (!tableBody) return;
     this.updatePaginationInfo();
     // Calculate pagination
     const startIndex = (this.currentApplicationsPage - 1) * this.applicationsPerPage;
     const endIndex = startIndex + this.applicationsPerPage;
-    //console.log("Filtered applications size is " + this.applications.length);
-    //console.log("Start index: " + startIndex + ", End index: " + endIndex);
+  
     const tableApplications = await it_base_companycloud.getAllCompanyApplications(this.companyId);
     const paginatedApplications = tableApplications.slice(startIndex, endIndex);
-    //console.log("Paginated applications size is " + paginatedApplications.length);
+  
 
     // Show loading or empty state
     if (paginatedApplications.length === 0) {
@@ -3454,8 +3444,8 @@ async loadApplicationsData() {
 
     // Generate table rows - HANDLE DIFFERENT DATA STRUCTURES
     tableBody.innerHTML = paginatedApplications.map(application => {
-        // Extract data based on your actual data structure
-        // Try multiple possible data structures
+  
+  
         const studentName = application.student?.name;
         
         const studentEmail = application.student?.email;
@@ -3472,7 +3462,7 @@ async loadApplicationsData() {
         
         // Get initials for avatar
         const initials = studentName.split(' ').map(n => n[0]).join('').toUpperCase();
-        //console.log("initials is "+initials);
+  
 
         return `
         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
@@ -3844,11 +3834,11 @@ showBulkActions() {
         return;
     }
     
-    // In a real app, you'd show a dropdown menu with bulk actions
-    const selectedIds = Array.from(selectedCheckboxes).map(cb => parseInt(cb.getAttribute('data-id')));
-    //console.log('Bulk actions for applications:', selectedIds);
     
-    // Simple confirmation for demo
+    const selectedIds = Array.from(selectedCheckboxes).map(cb => parseInt(cb.getAttribute('data-id')));
+    
+    
+    
     if (confirm(`Perform bulk actions on ${selectedIds.length} selected applications?`)) {
         this.showNotification(`Bulk action completed for ${selectedIds.length} applications`, 'success');
     }

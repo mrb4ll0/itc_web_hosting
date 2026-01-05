@@ -3,6 +3,7 @@ import { CompanyCloud } from "../fireabase/CompanyCloud.js";
 import { db, auth } from "../config/firebaseInit.js";
 import { StudentCloudDB } from "../fireabase/StudentCloud.js";
 import { ITCFirebaseLogic } from "../fireabase/ITCFirebaseLogic.js";
+import { createAvatarElement } from "../general/generalmethods.js";
 const companyCloud = new CompanyCloud();
 const itc_firebase_logic = new ITCFirebaseLogic();
 
@@ -38,15 +39,15 @@ class FeaturedCompany {
             right_image.style.backgroundImage = `url('${student.imageUrl}')`;
             right_image.onerror = () => {
                 console.warn("Failed to load student image, using placeholder");
-                right_image.style.backgroundImage = `url('${this.generateDefaultAvatar(student)}')`;
+                right_image.style.backgroundImage = `url('${createAvatarElement(student.fullName, student.imageUrl)}')`;
             };
         } else if (right_image && student) {
-            right_image.style.backgroundImage = `url('${this.generateDefaultAvatar(student)}')`;
+            right_image.style.backgroundImage = `url('${createAvatarElement(student.fullName, student.imageUrl)}')`;
         } else if (right_image) {
-            right_image.style.backgroundImage = `url('${this.generateDefaultAvatar()}')`;
+            right_image.style.backgroundImage = `url('${createAvatarElement(student.fullName, student.imageUrl)}')`;
         }
         
-             right_image.style.backgroundImage = `src('${student.imageURL}')`
+             right_image.style.backgroundImage = `src('${student.imageUrl}')`
             ////console.log("Loaded companies:", companies);
             
             this.renderCompanies(companies);

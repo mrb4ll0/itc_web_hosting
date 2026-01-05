@@ -2325,6 +2325,7 @@ async function validateStoragePath(filePath) {
 }
 
 function getAvatarElement(fullName, imageUrl = null, size = 60) {
+  
   // Default values
   const name = fullName || 'Unknown User';
   const hasValidImage = imageUrl && 
@@ -2394,6 +2395,135 @@ function getAvatarElement(fullName, imageUrl = null, size = 60) {
       </div>
     `;
   }
+}
+
+
+function getAvatarElementImg(fullName, imageUrl = null, size = 60) {
+  
+  
+  // Default values
+  const name = fullName || 'Unknown User';
+  const hasValidImage = imageUrl && 
+                       imageUrl !== "../images/Avatar.jpg" && 
+                       imageUrl.trim() !== "" &&
+                       !imageUrl.includes('undefined');
+
+  // Generate initials
+  const generateInitials = (name) => {
+    if (!name || name.trim() === "") return "??";
+    
+    const names = name.trim().split(' ');
+    if (names.length === 1) {
+      return names[0].charAt(0).toUpperCase();
+    } else {
+      return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
+    }
+  };
+
+  const initials = generateInitials(name);
+
+  // Size classes for container
+  const sizeClasses = {
+    40: 'h-10 w-10 text-sm',
+    60: 'h-15 w-15 text-base',
+    80: 'h-20 w-20 text-xl',
+    100: 'h-25 w-25 text-2xl'
+  };
+
+  const sizeClass = sizeClasses[size] || sizeClasses[60];
+
+  if (hasValidImage) {
+    // FIXED: Use img tag instead of div with background-image
+    return `
+      <div class="relative ${sizeClass} rounded-full overflow-hidden border-2 border-white dark:border-gray-700 shadow-sm" 
+           title="${name}">
+        <img 
+          src="${imageUrl}" 
+          alt="${name}"
+          class="w-full h-full object-cover"
+          loading="lazy"
+          onerror="this.style.display='none'; this.parentElement.innerHTML=getFallbackAvatar('${name}', ${size});"
+        >
+      </div>
+    `;
+  } else {
+    // Generate background color based on name for consistency
+    const colors = [
+      'bg-gradient-to-br from-blue-500 to-blue-600',
+      'bg-gradient-to-br from-green-500 to-green-600',
+      'bg-gradient-to-br from-purple-500 to-purple-600',
+      'bg-gradient-to-br from-red-500 to-red-600',
+      'bg-gradient-to-br from-yellow-500 to-yellow-600',
+      'bg-gradient-to-br from-indigo-500 to-indigo-600',
+      'bg-gradient-to-br from-pink-500 to-pink-600',
+      'bg-gradient-to-br from-teal-500 to-teal-600'
+    ];
+    
+    // Simple hash function for consistent color based on name
+    const getColorIndex = (str) => {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return Math.abs(hash) % colors.length;
+    };
+    
+    const colorClass = colors[getColorIndex(name)];
+
+    return `
+      <div class="${sizeClass} rounded-full ${colorClass} flex items-center justify-center text-white font-semibold border-2 border-white dark:border-gray-700 shadow-sm" 
+           title="${name}">
+        ${initials}
+      </div>
+    `;
+  }
+}
+
+// Add this helper function for fallback
+function getFallbackAvatar(name, size = 60) {
+  const generateInitials = (name) => {
+    if (!name || name.trim() === "") return "??";
+    const names = name.trim().split(' ');
+    if (names.length === 1) return names[0].charAt(0).toUpperCase();
+    return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
+  };
+  
+  const colors = [
+    'bg-gradient-to-br from-blue-500 to-blue-600',
+    'bg-gradient-to-br from-green-500 to-green-600',
+    'bg-gradient-to-br from-purple-500 to-purple-600',
+    'bg-gradient-to-br from-red-500 to-red-600',
+    'bg-gradient-to-br from-yellow-500 to-yellow-600',
+    'bg-gradient-to-br from-indigo-500 to-indigo-600',
+    'bg-gradient-to-br from-pink-500 to-pink-600',
+    'bg-gradient-to-br from-teal-500 to-teal-600'
+  ];
+  
+  const getColorIndex = (str) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return Math.abs(hash) % colors.length;
+  };
+  
+  const sizeClasses = {
+    40: 'h-10 w-10 text-sm',
+    60: 'h-15 w-15 text-base',
+    80: 'h-20 w-20 text-xl',
+    100: 'h-25 w-25 text-2xl'
+  };
+  
+  const sizeClass = sizeClasses[size] || sizeClasses[60];
+  const initials = generateInitials(name);
+  const colorClass = colors[getColorIndex(name)];
+  
+  return `
+    <div class="${sizeClass} rounded-full ${colorClass} flex items-center justify-center text-white font-semibold border-2 border-white dark:border-gray-700 shadow-sm" 
+         title="${name}">
+      ${initials}
+    </div>
+  `;
 }
 
 function showLoadingDialog(message = "Submitting...") {
@@ -3055,13 +3185,15 @@ function addLoadingStyles() {
 export{validateStoragePath,
   validateStorageUrl,
   getAvatarElement,
+  getAvatarElementImg,
   hideLoadingDialog,
   showLoadingDialog,
 safeConvertToTimestamp,
 removeNotification,
 updateNotification,
 showNotification,
-formatTimestamp
+formatTimestamp,
+getFallbackAvatar
 }
 
 

@@ -19,6 +19,7 @@ import {
   showLoadingDialog,
 } from "../general/generalmethods.js";
 import { ITBaseCompanyCloud } from "../fireabase/ITBaseCompanyCloud.js";
+import {PayStackPaymentService} from "../../company/js/paymentSystem/paymentService.js";
 
 const itc_firebase_logic = new ITCFirebaseLogic();
 /** @type {import('../fireabase/CompanyCloud.js').CompanyCloud} */
@@ -940,8 +941,9 @@ function decideAndReturnURL(company) {
 // Global reference to dashboard instance
 let dashboardInstance = null;
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async() => {
   dashboardInstance = new ITCDashBoard();
+   await PayStackPaymentService.resolvePendingTransactions();
 });
 
 // Cleanup on page unload

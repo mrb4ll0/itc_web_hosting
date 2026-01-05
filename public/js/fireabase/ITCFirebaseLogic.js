@@ -96,7 +96,7 @@ export class ITCFirebaseLogic {
   }
 
   async getStudent(uid) {
-    ////console.log("about to get user with uid "+uid);
+
     const ref = doc(
       this._firebaseFirestore,
       this.usersCollection,
@@ -106,11 +106,11 @@ export class ITCFirebaseLogic {
     );
       if(!ref)
       {
-        ////console.log("ref is null");
+
       }
     const snap = await getDoc(ref);
     if (snap.exists()) {
-      return Student.fromFirestore(snap.data());
+      return Student.fromFirestore(snap.data(),uid);
     }
     return null;
   }

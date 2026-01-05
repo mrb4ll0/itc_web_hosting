@@ -34,7 +34,7 @@ import {
   arrayUnion,
   arrayRemove,
   limit,
-  Timestamp
+  Timestamp,
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 import {
   getStorage,
@@ -44,8 +44,14 @@ import {
   getDownloadURL,
   deleteObject,
   listAll,
-  getMetadata
+  getMetadata,
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-storage.js";
+import {
+  getMessaging,
+  getToken,
+  onMessage,
+} from "https://www.gstatic.com/firebasejs/11.0.0/firebase-messaging.js";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyBO_RrqRNm-Oq72X4Sz24MonqzLokMxKK0",
@@ -72,6 +78,7 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const firebaseApp = app;
+const messaging = getMessaging(app);
 
 // Export all auth functions
 export {
@@ -112,5 +119,8 @@ export {
   limit,
   getMetadata,
   Timestamp,
-  arrayRemove
+  arrayRemove,
+  getToken, 
+  onMessage,
+  messaging
 };

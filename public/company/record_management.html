@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Records Management | Supervisor Dashboard</title>
+    <script>
+      (function () {
+        const savedTheme = localStorage.getItem("app-theme");
+        const systemDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+        if (savedTheme === "dark" || (!savedTheme && systemDark)) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
+    <style>
+      .fade-in {
+        animation: fadeIn 0.3s ease-in;
+      }
+      .slide-up {
+        animation: slideUp 0.3s ease-out;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes slideUp {
+        from {
+          transform: translateY(10px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      .scrollbar-thin::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      .scrollbar-thin::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      .scrollbar-thin::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+      }
+      .dark .scrollbar-thin::-webkit-scrollbar-track {
+        background: #334155;
+      }
+      .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+        background: #475569;
+      }
+      .action-completed {
+        border-left: 4px solid #10b981;
+      }
+      .action-pending {
+        border-left: 4px solid #f59e0b;
+      }
+      .action-warning {
+        border-left: 4px solid #ef4444;
+      }
+    </style>
+  </head>
+  <body class="h-full bg-slate-50 dark:bg-slate-900">
+    <div class="flex h-screen">
+      <!-- Main Content -->
+      <main class="flex-1 overflow-y-auto">
+        <!-- Header -->
+        <header
+          class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-6"
+        >
+          <div class="flex justify-between items-center">
+            <div>
+              <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
+                Records Management
+              </h1>
+              <p class="text-slate-600 dark:text-slate-400">
+                Track and manage all supervisor and student activities
+              </p>
+            </div>
+            <div class="flex items-center space-x-4">
+              <div class="relative">
+                <span
+                  class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"
+                  >search</span
+                >
+                <input
+                  type="text"
+                  placeholder="Search records..."
+                  class="pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-transparent text-slate-900 dark:text-white w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <button
+                class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+              >
+                <span
+                  class="material-symbols-outlined text-slate-500 dark:text-slate-400"
+                  >notifications</span
+                >
+                <span
+                  class="absolute top-5 right-5 w-2 h-2 bg-red-500 rounded-full"
+                ></span>
+              </button>
+              <button
+                onclick="toggleTheme()"
+                class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+              >
+                <span
+                  id="theme-icon"
+                  class="material-symbols-outlined text-slate-500 dark:text-slate-400"
+                  >dark_mode</span
+                >
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Stats -->
+          <div class="grid grid-cols-4 gap-4 mt-6">
+            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-slate-600 dark:text-slate-400">
+                    Total Records
+                  </p>
+                  <p class="text-2xl font-bold text-slate-900 dark:text-white">
+                    1,247
+                  </p>
+                </div>
+                <span class="material-symbols-outlined text-blue-500"
+                  >folder</span
+                >
+              </div>
+            </div>
+            <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-slate-600 dark:text-slate-400">
+                    Active Students
+                  </p>
+                  <p class="text-2xl font-bold text-slate-900 dark:text-white">
+                    84
+                  </p>
+                </div>
+                <span class="material-symbols-outlined text-green-500"
+                  >group</span
+                >
+              </div>
+            </div>
+            <div class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-slate-600 dark:text-slate-400">
+                    Pending Actions
+                  </p>
+                  <p class="text-2xl font-bold text-slate-900 dark:text-white">
+                    12
+                  </p>
+                </div>
+                <span class="material-symbols-outlined text-amber-500"
+                  >pending_actions</span
+                >
+              </div>
+            </div>
+            <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-slate-600 dark:text-slate-400">
+                    This Week
+                  </p>
+                  <p class="text-2xl font-bold text-slate-900 dark:text-white">
+                    48
+                  </p>
+                </div>
+                <span class="material-symbols-outlined text-purple-500"
+                  >trending_up</span
+                >
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <div class="p-6 space-y-6">
+          <!-- Recent Activity Sections -->
+          <div class="grid grid-cols-2 gap-6">
+            <!-- Supervisor Recent Actions -->
+            <div
+              class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 fade-in"
+            >
+              <div class="p-6 border-b border-slate-200 dark:border-slate-700">
+                <div class="flex items-center justify-between">
+                  <h2
+                    class="text-lg font-semibold text-slate-900 dark:text-white"
+                  >
+                    Supervisor Recent Actions
+                  </h2>
+                  <button
+                    class="text-sm text-blue-500 hover:text-blue-600 flex items-center"
+                  >
+                    <span class="material-symbols-outlined text-sm mr-1"
+                      >history</span
+                    >
+                    View All
+                  </button>
+                </div>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                  Your recent activities and updates
+                </p>
+              </div>
+              <div
+                class="p-6 space-y-4 max-h-96 overflow-y-auto scrollbar-thin"
+              >
+                <!-- Action Items -->
+                <div
+                  class="action-completed bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg slide-up"
+                >
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-start space-x-3">
+                      <div
+                        class="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mt-1"
+                      >
+                        <span
+                          class="material-symbols-outlined text-green-600 dark:text-green-400 text-sm"
+                          >check_circle</span
+                        >
+                      </div>
+                      <div>
+                        <p class="font-medium text-slate-900 dark:text-white">
+                          Approved student registration
+                        </p>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">
+                          Approved John Doe's registration for Computer Science
+                        </p>
+                        <div class="flex items-center mt-2">
+                          <a
+                            href="student_profile.html?id=STU001"
+                            class="text-sm text-blue-500 hover:text-blue-600 flex items-center"
+                          >
+                            <span class="material-symbols-outlined text-sm mr-1"
+                              >person</span
+                            >
+                            View John Doe's Profile
+                          </a>
+                          <span class="mx-2 text-slate-300">•</span>
+                          <span
+                            class="text-xs text-slate-500 dark:text-slate-400"
+                            >2 hours ago</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="action-pending bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg slide-up"
+                >
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-start space-x-3">
+                      <div
+                        class="w-8 h-8 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center mt-1"
+                      >
+                        <span
+                          class="material-symbols-outlined text-amber-600 dark:text-amber-400 text-sm"
+                          >pending</span
+                        >
+                      </div>
+                      <div>
+                        <p class="font-medium text-slate-900 dark:text-white">
+                          Pending report review
+                        </p>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">
+                          Student progress report requires your review
+                        </p>
+                        <div class="flex items-center mt-2">
+                          <button
+                            onclick="viewStudent('STU002')"
+                            class="text-sm text-blue-500 hover:text-blue-600 flex items-center"
+                          >
+                            <span class="material-symbols-outlined text-sm mr-1"
+                              >visibility</span
+                            >
+                            Review Now
+                          </button>
+                          <span class="mx-2 text-slate-300">•</span>
+                          <span
+                            class="text-xs text-slate-500 dark:text-slate-400"
+                            >4 hours ago</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="action-warning bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg slide-up"
+                >
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-start space-x-3">
+                      <div
+                        class="w-8 h-8 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mt-1"
+                      >
+                        <span
+                          class="material-symbols-outlined text-red-600 dark:text-red-400 text-sm"
+                          >warning</span
+                        >
+                      </div>
+                      <div>
+                        <p class="font-medium text-slate-900 dark:text-white">
+                          Attendance alert
+                        </p>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">
+                          3 students have low attendance this week
+                        </p>
+                        <div class="flex items-center mt-2">
+                          <a
+                            href="attendance.html"
+                            class="text-sm text-blue-500 hover:text-blue-600 flex items-center"
+                          >
+                            <span class="material-symbols-outlined text-sm mr-1"
+                              >group</span
+                            >
+                            View Students
+                          </a>
+                          <span class="mx-2 text-slate-300">•</span>
+                          <span
+                            class="text-xs text-slate-500 dark:text-slate-400"
+                            >1 day ago</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="action-completed bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg slide-up"
+                >
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-start space-x-3">
+                      <div
+                        class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mt-1"
+                      >
+                        <span
+                          class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-sm"
+                          >edit_document</span
+                        >
+                      </div>
+                      <div>
+                        <p class="font-medium text-slate-900 dark:text-white">
+                          Updated course materials
+                        </p>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">
+                          Uploaded new materials for Web Development course
+                        </p>
+                        <div class="flex items-center mt-2">
+                          <button
+                            class="text-sm text-blue-500 hover:text-blue-600 flex items-center"
+                          >
+                            <span class="material-symbols-outlined text-sm mr-1"
+                              >download</span
+                            >
+                            Download Materials
+                          </button>
+                          <span class="mx-2 text-slate-300">•</span>
+                          <span
+                            class="text-xs text-slate-500 dark:text-slate-400"
+                            >2 days ago</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Student Recent Actions -->
+            <div
+              class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 fade-in"
+            >
+              <div class="p-6 border-b border-slate-200 dark:border-slate-700">
+                <div class="flex items-center justify-between">
+                  <h2
+                    class="text-lg font-semibold text-slate-900 dark:text-white"
+                  >
+                    Student Recent Actions
+                  </h2>
+                  <div class="flex items-center space-x-2">
+                    <select
+                      class="text-sm border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-1 bg-transparent text-slate-900 dark:text-white"
+                    >
+                      <option>All Students</option>
+                      <option>This Week</option>
+                      <option>This Month</option>
+                    </select>
+                    <button
+                      class="text-sm text-blue-500 hover:text-blue-600 flex items-center"
+                    >
+                      <span class="material-symbols-outlined text-sm mr-1"
+                        >filter_list</span
+                      >
+                      Filter
+                    </button>
+                  </div>
+                </div>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                  Latest activities from students
+                </p>
+              </div>
+              <div
+                class="p-6 space-y-4 max-h-96 overflow-y-auto scrollbar-thin"
+              >
+                <!-- Student Actions -->
+                <div
+                  class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg slide-up hover:bg-slate-100 dark:hover:bg-slate-700/50 cursor-pointer"
+                  onclick="viewStudent('STU001')"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <img
+                        src="https://api.dicebear.com/7.x/avataaars/svg?seed=John"
+                        alt="John"
+                        class="w-10 h-10 rounded-full"
+                      />
+                      <div>
+                        <p class="font-medium text-slate-900 dark:text-white">
+                          John Doe
+                        </p>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">
+                          Submitted assignment - Web Development
+                        </p>
+                        <div class="flex items-center mt-1">
+                          <span
+                            class="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded"
+                            >Submitted</span
+                          >
+                          <span class="mx-2 text-slate-300">•</span>
+                          <span
+                            class="text-xs text-slate-500 dark:text-slate-400"
+                            >30 mins ago</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-400"
+                      >chevron_right</span
+                    >
+                  </div>
+                </div>
+
+                <div
+                  class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg slide-up hover:bg-slate-100 dark:hover:bg-slate-700/50 cursor-pointer"
+                  onclick="viewStudent('STU002')"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <img
+                        src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jane"
+                        alt="Jane"
+                        class="w-10 h-10 rounded-full"
+                      />
+                      <div>
+                        <p class="font-medium text-slate-900 dark:text-white">
+                          Jane Smith
+                        </p>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">
+                          Requested course change - Data Science
+                        </p>
+                        <div class="flex items-center mt-1">
+                          <span
+                            class="text-xs px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 rounded"
+                            >Pending</span
+                          >
+                          <span class="mx-2 text-slate-300">•</span>
+                          <span
+                            class="text-xs text-slate-500 dark:text-slate-400"
+                            >2 hours ago</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-400"
+                      >chevron_right</span
+                    >
+                  </div>
+                </div>
+
+                <div
+                  class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg slide-up hover:bg-slate-100 dark:hover:bg-slate-700/50 cursor-pointer"
+                  onclick="viewStudent('STU003')"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <img
+                        src="https://api.dicebear.com/7.x/avataaars/svg?seed=Mike"
+                        alt="Mike"
+                        class="w-10 h-10 rounded-full"
+                      />
+                      <div>
+                        <p class="font-medium text-slate-900 dark:text-white">
+                          Mike Johnson
+                        </p>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">
+                          Absent from class - Requires attention
+                        </p>
+                        <div class="flex items-center mt-1">
+                          <span
+                            class="text-xs px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 rounded"
+                            >Warning</span
+                          >
+                          <span class="mx-2 text-slate-300">•</span>
+                          <span
+                            class="text-xs text-slate-500 dark:text-slate-400"
+                            >1 day ago</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-400"
+                      >chevron_right</span
+                    >
+                  </div>
+                </div>
+
+                <div
+                  class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg slide-up hover:bg-slate-100 dark:hover:bg-slate-700/50 cursor-pointer"
+                  onclick="viewStudent('STU004')"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <img
+                        src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
+                        alt="Sarah"
+                        class="w-10 h-10 rounded-full"
+                      />
+                      <div>
+                        <p class="font-medium text-slate-900 dark:text-white">
+                          Sarah Wilson
+                        </p>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">
+                          Completed final project - AI & Machine Learning
+                        </p>
+                        <div class="flex items-center mt-1">
+                          <span
+                            class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded"
+                            >Completed</span
+                          >
+                          <span class="mx-2 text-slate-300">•</span>
+                          <span
+                            class="text-xs text-slate-500 dark:text-slate-400"
+                            >2 days ago</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-400"
+                      >chevron_right</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions & Student Directory -->
+          <div class="grid grid-cols-3 gap-6">
+            <!-- Quick Actions -->
+            <div
+              class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 fade-in"
+            >
+              <div class="p-6 border-b border-slate-200 dark:border-slate-700">
+                <h2
+                  class="text-lg font-semibold text-slate-900 dark:text-white"
+                >
+                  Quick Actions
+                </h2>
+                <p class="text-sm text-slate-600 dark:text-slate-400">
+                  Frequently used actions
+                </p>
+              </div>
+              <div class="p-6 grid grid-cols-2 gap-4">
+                <button
+                  class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 flex flex-col items-center justify-center transition-all hover:scale-[1.02]"
+                >
+                  <span
+                    class="material-symbols-outlined text-blue-500 text-2xl mb-2"
+                    >add_circle</span
+                  >
+                  <span
+                    class="text-sm font-medium text-slate-900 dark:text-white"
+                    >Add Record</span
+                  >
+                </button>
+                <button
+                  class="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 flex flex-col items-center justify-center transition-all hover:scale-[1.02]"
+                >
+                  <span
+                    class="material-symbols-outlined text-green-500 text-2xl mb-2"
+                    >upload_file</span
+                  >
+                  <span
+                    class="text-sm font-medium text-slate-900 dark:text-white"
+                    >Import Data</span
+                  >
+                </button>
+                <button
+                  class="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/30 flex flex-col items-center justify-center transition-all hover:scale-[1.02]"
+                >
+                  <span
+                    class="material-symbols-outlined text-amber-500 text-2xl mb-2"
+                    >print</span
+                  >
+                  <span
+                    class="text-sm font-medium text-slate-900 dark:text-white"
+                    >Print Report</span
+                  >
+                </button>
+                <button
+                  class="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 flex flex-col items-center justify-center transition-all hover:scale-[1.02]"
+                >
+                  <span
+                    class="material-symbols-outlined text-purple-500 text-2xl mb-2"
+                    >share</span
+                  >
+                  <span
+                    class="text-sm font-medium text-slate-900 dark:text-white"
+                    >Export Data</span
+                  >
+                </button>
+              </div>
+            </div>
+
+            <!-- Student Directory -->
+            <div
+              class="col-span-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 fade-in"
+            >
+              <div class="p-6 border-b border-slate-200 dark:border-slate-700">
+                <div class="flex items-center justify-between">
+                  <h2
+                    class="text-lg font-semibold text-slate-900 dark:text-white"
+                  >
+                    Student Directory
+                  </h2>
+                  <input
+                    type="text"
+                    placeholder="Search students..."
+                    class="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-transparent text-slate-900 dark:text-white w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <div class="p-6">
+                <div class="overflow-x-auto">
+                  <table class="w-full">
+                    <thead>
+                      <tr
+                        class="text-left text-sm text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700"
+                      >
+                        <th class="pb-3 font-medium">Student</th>
+                        <th class="pb-3 font-medium">Student ID</th>
+                        <th class="pb-3 font-medium">Course</th>
+                        <th class="pb-3 font-medium">Status</th>
+                        <th class="pb-3 font-medium">Last Activity</th>
+                        <th class="pb-3 font-medium">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                      <tr
+                        class="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                      >
+                        <td class="py-4">
+                          <div class="flex items-center space-x-3">
+                            <img
+                              src="https://api.dicebear.com/7.x/avataaars/svg?seed=John"
+                              alt="John"
+                              class="w-8 h-8 rounded-full"
+                            />
+                            <span
+                              class="font-medium text-slate-900 dark:text-white"
+                              >John Doe</span
+                            >
+                          </div>
+                        </td>
+                        <td class="py-4 text-slate-600 dark:text-slate-400">
+                          STU001
+                        </td>
+                        <td class="py-4 text-slate-600 dark:text-slate-400">
+                          Computer Science
+                        </td>
+                        <td class="py-4">
+                          <span
+                            class="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded text-xs"
+                            >Active</span
+                          >
+                        </td>
+                        <td class="py-4 text-slate-600 dark:text-slate-400">
+                          Today, 10:30 AM
+                        </td>
+                        <td class="py-4">
+                          <button
+                            onclick="viewStudent('STU001')"
+                            class="text-blue-500 hover:text-blue-600 flex items-center text-sm"
+                          >
+                            <span class="material-symbols-outlined text-sm mr-1"
+                              >visibility</span
+                            >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                      <tr
+                        class="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                      >
+                        <td class="py-4">
+                          <div class="flex items-center space-x-3">
+                            <img
+                              src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jane"
+                              alt="Jane"
+                              class="w-8 h-8 rounded-full"
+                            />
+                            <span
+                              class="font-medium text-slate-900 dark:text-white"
+                              >Jane Smith</span
+                            >
+                          </div>
+                        </td>
+                        <td class="py-4 text-slate-600 dark:text-slate-400">
+                          STU002
+                        </td>
+                        <td class="py-4 text-slate-600 dark:text-slate-400">
+                          Data Science
+                        </td>
+                        <td class="py-4">
+                          <span
+                            class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 rounded text-xs"
+                            >Pending</span
+                          >
+                        </td>
+                        <td class="py-4 text-slate-600 dark:text-slate-400">
+                          Yesterday, 3:45 PM
+                        </td>
+                        <td class="py-4">
+                          <button
+                            onclick="viewStudent('STU002')"
+                            class="text-blue-500 hover:text-blue-600 flex items-center text-sm"
+                          >
+                            <span class="material-symbols-outlined text-sm mr-1"
+                              >visibility</span
+                            >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                      <tr
+                        class="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                      >
+                        <td class="py-4">
+                          <div class="flex items-center space-x-3">
+                            <img
+                              src="https://api.dicebear.com/7.x/avataaars/svg?seed=Mike"
+                              alt="Mike"
+                              class="w-8 h-8 rounded-full"
+                            />
+                            <span
+                              class="font-medium text-slate-900 dark:text-white"
+                              >Mike Johnson</span
+                            >
+                          </div>
+                        </td>
+                        <td class="py-4 text-slate-600 dark:text-slate-400">
+                          STU003
+                        </td>
+                        <td class="py-4 text-slate-600 dark:text-slate-400">
+                          Web Development
+                        </td>
+                        <td class="py-4">
+                          <span
+                            class="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 rounded text-xs"
+                            >Warning</span
+                          >
+                        </td>
+                        <td class="py-4 text-slate-600 dark:text-slate-400">
+                          2 days ago
+                        </td>
+                        <td class="py-4">
+                          <button
+                            onclick="viewStudent('STU003')"
+                            class="text-blue-500 hover:text-blue-600 flex items-center text-sm"
+                          >
+                            <span class="material-symbols-outlined text-sm mr-1"
+                              >visibility</span
+                            >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                        <td class="py-4">
+                          <div class="flex items-center space-x-3">
+                            <img
+                              src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
+                              alt="Sarah"
+                              class="w-8 h-8 rounded-full"
+                            />
+                            <span
+                              class="font-medium text-slate-900 dark:text-white"
+                              >Sarah Wilson</span
+                            >
+                          </div>
+                        </td>
+                        <td class="py-4 text-slate-600 dark:text-slate-400">
+                          STU004
+                        </td>
+                        <td class="py-4 text-slate-600 dark:text-slate-400">
+                          AI & ML
+                        </td>
+                        <td class="py-4">
+                          <span
+                            class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded text-xs"
+                            >Completed</span
+                          >
+                        </td>
+                        <td class="py-4 text-slate-600 dark:text-slate-400">
+                          1 week ago
+                        </td>
+                        <td class="py-4">
+                          <button
+                            onclick="viewStudent('STU004')"
+                            class="text-blue-500 hover:text-blue-600 flex items-center text-sm"
+                          >
+                            <span class="material-symbols-outlined text-sm mr-1"
+                              >visibility</span
+                            >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Record Statistics -->
+          <div
+            class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 fade-in"
+          >
+            <div class="p-6 border-b border-slate-200 dark:border-slate-700">
+              <h2 class="text-lg font-semibold text-slate-900 dark:text-white">
+                Record Statistics
+              </h2>
+              <p class="text-sm text-slate-600 dark:text-slate-400">
+                Overview of all records and activities
+              </p>
+            </div>
+            <div class="p-6">
+              <div class="grid grid-cols-4 gap-6">
+                <div class="text-center">
+                  <div
+                    class="text-3xl font-bold text-slate-900 dark:text-white"
+                  >
+                    248
+                  </div>
+                  <div class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                    Academic Records
+                  </div>
+                </div>
+                <div class="text-center">
+                  <div
+                    class="text-3xl font-bold text-slate-900 dark:text-white"
+                  >
+                    156
+                  </div>
+                  <div class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                    Attendance Records
+                  </div>
+                </div>
+                <div class="text-center">
+                  <div
+                    class="text-3xl font-bold text-slate-900 dark:text-white"
+                  >
+                    73
+                  </div>
+                  <div class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                    Assignment Submissions
+                  </div>
+                </div>
+                <div class="text-center">
+                  <div
+                    class="text-3xl font-bold text-slate-900 dark:text-white"
+                  >
+                    42
+                  </div>
+                  <div class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                    Pending Reviews
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+      // Theme Toggle
+      function toggleTheme() {
+        const isDark = document.documentElement.classList.toggle("dark");
+        localStorage.setItem("app-theme", isDark ? "dark" : "light");
+        const themeIcon = document.getElementById("theme-icon");
+        themeIcon.textContent = isDark ? "light_mode" : "dark_mode";
+      }
+
+      // View Student Profile
+      function viewStudent(studentId) {
+        // In a real app, you would redirect to student profile page
+        // For demo, show a modal or redirect
+        console.log(`Viewing student: ${studentId}`);
+        window.location.href = `student_profile.html?id=${studentId}`;
+      }
+
+      // Filter functionality
+      document.querySelectorAll("select").forEach((select) => {
+        select.addEventListener("change", (e) => {
+          console.log(`Filter changed to: ${e.target.value}`);
+          // Implement filter logic here
+        });
+      });
+
+      // Search functionality
+      const searchInput = document.querySelector('input[type="text"]');
+      searchInput.addEventListener("input", (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        // Implement search logic here
+        console.log(`Searching for: ${searchTerm}`);
+      });
+
+      // Initialize animations
+      document.addEventListener("DOMContentLoaded", () => {
+        // Add staggered animations
+        const slideUps = document.querySelectorAll(".slide-up");
+        slideUps.forEach((element, index) => {
+          element.style.animationDelay = `${index * 0.1}s`;
+        });
+      });
+    </script>
+  </body>
+</html>

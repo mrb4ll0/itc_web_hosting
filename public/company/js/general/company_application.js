@@ -1,6 +1,11 @@
 import { ITBaseCompanyCloud } from "../../../js/fireabase/ITBaseCompanyCloud.js";
 import { auth, db } from "../../../js/config/firebaseInit.js";
+import generalmethods, {
+  getAvatarElement,
+  getAvatarElementImg,
+} from "../../../js/general/generalmethods.js";
 const companyCloud = new ITBaseCompanyCloud();
+const it_base_company_cloud = new ITBaseCompanyCloud();
 
 class ApplicationsManager {
   constructor() {
@@ -160,36 +165,39 @@ class ApplicationsManager {
     this.hideAllStates();
 
     if (this.filteredApplications.length === 0) {
-        if (this.isInitialLoad && this.applications.length === 0) {
-            this.showEmptyState("No applications yet");
-        } else if (this.hasSearched) {
-            this.showEmptyState("No applications match your filters");
-        } else {
-            this.showEmptyState("No applications to display");
-        }
-        this.isInitialLoad = false;
-        return;
+      if (this.isInitialLoad && this.applications.length === 0) {
+        this.showEmptyState("No applications yet");
+      } else if (this.hasSearched) {
+        this.showEmptyState("No applications match your filters");
+      } else {
+        this.showEmptyState("No applications to display");
+      }
+      this.isInitialLoad = false;
+      return;
     }
 
     this.isInitialLoad = false;
 
-    const tableContainer = document.getElementById("applications-table-container");
-    const listContainer = document.getElementById("applications-list-container");
+    const tableContainer = document.getElementById(
+      "applications-table-container"
+    );
+    const listContainer = document.getElementById(
+      "applications-list-container"
+    );
 
     if (window.innerWidth >= 640) {
-        // Show table on sm+ screens
-        tableContainer.classList.remove("hidden");
-        listContainer.classList.add("hidden");
+      // Show table on sm+ screens
+      tableContainer.classList.remove("hidden");
+      listContainer.classList.add("hidden");
     } else {
-        // Show list on mobile
-        tableContainer.classList.add("hidden");
-        listContainer.classList.remove("hidden");
+      // Show list on mobile
+      tableContainer.classList.add("hidden");
+      listContainer.classList.remove("hidden");
     }
 
     this.renderDesktopTable();
     this.renderMobileList();
-}
-
+  }
 
   renderDesktopTable() {
     const tableBody = document.getElementById("applications-table-body");
@@ -198,60 +206,69 @@ class ApplicationsManager {
       .map(
         (application, index) => `
             <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                <td class="px-4 sm:px-6 py-4">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0 h-10 w-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                            <span class="material-symbols-outlined text-gray-500 dark:text-gray-400 text-sm">person</span>
-                        </div>
-                        <div class="ml-4">
-                            <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                ${application.studentName || "N/A"}
-                            </div>
-                            <div class="text-sm text-gray-500 dark:text-gray-400">
-                                ${
-                                  application.studentEmail ||
-                                  application.email ||
-                                  "No email"
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </td>
-                <td class="px-4 sm:px-6 py-4 text-sm text-gray-900 dark:text-white">
-                    ${application.opportunity || "N/A"}
-                </td>
-                <td class="px-4 sm:px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                    ${this.formatDate(application.applicationDate)}
-                </td>
-                <td class="px-4 sm:px-6 py-4">
-                    ${this.getStatusBadge(application.status)}
-                </td>
-                <td class="px-4 sm:px-6 py-4 text-sm font-medium">
-                    <div class="flex items-center space-x-2">
-                        <button 
-                            onclick="applicationsManager.viewApplication(${index})"
-                            class="text-primary hover:text-primary/80 transition-colors p-1 rounded"
-                            title="View Details"
-                        >
-                            <span class="material-symbols-outlined text-lg">visibility</span>
-                        </button>
-                        <button 
-                            onclick="applicationsManager.acceptApplication(${index})"
-                            class="text-success hover:text-success/80 transition-colors p-1 rounded"
-                            title="Accept"
-                        >
-                            <span class="material-symbols-outlined text-lg">check_circle</span>
-                        </button>
-                        <button 
-                            onclick="applicationsManager.rejectApplication(${index})"
-                            class="text-danger hover:text-danger/80 transition-colors p-1 rounded"
-                            title="Reject"
-                        >
-                            <span class="material-symbols-outlined text-lg">cancel</span>
-                        </button>
-                    </div>
-                </td>
-            </tr>
+    <td class="px-4 sm:px-6 py-4">
+        <div class="flex items-center">
+            ${getAvatarElementImg(
+              application.studentName,
+              application.student.imageUrl
+            )}
+            <div class="ml-4">
+                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                    ${application.studentName || "N/A"}
+                </div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    ${
+                      application.studentEmail ||
+                      application.email ||
+                      "No email"
+                    }
+                </div>
+            </div>
+        </div>
+    </td>
+    <td class="px-4 sm:px-6 py-4 text-sm text-gray-900 dark:text-white">
+        ${application.opportunity || "N/A"}
+    </td>
+    <td class="px-4 sm:px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+        ${this.formatDate(application.applicationDate)}
+    </td>
+    <td class="px-4 sm:px-6 py-4">
+        ${this.getStatusBadge(application.status)}
+    </td>
+    <td class="px-4 sm:px-6 py-4 text-sm font-medium">
+        <div class="flex items-center space-x-2">
+            <button 
+                onclick="applicationsManager.viewApplication(${index})"
+                class="text-primary hover:text-primary/80 transition-colors p-1 rounded"
+                title="View Details"
+            >
+                <span class="material-symbols-outlined text-lg">visibility</span>
+            </button>
+            
+            ${
+              application.status.toLowerCase() === "pending" ||
+              application.status.toLowerCase() === "pend"
+                ? `
+            <button 
+                onclick="applicationsManager.acceptApplication(${index})"
+                class="text-success hover:text-success/80 transition-colors p-1 rounded"
+                title="Accept"
+            >
+                <span class="material-symbols-outlined text-lg">check_circle</span>
+            </button>
+            <button 
+                onclick="applicationsManager.rejectApplication(${index})"
+                class="text-danger hover:text-danger/80 transition-colors p-1 rounded"
+                title="Reject"
+            >
+                <span class="material-symbols-outlined text-lg">cancel</span>
+            </button>
+            `
+                : ""
+            }
+        </div>
+    </td>
+</tr>
         `
       )
       .join("");
@@ -266,9 +283,10 @@ class ApplicationsManager {
             <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4">
                 <div class="flex items-start justify-between mb-3">
                     <div class="flex items-center space-x-3">
-                        <div class="flex-shrink-0 h-12 w-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                            <span class="material-symbols-outlined text-gray-500 dark:text-gray-400">person</span>
-                        </div>
+                         ${getAvatarElementImg(
+                           application.studentName,
+                           application.student.imageUrl
+                         )}
                         <div>
                             <div class="font-medium text-gray-900 dark:text-white">
                                 ${application.studentName || "N/A"}
@@ -432,17 +450,21 @@ class ApplicationsManager {
 
   viewApplication(applicationIndex) {
     const application = this.filteredApplications[applicationIndex];
-   // //console.log("applciations "+JSON.stringify(application));
+    // //console.log("applciations "+JSON.stringify(application));
     if (application) {
-       if(application.training.id && application.id)
-       {
-      window.location.href = `student_profile.html?itid=${application.training.id}&id=${application.id}`;
-       }
+      if (application.training.id && application.id) {
+        window.location.href = `student_profile.html?itid=${application.training.id}&id=${application.id}`;
+      }
     }
   }
 
   async acceptApplication(applicationIndex) {
     const application = this.filteredApplications[applicationIndex];
+    if (application.status === "accepted") {
+      alert("Application is already Accepted ");
+      return;
+    }
+    this.currentApplication = application;
     if (!application) return;
 
     if (
@@ -455,6 +477,7 @@ class ApplicationsManager {
         application.status = "accepted";
         this.renderApplications();
         this.showSuccess("Application accepted successfully");
+        this.messageDialog(true);
       } catch (error) {
         console.error("Error accepting application:", error);
         this.showError("Failed to accept application: " + error.message);
@@ -464,6 +487,10 @@ class ApplicationsManager {
 
   async rejectApplication(applicationIndex) {
     const application = this.filteredApplications[applicationIndex];
+    if (application.status === "rejected") {
+      alert("Application is already rejected ");
+      return;
+    }
     if (!application) return;
 
     if (
@@ -476,6 +503,7 @@ class ApplicationsManager {
         application.status = "rejected";
         this.renderApplications();
         this.showSuccess("Application rejected");
+        this.messageDialog(true);
       } catch (error) {
         console.error("Error rejecting application:", error);
         this.showError("Failed to reject application: " + error.message);
@@ -611,11 +639,172 @@ class ApplicationsManager {
         user.uid,
         application.opportunityId,
         application.id,
-        newStatus
+        newStatus,
+        application.student.uid
       );
     } catch (error) {
       console.error("Error updating application in Firebase:", error);
       throw error;
+    }
+  }
+
+  messageDialog(hideCancel = true) {
+    const modalOverlay = document.createElement("div");
+    modalOverlay.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; 
+        align-items: center; z-index: 1000; font-family: sans-serif;
+    `;
+
+    const modal = document.createElement("div");
+    modal.style.cssText = `
+        background: white; padding: 24px; border-radius: 8px; 
+        width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+    `;
+
+    // Conditionally render the buttons based on hideCancel parameter
+    const buttonsHTML = hideCancel
+      ? `<div style="display: flex; justify-content: flex-end;">
+            <button id="send-message" style="padding: 8px 16px; border: none; border-radius: 4px; background: #007bff; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <span id="send-text">Send Message</span>
+                <span id="send-loading" style="display: none;">Sending...</span>
+            </button>
+        </div>`
+      : `<div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <button id="cancel-message" style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; background: white; cursor: pointer;">
+                Cancel
+            </button>
+            <button id="send-message" style="padding: 8px 16px; border: none; border-radius: 4px; background: #007bff; color: white; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <span id="send-text">Send Message</span>
+                <span id="send-loading" style="display: none;">Sending...</span>
+            </button>
+        </div>`;
+
+    modal.innerHTML = `
+        <h2 style="margin: 0 0 20px 0; color: #333;">Send Message to Student</h2>
+        
+        <div style="margin-bottom: 16px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: 500;">Student Name</label>
+            <input type="text" id="student-name" placeholder="Enter student name" 
+                value="${this.currentApplication.student.fullName || ""}"
+                style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: 500;">Message</label>
+            <textarea id="message-text" rows="6" placeholder="Type your message to the student..."
+                    style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; font-family: inherit;">
+Hello ${this.currentApplication.student.fullName || "Student"},
+
+I'd like to schedule a time to discuss your industrial training progress.
+
+Are you available sometime this week?
+
+Best regards
+            </textarea>
+        </div>
+
+        ${buttonsHTML}
+    `;
+
+    modalOverlay.appendChild(modal);
+    document.body.appendChild(modalOverlay);
+
+    // Get references to elements
+    const sendButton = modal.querySelector("#send-message");
+    const sendText = modal.querySelector("#send-text");
+    const sendLoading = modal.querySelector("#send-loading");
+    const studentNameInput = modal.querySelector("#student-name");
+    const messageTextarea = modal.querySelector("#message-text");
+
+    // Event handlers
+    const closeModal = () => document.body.removeChild(modalOverlay);
+
+    // Function to set loading state
+    const setLoadingState = (isLoading) => {
+      if (isLoading) {
+        sendButton.disabled = true;
+        sendButton.style.opacity = "0.6";
+        sendButton.style.cursor = "not-allowed";
+        sendText.style.display = "none";
+        sendLoading.style.display = "inline";
+
+        // Also disable inputs during loading
+        studentNameInput.disabled = true;
+        messageTextarea.disabled = true;
+      } else {
+        sendButton.disabled = false;
+        sendButton.style.opacity = "1";
+        sendButton.style.cursor = "pointer";
+        sendText.style.display = "inline";
+        sendLoading.style.display = "none";
+
+        // Re-enable inputs
+        studentNameInput.disabled = false;
+        messageTextarea.disabled = false;
+      }
+    };
+
+    // Only add cancel event listener if cancel button exists
+    if (!hideCancel) {
+      modal
+        .querySelector("#cancel-message")
+        .addEventListener("click", closeModal);
+    }
+
+    sendButton.addEventListener("click", async () => {
+      const studentName = studentNameInput.value;
+      const messageText = messageTextarea.value;
+
+      if (!studentName || !messageText) {
+        alert("Please enter student name and message");
+        return;
+      }
+
+      // Set loading state
+      setLoadingState(true);
+
+      try {
+        const studentUid = this.currentApplication.student.uid;
+        const companyName = this.currentApplication.training.company.name;
+
+        if (!studentUid || !companyName) {
+          alert("Student information is missing");
+          setLoadingState(false);
+          return;
+        }
+
+        const result = await it_base_company_cloud.sendNotificationToStudent(
+          studentUid,
+          {
+            title: "New Message from " + companyName,
+            message: messageText.replace("{name}", studentName),
+            type: "message",
+          }
+        );
+
+        if (result.success) {
+          // Success - close modal after a brief delay to show success state
+          setTimeout(() => {
+            alert(`Message sent to ${studentName}`);
+            closeModal();
+          }, 500);
+        } else {
+          alert("Failed to send message: " + result.error);
+          setLoadingState(false);
+        }
+      } catch (error) {
+        alert("Error sending message: " + error.message);
+        console.error(error);
+        setLoadingState(false);
+      }
+    });
+
+    // Only allow clicking outside to close if cancel button is visible
+    if (!hideCancel) {
+      modalOverlay.addEventListener("click", (e) => {
+        if (e.target === modalOverlay) closeModal();
+      });
     }
   }
 

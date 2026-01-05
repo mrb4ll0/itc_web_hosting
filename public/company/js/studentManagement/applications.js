@@ -1069,8 +1069,6 @@ downloadCSV(csvContent, filename) {
         // Show bulk progress indicator
         //this.showBulkProgress(this.selectedApplications.size);
         
-        //console.log("appId is " + JSON.stringify(this.selectedApplications));
-        
         // Process all applications with the notification message
         const applicationsArray = Array.from(this.selectedApplications);
         for (const appId of applicationsArray) {

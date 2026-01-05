@@ -1,3 +1,4 @@
+import { requestWebPushPermission } from "../../notification.js";
 import {
   auth,
   GoogleAuthProvider,
@@ -19,8 +20,8 @@ class Login {
     this.initElements();
 
     // Then check auth state - THIS WAS THE MAIN ISSUE (commented out)
-    this.checkAuthState();
-
+    ///this.checkAuthState();
+    document.body.style.display = "block";
     this.initListeners();
     this.loadRememberedUser();
   }
@@ -269,7 +270,8 @@ class Login {
         this.resetLoginButton();
         return;
       }
-
+         await requestWebPushPermission();
+         
       this.showNotification("Welcome " + email, "success");
       this.rememberUser(email);
       localStorage.setItem("student", JSON.stringify(student));
@@ -356,7 +358,7 @@ class Login {
         this.showNotification("Student account "+user.email+" not found in system.", "error");
         return;
       }
-
+       await requestWebPushPermission();
       setTimeout(() => {
         window.location.replace("../dashboard/itc_dashboard.html");
       }, 1000);

@@ -934,7 +934,7 @@ attachPostingButtonListeners() {
     }
 
     showProfileMenu() {
-        this.showNotification('Profile menu feature coming soon!', 'info');
+        window.location.href = 'maincompany_profile.html';
     }
 
     getStatusClass(status) {

@@ -793,4 +793,137 @@ export class StudentCloudDB {
       return null;
     }
   }
+
+  async addSlotBalance(studentId, amount, transactionId, reference, metadata = {}) {
+        try {
+            // Update student's slot balance
+            const studentRef = doc(this._firebaseFirestore, 
+                "users", "students", "students", studentId);
+            
+            await updateDoc(studentRef, {
+                slotBalance: FieldValue.increment(amount),
+                updatedAt: serverTimestamp()
+            });
+
+            // Record purchase
+            await this.recordStudentPurchase(studentId, {
+                transactionId,
+                reference,
+                amount,
+                metadata
+            });
+
+            console.log(`Added ₦${amount} slot balance to student ${studentId}`);
+            return { success: true, newBalance: await this.getSlotBalance(studentId) };
+        } catch (error) {
+            console.error('Error adding slot balance:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Record student purchase
+     */
+    async recordStudentPurchase(studentId, purchaseData) {
+        try {
+            const purchaseRef = collection(this._firebaseFirestore, "student_purchases");
+            
+            await addDoc(purchaseRef, {
+                userId: studentId,
+                transactionId: purchaseData.transactionId,
+                reference: purchaseData.reference,
+                amount: purchaseData.amount,
+                metadata: purchaseData.metadata || {},
+                purchasedAt: serverTimestamp(),
+                status: 'completed'
+            });
+
+            // Also add to transactionIds array in student document
+            const studentRef = doc(this._firebaseFirestore, 
+                "users", "students", "students", studentId);
+            
+            await updateDoc(studentRef, {
+                transactionIds: FieldValue.arrayUnion(purchaseData.transactionId),
+                updatedAt: serverTimestamp()
+            });
+
+            console.log(`Purchase recorded for student ${studentId}: ${purchaseData.transactionId}`);
+        } catch (error) {
+            console.error('Error recording purchase:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get student's slot balance
+     */
+    async getSlotBalance(studentId) {
+        try {
+            const student = await this.getStudentById(studentId);
+            return student?.slotBalance || 0;
+        } catch (error) {
+            console.error('Error getting slot balance:', error);
+            return 0;
+        }
+    }
+
+    /**
+     * Check if student can afford to apply
+     */
+    async canStudentApply(studentId, applicationCost = 200) {
+        try {
+            const balance = await this.getSlotBalance(studentId);
+            return balance >= applicationCost;
+        } catch (error) {
+            console.error('Error checking application affordability:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Deduct application fee from student's balance
+     */
+    async deductApplicationFee(studentId, applicationCost = 200, applicationId) {
+        try {
+            const currentBalance = await this.getSlotBalance(studentId);
+            
+            if (currentBalance < applicationCost) {
+                throw new Error('Insufficient balance for application');
+            }
+
+            const studentRef = doc(this._firebaseFirestore, 
+                "users", "students", "students", studentId);
+            
+            await updateDoc(studentRef, {
+                slotBalance: FieldValue.increment(-applicationCost),
+                updatedAt: serverTimestamp()
+            });
+
+            console.log(`Deducted ₦${applicationCost} from student ${studentId} for application ${applicationId}`);
+            return { success: true, newBalance: currentBalance - applicationCost };
+        } catch (error) {
+            console.error('Error deducting application fee:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get student's purchase history
+     */
+    async getPurchaseHistory(studentId, limit = 10) {
+        try {
+            const q = query(
+                collection(this._firebaseFirestore, "student_purchases"),
+                where("userId", "==", studentId),
+                orderBy("purchasedAt", "desc"),
+                limit(limit)
+            );
+
+            const snapshot = await getDocs(q);
+            return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        } catch (error) {
+            console.error('Error getting purchase history:', error);
+            return [];
+        }
+    }
 }

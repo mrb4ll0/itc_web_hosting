@@ -527,7 +527,7 @@ openApplicationDetails(applicationId) {
 }
 
   async updateApplicationStatus(applicationId, newStatus, notificationMessage = null) {
-  //console.log(`Updating application ${applicationId} to status: ${newStatus}`);
+  
   
   // Find the application
   const applicationIndex = this.applications.findIndex(
@@ -557,7 +557,8 @@ openApplicationDetails(applicationId) {
       applicationData.training.company.id,
       applicationData.opportunityId,
       applicationId,
-      newStatus
+      newStatus,
+      application.student.uid
     );
 
     // Send notification to student if status changed and message is provided
