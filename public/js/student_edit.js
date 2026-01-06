@@ -154,6 +154,7 @@ class StudentEdit {
 
       // Collect form data
       const updates = this.collectFormData();
+      
 
       // Handle file uploads if any
       await this.handleFileUploads(updates);
@@ -255,6 +256,7 @@ class StudentEdit {
 
     // Remove empty fields
     Object.keys(updates).forEach((key) => {
+      console.log("key is "+key+" updates @ key is "+updates[key]);
       if (
         updates[key] === "" ||
         updates[key] === null ||

@@ -30,13 +30,19 @@ class MainCompanyProfile {
       const user = auth.currentUser;
       if (!user) {
         console.warn("No authenticated user found.");
+        this.showToast("Please login to view company profile", "error");
         return;
       }
+
+      // Show loading state
+      this.showLoading(true);
 
       // Fetch company data
       const companyData = await itc_firebase_logic.getCompany(user.uid);
       if (!companyData) {
         console.warn("No company found for this user.");
+        this.showToast("Company profile not found", "warning");
+        this.showLoading(false);
         return;
       }
 
@@ -44,69 +50,204 @@ class MainCompanyProfile {
       this.company = Company.fromMap(companyData);
 
       // Render the data into the DOM
-      this.renderCompanyProfile();
-      this.setupGalleryEventListeners();
+      await this.renderCompanyProfile();
+      this.setupEventListeners();
+      
+      this.showLoading(false);
     } catch (error) {
       console.error("Error loading company profile:", error);
+      this.showToast("Failed to load company profile", "error");
+      this.showLoading(false);
     }
   }
 
-  renderCompanyProfile() {
+  async renderCompanyProfile() {
     const c = this.company;
     if (!c) return;
 
     // Company name, tagline, and contact info
     this.setText("companyName", c.name || "No Name Provided");
     this.setText("companyIndustry", c.industry || "Not specified");
-    this.setText("companyLocation", c.getDisplayLocation());
-    this.setText("companyPhone", c.phoneNumber || "N/A");
-    this.setText("companyTagline", c.description || "No description available");
-    this.setHref(
-      "companyWebsite",
-      c.website,
-      "🌐 " + (c.website || "No Website")
-    );
-    this.setHref(
-      "companyEmail",
-      `mailto:${c.email}`,
-      "✉ " + (c.email || "No Email")
-    );
+    this.setText("companyLocation", c.getDisplayLocation() || "Not specified");
+    this.setText("companyPhone", c.phoneNumber || "Not provided");
+    this.setText("companyDescription", c.description || "No description available");
+    this.setText("companySize", c.companySize || "Not specified");
+    this.setText("registrationNumber", c.registrationNumber || "Not registered");
+    
+    // Set website and email links
+    this.setHref("companyWebsite", c.website, "Website");
+    this.setHref("companyEmail", `mailto:${c.email}`, "Email");
 
-    // Company Logo
-    this.setImage(
-      "companyLogo",
-      c.logoURL || "https://via.placeholder.com/150"
-    );
+    // Set images with fallback
+    const defaultLogo = "https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&w=400&q=80";
+    const defaultBanner = "https://images.unsplash.com/photo-1605902711622-cfb43c4437d4?auto=format&fit=crop&w=1400&q=80";
+    
+    this.setImage("companyLogo", c.logoURL || defaultLogo);
+    this.setImage("companyBanner", c.bannerURL || defaultBanner);
 
     // Gallery images
-    ////console.log("images " + c.galleryImages);
     this.setGalleryImages(c.galleryImages || []);
 
-    // Simulate profile completion based on filled fields
-    const completion = this.calculateProfileCompletion(c);
-    this.setProfileProgress(completion);
+    // Stats and progress
+    this.updateStats(c);
+    this.updateStatusBadges(c);
 
-    const editProfilebtn = document.getElementById("editProfileButton");
-    editProfilebtn.addEventListener("click", () => {
-      window.location.href = "maincompany_profile_edit.html";
-    });
+    // Format dates
+    if (c.updatedAt) {
+      this.setText("lastUpdated", new Date(c.updatedAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }));
+    }
+
+    // Calculate and display registration date (using creation timestamp or current date)
+    const registrationDate = c.updatedAt || new Date();
+    this.setText("companySince", new Date(registrationDate).getFullYear());
+
+    // Check and update expandable text
+    setTimeout(() => this.updateReadMoreButton(), 100);
   }
 
-  setupGalleryEventListeners() {
+  updateStats(c) {
+    // Calculate profile completion
+    const completion = this.calculateProfileCompletion(c);
+    this.setText("profileCompletion", `${completion}%`);
+    this.setProgressBar("profileCompletionBar", completion);
+    
+    // Update trainee stats
+    const totalTrainees = c.getTotalTrainees();
+    const activeTrainees = c.currentTrainees.length;
+    const activePercentage = totalTrainees > 0 ? Math.round((activeTrainees / totalTrainees) * 100) : 0;
+    
+    this.setText("totalTrainees", totalTrainees.toString());
+    this.setText("activeTrainees", activeTrainees.toString());
+    this.setProgressBar("activeTraineesBar", activePercentage);
+    
+    // Update other stats
+    this.setText("pendingApplications", c.pendingApplications.length.toString());
+    this.setText("totalSupervisors", c.supervisors.length.toString());
+  }
+
+  updateStatusBadges(c) {
+    // Update header status badge
+    const statusBadge = document.getElementById("companyStatusBadge");
+    if (statusBadge) {
+      statusBadge.textContent = c.getStatus();
+      statusBadge.className = "status-badge ";
+      
+      if (c.isApproved) {
+        statusBadge.classList.add("status-active");
+      } else if (c.isPending) {
+        statusBadge.classList.add("status-pending");
+      } else if (c.isRejected) {
+        statusBadge.classList.add("bg-red-100", "text-red-800", "dark:bg-red-900", "dark:text-red-300");
+      }
+    }
+
+    // Update verification status
+    const verificationStatus = document.getElementById("verificationStatus");
+    if (verificationStatus) {
+      verificationStatus.textContent = c.isVerified ? "Verified" : "Not Verified";
+      verificationStatus.className = "status-badge " + (c.isVerified ? "status-verified" : "status-pending");
+    }
+
+    // Update active status
+    const activeStatus = document.getElementById("activeStatus");
+    if (activeStatus) {
+      activeStatus.textContent = c.isActive ? "Active" : "Inactive";
+      activeStatus.className = "status-badge " + (c.isActive ? "status-active" : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300");
+    }
+
+    // Update approval status
+    const approvalStatus = document.getElementById("approvalStatus");
+    if (approvalStatus) {
+      approvalStatus.textContent = c.isApproved ? "Approved" : 
+                                  c.isRejected ? "Rejected" : "Pending";
+      approvalStatus.className = "status-badge ";
+      if (c.isApproved) {
+        approvalStatus.classList.add("status-active");
+      } else if (c.isRejected) {
+        approvalStatus.classList.add("bg-red-100", "text-red-800", "dark:bg-red-900", "dark:text-red-300");
+      } else {
+        approvalStatus.classList.add("status-pending");
+      }
+    }
+
+    // Update featured status
+    const featuredStatus = document.getElementById("featuredStatus");
+    if (featuredStatus) {
+      featuredStatus.textContent = c.isfeatured ? "Yes" : "No";
+      featuredStatus.className = "status-badge " + (c.isfeatured ? 
+        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300" : 
+        "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300");
+    }
+
+    // Show verified badge if company is verified
+    const verifiedBadge = document.getElementById("verifiedBadge");
+    if (verifiedBadge) {
+      verifiedBadge.classList.toggle("hidden", !c.isVerified);
+      if (c.isVerified) {
+        verifiedBadge.classList.add("badge-pulse");
+      }
+    }
+  }
+
+  setupEventListeners() {
+    // Edit profile button
+    document.getElementById("editProfileButton")?.addEventListener("click", () => {
+      window.location.href = "maincompany_profile_edit.html";
+    });
+
+    // Gallery upload
     const galleryUpload = document.getElementById("galleryUpload");
     const galleryAddButton = document.getElementById("galleryAddButton");
 
     if (galleryUpload) {
-      galleryUpload.addEventListener("change", (e) =>
-        this.handleGalleryUpload(e)
-      );
+      galleryUpload.addEventListener("change", (e) => this.handleGalleryUpload(e));
     }
 
     if (galleryAddButton) {
       galleryAddButton.addEventListener("click", () => {
         if (this.galleryImages.length < this.MAX_IMAGES) {
-          document.getElementById("galleryUpload").click();
+          galleryUpload.click();
+        } else {
+          this.showToast(`Maximum ${this.MAX_IMAGES} images allowed`, "warning");
         }
+      });
+    }
+
+    // Manage gallery button
+    document.getElementById("manageGalleryBtn")?.addEventListener("click", () => {
+      // Show gallery management modal or page
+      this.showToast("Gallery management coming soon", "info");
+    });
+
+    // Quick action buttons
+    const actionButtons = {
+      viewApplicationsBtn: () => this.navigateTo("applications.html"),
+      manageSupervisorsBtn: () => this.navigateTo("supervisors.html"),
+      viewOpportunitiesBtn: () => this.navigateTo("opportunities.html"),
+      createOpportunityBtn: () => this.navigateTo("create_opportunity.html"),
+      viewAnalyticsBtn: () => this.showToast("Analytics dashboard coming soon", "info"),
+      manageFormsBtn: () => this.navigateTo("forms.html"),
+      settingsBtn: () => this.navigateTo("settings.html"),
+      contactSupportBtn: () => window.open("mailto:support@itconnect.com", "_blank")
+    };
+
+    Object.entries(actionButtons).forEach(([id, action]) => {
+      document.getElementById(id)?.addEventListener("click", action);
+    });
+
+    // Read more button
+    const readMoreButton = document.getElementById("readMoreButton");
+    if (readMoreButton) {
+      readMoreButton.addEventListener("click", () => {
+        const textElement = document.getElementById("companyDescription");
+        const isExpanded = textElement.classList.toggle("expanded");
+        readMoreButton.textContent = isExpanded ? "Read Less" : "Read More";
       });
     }
   }
@@ -120,7 +261,7 @@ class MainCompanyProfile {
     const el = document.getElementById(id);
     if (el) {
       el.href = href || "#";
-      el.textContent = text;
+      if (text) el.textContent = text;
     }
   }
 
@@ -128,7 +269,17 @@ class MainCompanyProfile {
     const el = document.getElementById(id);
     if (el) {
       el.src = src;
-      el.onload = () => el.classList.remove("opacity-0");
+      el.onload = () => {
+        el.classList.remove("opacity-0");
+        el.parentElement?.classList?.remove("shimmer");
+      };
+    }
+  }
+
+  setProgressBar(id, percentage) {
+    const bar = document.getElementById(id);
+    if (bar) {
+      bar.style.width = `${Math.min(100, Math.max(0, percentage))}%`;
     }
   }
 
@@ -156,40 +307,20 @@ class MainCompanyProfile {
     // Add gallery images
     this.galleryImages.forEach((image, index) => {
       const galleryItem = document.createElement("div");
-      galleryItem.className =
-        "gallery-item aspect-square rounded-lg bg-center bg-cover overflow-hidden relative";
+      galleryItem.className = "gallery-item rounded-lg overflow-hidden";
       galleryItem.style.backgroundImage = `url('${image.url}')`;
+      galleryItem.style.backgroundSize = "cover";
+      galleryItem.style.backgroundPosition = "center";
+      galleryItem.style.aspectRatio = "1";
 
       // Add remove button
       const removeBtn = document.createElement("button");
       removeBtn.className = "remove-btn";
       removeBtn.innerHTML = "×";
+      removeBtn.title = "Remove image";
       removeBtn.onclick = async (e) => {
         e.stopPropagation();
-
-        // Optional: show visual feedback while deleting
-        removeBtn.disabled = true;
-        removeBtn.textContent = "…";
-
-        try {
-          await it_based_company_cloud.removeImageFromGallery(
-            this.company.id,
-            image.url
-          );
-
-          // Remove locally
-          this.galleryImages.splice(index, 1);
-          this.renderGallery();
-
-          // Show success feedback
-          this.showToast("Image deleted successfully ", "success");
-        } catch (error) {
-          console.error("Error removing image:", error);
-          this.showToast("Failed to delete image ", "error");
-        } finally {
-          removeBtn.disabled = false;
-          removeBtn.textContent = "×";
-        }
+        await this.removeGalleryImage(index);
       };
 
       galleryItem.appendChild(removeBtn);
@@ -198,63 +329,42 @@ class MainCompanyProfile {
 
     // Update count
     if (countElement) {
-      countElement.textContent = `${this.galleryImages.length} image${
-        this.galleryImages.length !== 1 ? "s" : ""
-      }`;
+      countElement.textContent = `${this.galleryImages.length}/${this.MAX_IMAGES} images`;
     }
 
     // Disable add button if max reached
     if (addButton) {
       if (this.galleryImages.length >= this.MAX_IMAGES) {
         addButton.classList.add("opacity-50", "cursor-not-allowed");
+        addButton.onclick = null;
       } else {
         addButton.classList.remove("opacity-50", "cursor-not-allowed");
+        addButton.onclick = () => document.getElementById("galleryUpload").click();
       }
     }
   }
 
   async removeGalleryImage(index) {
     const imageToRemove = this.galleryImages[index];
+    
+    if (!confirm("Are you sure you want to remove this image?")) return;
 
     try {
       // Delete the image from Firebase Storage
       await this.cloudStorage.deleteFile(imageToRemove.url);
-      ////console.log("Image deleted from storage:", imageToRemove.name);
+      
+      // Remove from Firestore
+      await it_based_company_cloud.removeImageFromGallery(this.company.id, imageToRemove.url);
+      
+      // Remove from local array
+      this.galleryImages.splice(index, 1);
+      this.renderGallery();
+      
+      this.showToast("Image removed successfully", "success");
     } catch (error) {
-      console.error("Error deleting image from storage:", error);
-      // Continue with removal from gallery even if storage deletion fails
+      console.error("Error removing image:", error);
+      this.showToast("Failed to remove image", "error");
     }
-
-    // Remove from local array
-    this.galleryImages.splice(index, 1);
-
-    this.renderGallery();
-  }
-
-  showToast(message, type = "info") {
-    const existingToast = document.querySelector(".custom-toast");
-    if (existingToast) existingToast.remove();
-
-    const toast = document.createElement("div");
-    toast.className = `custom-toast fixed bottom-6 right-6 px-4 py-2 rounded-lg shadow-lg text-white text-sm transition-all duration-300 opacity-0 ${
-      type === "success"
-        ? "bg-green-600"
-        : type === "error"
-        ? "bg-red-600"
-        : "bg-gray-800"
-    }`;
-    toast.textContent = message;
-
-    document.body.appendChild(toast);
-
-    // Fade in
-    setTimeout(() => (toast.style.opacity = "1"), 100);
-
-    // Fade out and remove after 3s
-    setTimeout(() => {
-      toast.style.opacity = "0";
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
   }
 
   async handleGalleryUpload(event) {
@@ -262,162 +372,84 @@ class MainCompanyProfile {
     const remainingSlots = this.MAX_IMAGES - this.galleryImages.length;
 
     if (files.length > remainingSlots) {
-      alert(
-        `You can only upload ${remainingSlots} more image${
-          remainingSlots !== 1 ? "s" : ""
-        }.`
-      );
+      this.showToast(`You can only upload ${remainingSlots} more image${remainingSlots !== 1 ? "s" : ""}`, "warning");
       files.splice(remainingSlots);
     }
+
+    // Validate files
+    const { validFiles, errors } = this.validateImageFiles(files);
+    
+    if (errors.length > 0) {
+      errors.forEach(error => this.showToast(error, "warning"));
+    }
+
+    if (validFiles.length === 0) return;
 
     // Show loading state
     const addButton = document.getElementById("galleryAddButton");
     if (addButton) {
+      const originalContent = addButton.innerHTML;
+      addButton.innerHTML = `
+        <div class="animate-spin rounded-full h-6 w-6 border-2 border-primary-500 border-t-transparent"></div>
+        <span class="text-sm mt-2">Uploading...</span>
+      `;
       addButton.classList.add("opacity-50", "cursor-not-allowed");
-      addButton.innerHTML = '<span class="animate-pulse">Uploading...</span>';
     }
 
-    const uploadedImages = [];
-
     try {
-      // Process each file
-      for (const file of files) {
-        if (file.type.startsWith("image/")) {
-          try {
-            ////console.log(`Uploading image: ${file.name}`);
-
-            // Upload to Firebase Storage using CloudStorage class
-            const imageUrl = await this.uploadImageToStorage(file);
-
-            if (imageUrl) {
-              uploadedImages.push({
-                url: imageUrl,
-                name: file.name,
-                timestamp: new Date().toISOString(),
-              });
-              ////console.log(`Successfully uploaded: ${file.name}`);
-            } else {
-              console.error(`Failed to upload: ${file.name}`);
-              alert(`Failed to upload ${file.name}. Please try again.`);
-            }
-          } catch (error) {
-            console.error(`Error uploading image ${file.name}:`, error);
-            alert(`Failed to upload ${file.name}. Please try again.`);
-          }
-        } else {
-          alert(`Skipped ${file.name}: Only image files are allowed.`);
-        }
-      }
-
-      // Add uploaded images to gallery
-      this.galleryImages.push(...uploadedImages);
-
-      // Update gallery in Firebase Firestore
-      if (this.company && uploadedImages.length > 0) {
-        try {
-          const newImageUrls = uploadedImages.map((img) => img.url);
-          await this.addImagesToGallery(newImageUrls);
-
-          ////console.log("Gallery updated in Firestore with new images");
-        } catch (error) {
-          console.error("Error updating gallery in Firebase:", error);
-          alert(
-            "Images uploaded but failed to save to profile. Please try again."
-          );
-        }
-      }
-
-      this.renderGallery();
-
+      // Upload images
+      const uploadedImages = await this.uploadMultipleImagesToStorage(validFiles);
+      
       if (uploadedImages.length > 0) {
-        ////console.log(`Successfully uploaded ${uploadedImages.length} image(s)`);
+        // Add to gallery
+        this.galleryImages.push(...uploadedImages);
+        
+        // Update Firestore
+        const imageUrls = uploadedImages.map(img => img.url);
+        await this.addImagesToGallery(imageUrls);
+        
+        this.renderGallery();
+        this.showToast(`Successfully uploaded ${uploadedImages.length} image${uploadedImages.length !== 1 ? "s" : ""}`, "success");
       }
     } catch (error) {
-      console.error("Error in gallery upload process:", error);
-      alert("An error occurred during upload. Please try again.");
+      console.error("Error uploading images:", error);
+      this.showToast("Failed to upload images", "error");
     } finally {
       // Reset UI state
       if (addButton) {
-        addButton.classList.remove("opacity-50", "cursor-not-allowed");
         addButton.innerHTML = `
           <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
           </svg>
-          <span class="text-sm text-center px-2">Add Images</span>
-          <span class="text-xs text-gray-400 mt-1">Multiple allowed</span>
+          <span class="text-sm font-medium">Add Images</span>
+          <span class="text-xs mt-1">Max 20 images</span>
         `;
+        addButton.classList.remove("opacity-50", "cursor-not-allowed");
       }
-
+      
       // Reset file input
       event.target.value = "";
     }
   }
 
-  async uploadImageToStorage(file) {
-    try {
-      // Use the CloudStorage class to upload the file
-      const downloadUrl = await this.cloudStorage.uploadFile(
-        file,
-        this.company.uid,
-        "company-gallery"
-      );
-
-      if (!downloadUrl) {
-        throw new Error("Upload failed - no download URL returned");
-      }
-
-      return downloadUrl;
-    } catch (error) {
-      console.error("Error in uploadImageToStorage:", error);
-      throw error;
-    }
-  }
-
-  async uploadMultipleImagesToStorage(files) {
-    try {
-      // Use the batch upload method from CloudStorage
-      const results = await this.cloudStorage.uploadMultipleFiles(
-        files,
-        this.company.uid,
-        "company-gallery"
-      );
-
-      // Filter out failed uploads and return successful ones
-      return results
-        .filter((result) => result.url !== null)
-        .map((result) => ({
-          url: result.url,
-          name: result.file.name,
-          timestamp: new Date().toISOString(),
-        }));
-    } catch (error) {
-      console.error("Error in uploadMultipleImagesToStorage:", error);
-      return [];
-    }
-  }
-
-  setProfileProgress(percent) {
-    const bar = document.querySelector("#companyProfileProgress div");
-    if (bar) bar.style.width = `${percent}%`;
-  }
-
   calculateProfileCompletion(c) {
-    const totalFields = 8;
-    let filled = 0;
-
-    if (c.name) filled++;
-    if (c.email) filled++;
-    if (c.industry) filled++;
-    if (c.address || c.localGovernment || c.state) filled++;
-    if (c.phoneNumber) filled++;
-    if (c.website) filled++;
-    if (c.logoURL) filled++;
-    if (c.description) filled++;
-
-    return Math.round((filled / totalFields) * 100);
+    const fields = [
+      c.name,
+      c.email,
+      c.industry,
+      c.address || c.localGovernment || c.state,
+      c.phoneNumber,
+      c.website,
+      c.logoURL,
+      c.description,
+      c.companySize,
+      c.registrationNumber
+    ];
+    
+    const filled = fields.filter(field => field && field.trim() !== "").length;
+    return Math.round((filled / fields.length) * 100);
   }
 
-  // Utility method to validate image files before upload
   validateImageFile(file) {
     const maxSize = 5 * 1024 * 1024; // 5MB
     const allowedTypes = [
@@ -431,8 +463,7 @@ class MainCompanyProfile {
     if (!allowedTypes.includes(file.type)) {
       return {
         isValid: false,
-        error:
-          "Invalid file type. Please upload JPEG, PNG, WebP, or GIF images.",
+        error: "Invalid file type. Please upload JPEG, PNG, WebP, or GIF images.",
       };
     }
 
@@ -443,7 +474,6 @@ class MainCompanyProfile {
     return { isValid: true, error: null };
   }
 
-  // Method to handle bulk image validation
   validateImageFiles(files) {
     const validFiles = [];
     const errors = [];
@@ -460,48 +490,121 @@ class MainCompanyProfile {
     return { validFiles, errors };
   }
 
-  /**
-   * @param {string} imageUrl - The URL of the uploaded image
-   */
+  async uploadMultipleImagesToStorage(files) {
+    try {
+      const results = await this.cloudStorage.uploadMultipleFiles(
+        files,
+        this.company.id,
+        "company-gallery"
+      );
+
+      return results
+        .filter((result) => result.url !== null)
+        .map((result) => ({
+          url: result.url,
+          name: result.file.name,
+          timestamp: new Date().toISOString(),
+        }));
+    } catch (error) {
+      console.error("Error in uploadMultipleImagesToStorage:", error);
+      return [];
+    }
+  }
+
   async addImagesToGallery(imageUrls) {
-      if(imageUrls.length > 1)
-      {
-        ////console.log("image length "+imageUrls.length);
-        return;
-      }
     if (!this.company || !imageUrls || !imageUrls.length) {
       console.error("Cannot add images: missing company or image URLs");
       return;
     }
 
     try {
-      const companyRef = this.company.id
-        ? doc(
-            it_based_company_cloud.db,
-            it_based_company_cloud.usersCollection,
-            it_based_company_cloud.companiesSubcollection,
-            it_based_company_cloud.companiesSubcollection,
-            this.company.id
-          )
-        : null;
+      const companyRef = doc(
+        it_based_company_cloud.db,
+        "companies",
+        this.company.id
+      );
 
-      if (!companyRef) {
-        throw new Error("Invalid company reference");
-      }
-
-      // Update Firestore with all images at once
       await updateDoc(companyRef, {
-        galleryImages: arrayUnion(...imageUrls), // Spread the array
+        galleryImages: arrayUnion(...imageUrls),
         updatedAt: serverTimestamp(),
       });
 
-      this.renderGallery();
-      this.showToast("Images added successfully!", "success");
       ////console.log("Images added to gallery successfully:", imageUrls);
     } catch (error) {
       console.error("Error adding images to gallery:", error);
-      this.showToast("Failed to add images to gallery", "error");
+      throw error;
     }
+  }
+
+  showToast(message, type = "info") {
+    const container = document.getElementById("toastContainer") || document.body;
+    
+    const toast = document.createElement("div");
+    toast.className = `flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg text-white animate-slide-up ${
+      type === "success" ? "bg-green-500" :
+      type === "error" ? "bg-red-500" :
+      type === "warning" ? "bg-yellow-500" :
+      "bg-blue-500"
+    }`;
+    
+    // Icon based on type
+    const icon = type === "success" ? "✓" :
+                 type === "error" ? "✕" :
+                 type === "warning" ? "!" : "i";
+    
+    toast.innerHTML = `
+      <span class="font-bold">${icon}</span>
+      <span class="flex-1 text-sm">${message}</span>
+      <button class="text-white/80 hover:text-white" onclick="this.parentElement.remove()">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    `;
+    
+    container.appendChild(toast);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+      if (toast.parentElement) {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(10px)";
+        setTimeout(() => toast.remove(), 300);
+      }
+    }, 5000);
+  }
+
+  showLoading(show) {
+    const skeletonElements = document.querySelectorAll(".shimmer");
+    skeletonElements.forEach(el => {
+      if (show) {
+        el.classList.add("shimmer");
+      } else {
+        el.classList.remove("shimmer");
+      }
+    });
+    
+    if (show) {
+      document.body.style.pointerEvents = "none";
+      document.body.style.opacity = "0.8";
+    } else {
+      document.body.style.pointerEvents = "auto";
+      document.body.style.opacity = "1";
+    }
+  }
+
+  updateReadMoreButton() {
+    const textElement = document.getElementById("companyDescription");
+    const readMoreButton = document.getElementById("readMoreButton");
+    
+    if (!textElement || !readMoreButton) return;
+    
+    const isTruncated = textElement.scrollHeight > textElement.clientHeight + 5;
+    readMoreButton.classList.toggle("hidden", !isTruncated);
+  }
+
+  navigateTo(url) {
+    window.location.href = url;
   }
 }
 

@@ -13,6 +13,7 @@ import {
 import { CloudStorage } from "../fireabase/Cloud_Storage.js";
 import { ITBaseCompanyCloud } from "../fireabase/ITBaseCompanyCloud.js";
 import { StudentApplication } from "../model/studentApplication.js";
+import PaymentUI from "../../company/js/paymentSystem/paymentUi.js";
 const itc_firebase_logic = new ITCFirebaseLogic();
 const it_base_companycloud = new ITBaseCompanyCloud();
 /** @type {import('../fireabase/CompanyCloud.js').CompanyCloud} */
@@ -902,7 +903,7 @@ class ITFormSubmission {
           label: "Institution",
           value: student.institution,
         },
-        { key: "school", label: "School/Faculty", value: student.school },
+        { key: "school", label: "School/Faculty", value: student.institution },
         { key: "department", label: "Department", value: student.department },
         {
           key: "courseOfStudy",
@@ -910,12 +911,13 @@ class ITFormSubmission {
           value: student.courseOfStudy,
         },
         { key: "level", label: "Level", value: student.level },
-        { key: "major", label: "Major", value: student.major },
+        { key: "major", label: "Major", value: student.courseOfStudy },
       ];
 
       // Check for missing fields
       const missingFields = requiredFields.filter((field) => {
         const value = field.value;
+           console.log("value is "+value);
         return (
           !value ||
           (typeof value === "string" && value.trim() === "") ||
@@ -1012,6 +1014,15 @@ class ITFormSubmission {
     }
 
     // If profile is complete, proceed with the application
+    await auth.authStateReady();
+    const canApply = await PaymentUI.checkCanApply(auth.currentUser.uid);
+        if (!canApply) {
+          submitBtn.innerHTML = originalText;
+      submitBtn.disabled = false;
+      return false; 
+            // Payment modal will be shown automatically
+        }
+    
     return await this.submitApplication(event, it, originalText);
   }
 

@@ -262,32 +262,62 @@ class StudentApplicationView {
   }
 
   showApplicationDetails(application) {
-    // Format date for display
-    const appDate = application.appliedAt?.toDate
-      ? application.appliedAt.toDate()
-      : new Date(application.appliedAt);
-    const formattedDate = appDate.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-
-    const details = `
-Company: ${application.internship.company.name}
-Position: ${application.internship.title}
-Application Date: ${formattedDate}
-Status: ${application.applicationStatus.toUpperCase()}
-Location: ${application.internship.address}, ${
-      application.internship.company.localGovernment
-    }, ${application.internship.company.state}
-Start Date: ${application.duration.startDate}
-End Date: ${application.duration.endDate}
-Duration : ${application.duration.totalDays} days
-Time: ${application.duration.time}
-    `.trim();
-
-    alert(details); // You can replace this with a proper modal
+  try {
+    // Get the required IDs from the application object
+    console.log("application details "+JSON.stringify(application));
+    const applicationId = application.applicationId;
+    const companyId = application.internship?.company?.id || application.companyId;
+    const itId = application.internship?.id || application.itId;
+    
+    // Validate that we have the required IDs
+    if (!applicationId || !companyId || !itId) {
+      console.error('Missing required IDs for navigation:', {
+        applicationId,
+        companyId,
+        itId,
+        application
+      });
+      
+      // Try alternative ways to get the IDs
+      const fallbackCompanyId = application.companyId || 
+                               application.internship?.company?.uid ||
+                               application.internship?.companyId;
+      const fallbackItId = application.itId || 
+                          application.internshipId;
+      
+      if (!applicationId) {
+        alert('Cannot view application: Application ID is missing');
+        return;
+      }
+      
+      // If we're missing companyId or itId, we might need to fetch them differently
+      // or check if the application object has them in a different structure
+      console.log('Trying fallback IDs:', {
+        fallbackCompanyId,
+        fallbackItId
+      });
+      
+      // Use fallback IDs if available
+      const finalCompanyId = companyId || fallbackCompanyId;
+      const finalItId = itId || fallbackItId;
+      
+      if (!finalCompanyId || !finalItId) {
+        alert('Cannot view application: Required information is missing. Please contact support.');
+        return;
+      }
+      
+      // Navigate with fallback IDs
+      window.location.href = `./details/student_application_details.html?id=${applicationId}&companyId=${finalCompanyId}&itId=${finalItId}`;
+    } else {
+      // Navigate with the original IDs
+      window.location.href = `./details/student_application_details.html?id=${applicationId}&companyId=${companyId}&itId=${itId}`;
+    }
+    
+  } catch (error) {
+    console.error('Error navigating to application details:', error);
+    alert('An error occurred while trying to view application details');
   }
+}
 
   escapeHtml(unsafe) {
     if (typeof unsafe !== "string") return unsafe;

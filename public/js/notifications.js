@@ -24,7 +24,7 @@ class NotificationManager {
     this.unsubscribe = null;
     this.currentTab = "all";
     this.selectedNotification = null;
-     this.isLoadingNotifications = true;
+    this.isLoadingNotifications = true;
     this.init();
   }
 
@@ -34,11 +34,12 @@ class NotificationManager {
 
       // Use authStateReady to wait for auth initialization
       await auth.authStateReady();
-      this.currentStudent = await studentCloudDB.getStudentById(auth.currentUser.uid);
+      this.currentStudent = await studentCloudDB.getStudentById(
+        auth.currentUser.uid
+      );
 
       if (auth.currentUser) {
         this.currentStudentUid = auth.currentUser.uid;
-        ////console.log('User authenticated:', this.currentStudentUid);
 
         // Set up header profile
         this.setupHeaderProfile();
@@ -128,8 +129,8 @@ class NotificationManager {
     const profileElement = document.getElementById("header-profile");
     const user = auth.currentUser;
 
-      const image = this.currentStudent.imageUrl;
-      ////console.log("image is "+image);
+    const image = this.currentStudent.imageUrl;
+    ////console.log("image is "+image);
     if (image) {
       profileElement.style.backgroundImage = `url('${image}')`;
       profileElement.classList.remove("loading-skeleton");
@@ -206,26 +207,19 @@ class NotificationManager {
         );
       }
     });
-
+    console.log("render notification called in switchtab");
     this.renderNotifications();
   }
 
   startNotificationsStream() {
-    if (this.unsubscribe) {
-      this.unsubscribe();
-    }
-
-    ////console.log('Starting notifications stream for user:', this.currentStudentUid);
-
     // Add error handling for the notifications stream
     try {
       this.unsubscribe = unifiedNotificationsStream(
         this.currentStudentUid,
         (notifications) => {
-          ////console.log('Received notifications:', notifications.length);
           this.notifications = notifications;
           this.isLoadingNotifications = false;
-          ////console.log("isloadingNotifications is "+this.isLoadingNotifications );
+
           this.renderNotifications();
         }
       );
@@ -241,6 +235,8 @@ class NotificationManager {
     const container = document.getElementById("notifications-container");
     const loading = document.getElementById("loading-state");
     const empty = document.getElementById("empty-state");
+
+    
 
     if (this.isLoadingNotifications) {
       if (loading) loading.classList.remove("hidden");
@@ -266,14 +262,10 @@ class NotificationManager {
     if (empty) empty.classList.add("hidden");
     container.classList.remove("hidden");
 
-    // Filter notifications based on current tab
     let filteredNotifications = this.notifications;
     if (this.currentTab === "unread") {
-      // You can add read status to your notifications if needed
-      // For now, we'll show all as we don't have read status
       filteredNotifications = this.notifications;
     } else if (this.currentTab === "archived") {
-      // You can add archived status to your notifications if needed
       filteredNotifications = [];
     }
 
@@ -374,9 +366,6 @@ class NotificationManager {
 
   markAsRead() {
     if (this.selectedNotification) {
-      // Here you would update the notification as read in Firestore
-      // For now, we'll just close the dialog
-      ////console.log("Marking as read:", this.selectedNotification);
       this.closeDialog();
     }
   }
@@ -445,7 +434,7 @@ function unifiedNotificationsStream(studentUid, callback) {
     return () => {}; // Return empty cleanup function
   }
 
-  ////console.log('Setting up notifications stream for:', studentUid);
+
 
   let privateUnsubscribe = null;
   let generalUnsubscribe = null;
@@ -470,8 +459,12 @@ function unifiedNotificationsStream(studentUid, callback) {
 
     let privateNotifications = [];
     let generalNotifications = [];
+    let privateLoaded = false;
+    let generalLoaded = false;
 
     const updateAndNotify = () => {
+      
+      if (!privateLoaded || !generalLoaded) return;
       const all = [...privateNotifications, ...generalNotifications];
       all.sort((a, b) => b.timestamp - a.timestamp);
       callback(all);
@@ -481,6 +474,8 @@ function unifiedNotificationsStream(studentUid, callback) {
       privateQuery,
       async (snapshot) => {
         ////console.log('Private notifications updated:', snapshot.docs.length);
+
+        
 
         // Use await with Promise.all to wait for all async operations
         privateNotifications = await Promise.all(
@@ -501,12 +496,12 @@ function unifiedNotificationsStream(studentUid, callback) {
                 compName = "Unknown Company";
               }
             }
-
+        
             return {
               title: compName
                 ? `New Notification from ${compName}`
                 : "New Notification",
-              body: data.message || "No Message",
+              body: data.message || data.body,
               timestamp: safeConvertToTimestamp(data.timestamp),
               type: "private",
               id: doc.id,
@@ -514,7 +509,12 @@ function unifiedNotificationsStream(studentUid, callback) {
             };
           })
         );
+        
+        privateLoaded = true;
+        if(generalLoaded)
+        {
         updateAndNotify();
+        }
       },
       (error) => {
         console.error("Error listening to private notifications:", error);
@@ -524,9 +524,11 @@ function unifiedNotificationsStream(studentUid, callback) {
     generalUnsubscribe = onSnapshot(
       generalQuery,
       (snapshot) => {
-        ////console.log('General notifications updated:', snapshot.docs.length);
+        
+        
         generalNotifications = snapshot.docs.map((doc) => {
           const data = doc.data();
+          
           return {
             title: data.title || "No Title",
             body: data.body || "No Message",
@@ -536,7 +538,11 @@ function unifiedNotificationsStream(studentUid, callback) {
             docRef: doc.ref,
           };
         });
+        generalLoaded = true;
+        if(privateLoaded)
+        {
         updateAndNotify();
+        }
       },
       (error) => {
         console.error("Error listening to general notifications:", error);
@@ -565,4 +571,3 @@ window.addEventListener("beforeunload", () => {
     notificationManager.destroy();
   }
 });
-

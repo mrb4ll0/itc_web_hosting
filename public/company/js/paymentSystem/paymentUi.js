@@ -98,7 +98,7 @@ export class PaymentUI {
                             <div class="font-bold text-blue-600">10 Slots</div>
                             <div class="text-sm text-gray-600">₦2,000</div>
                         </button>
-                        <button class="slot-option px-4 py-3 border border-blue-300 rounded-lg hover:bg-blue-50 text-center" data-amount="2000">
+                        <button class="slot-option px-4 py-3 border border-blue-300 rounded-lg hover:bg-blue-50 text-center" data-amount="3000">
                             <div class="font-bold text-blue-600">15 Slots</div>
                             <div class="text-sm text-gray-600">₦3,000</div>
                         </button>

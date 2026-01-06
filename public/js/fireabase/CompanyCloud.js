@@ -690,7 +690,8 @@ export class CompanyCloud {
                 applicationData.appliedAt || applicationData.updatedAt || null,
               applicationId: appId,
               companyId: companyDoc.id,
-              duration: applicationData.duration
+              duration: applicationData.duration,
+              application: StudentApplication.fromMap(applicationData,internship.id,applicationData.id)
             });
           }
         }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,26 +20,77 @@
         }
       })();
     </script>
+
+    <!-- Google Fonts & Tailwind -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: "#f0f4ff",
+                100: "#e0e8ff",
+                500: "#4F46E5",
+                600: "#4338ca",
+              },
+              background: "#F9FAFB",
+              darkbg: "#0f1323",
+              darkcard: "#1a1f35",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            boxShadow: {
+              soft: "0 4px 14px rgba(0, 0, 0, 0.08)",
+              card: "0 2px 4px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.05)",
+            },
+            animation: {
+              "slide-up": "slideUp 0.3s ease-out",
+            },
+            keyframes: {
+              slideUp: {
+                "0%": { transform: "translateY(10px)", opacity: "0" },
+                "100%": { transform: "translateY(0)", opacity: "1" },
+              },
+            },
+          },
+        },
+      };
+    </script>
+
     <style>
-      .gallery-preview {
-        display: block;
-        width: 100px;
-        height: 100px;
-        object-fit: cover;
-        border-radius: 0.5rem;
-        border: 2px solid #e5e7eb;
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
       }
-      .gallery-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
       }
+      .dark ::-webkit-scrollbar-track {
+        background: #2d3748;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+      }
+      .dark ::-webkit-scrollbar-thumb {
+        background: #4a5568;
+      }
+
+      /* File upload styling */
       .file-input-wrapper {
         position: relative;
         overflow: hidden;
         display: inline-block;
+        cursor: pointer;
       }
       .file-input-wrapper input[type="file"] {
         position: absolute;
@@ -50,198 +101,660 @@
         height: 100%;
         cursor: pointer;
       }
+
+      /* Image preview */
+      .image-preview {
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .image-preview:hover {
+        transform: scale(1.02);
+      }
+
+      /* Loading animation */
+      @keyframes shimmer {
+        0% {
+          background-position: -200% 0;
+        }
+        100% {
+          background-position: 200% 0;
+        }
+      }
+      .shimmer {
+        background: linear-gradient(
+          90deg,
+          #f0f0f0 25%,
+          #e0e0e0 50%,
+          #f0f0f0 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+      }
+      .dark .shimmer {
+        background: linear-gradient(
+          90deg,
+          #2d3748 25%,
+          #4a5568 50%,
+          #2d3748 75%
+        );
+        background-size: 200% 100%;
+      }
+
+      /* Form input focus */
+      .form-input:focus {
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+      }
+      .dark .form-input:focus {
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+      }
+
+      /* Remove button animation */
+      .remove-btn {
+        transition: all 0.2s ease;
+      }
+      .remove-btn:hover {
+        transform: scale(1.1);
+        background-color: #dc2626 !important;
+      }
+
+      /* Progress bar */
+      .progress-bar {
+        transition: width 0.6s ease;
+      }
     </style>
   </head>
-  <body class="bg-gray-50 min-h-screen flex flex-col">
+
+  <body
+    class="bg-background dark:bg-darkbg text-gray-800 dark:text-gray-200 font-display min-h-screen"
+  >
     <!-- Header -->
     <header
-      class="flex items-center justify-between px-6 py-4 bg-white shadow-sm sticky top-0 z-50"
+      class="sticky top-0 z-50 w-full bg-white/95 dark:bg-darkcard/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800"
     >
-      <div class="flex items-center gap-3">
-        <div class="w-15 h-8 text-blue-600 animate-bounce">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            class="size-6"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
-            />
-          </svg>
-        </div>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-3">
+            <div class="w-15 h-8 text-blue-500 text-primary animate-bounce">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                class="size-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h1 class="font-bold text-xl text-primary-500">IT Connect</h1>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                Edit Company Profile
+              </p>
+            </div>
+          </div>
 
-        <h1 class="text-xl text-blue-600 font-semibold text-gray-800">
-          Edit Company Profile
-        </h1>
+          <div class="flex items-center gap-3">
+            <button
+              onclick="window.location.href='maincompany_profile.html'"
+              class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              id="saveProfileBtn"
+              class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              Save Changes
+            </button>
+          </div>
+        </div>
       </div>
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 px-6 py-10 max-w-4xl mx-auto">
-      <div class="bg-white shadow-md rounded-2xl p-8 space-y-6">
-        <!-- Logo Upload -->
-        <div class="flex items-center gap-6">
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <!-- Profile Completion -->
+      <div class="mb-8 bg-white dark:bg-darkcard rounded-xl shadow-card p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-lg font-semibold mb-1">Profile Completion</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Complete your profile to improve visibility
+            </p>
+          </div>
           <div
-            id="companyLogoPreview"
-            class="w-24 h-24 rounded-full bg-gray-100 bg-center bg-cover border border-gray-200"
-            style="background-image: url('https://via.placeholder.com/150')"
+            id="profileCompletion"
+            class="text-2xl font-bold text-primary-500"
+          >
+            0%
+          </div>
+        </div>
+        <div
+          class="w-full bg-gray-200 dark:bg-gray-700 h-2.5 rounded-full overflow-hidden"
+        >
+          <div
+            id="profileCompletionBar"
+            class="progress-bar bg-gradient-to-r from-green-400 to-green-600 h-2.5 rounded-full"
+            style="width: 0%"
           ></div>
-          <div>
-            <label
-              for="companyLogo"
-              class="block text-sm font-medium text-gray-700 mb-2"
-              >Company Logo</label
-            >
-            <input
-              type="file"
-              id="companyLogo"
-              accept="image/*"
-              class="block text-sm text-gray-600"
-            />
-          </div>
         </div>
+        <div
+          id="completionTips"
+          class="mt-4 text-sm text-gray-600 dark:text-gray-400 space-y-1 hidden"
+        ></div>
+      </div>
 
-        <!-- Basic Info -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label for="companyName" class="text-sm font-medium text-gray-700"
-              >Company Name</label
-            >
-            <input
-              id="companyName"
-              type="text"
-              placeholder="Enter company name"
-              class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Left Column: Basic Info -->
+        <div class="lg:col-span-2 space-y-6">
+          <!-- Logo & Banner -->
+          <div class="bg-white dark:bg-darkcard rounded-xl shadow-card p-6">
+            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+              <svg
+                class="w-5 h-5 text-gray-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+              Logo & Banner
+            </h3>
 
-          <div>
-            <label
-              for="companyIndustry"
-              class="text-sm font-medium text-gray-700"
-              >Industry</label
-            >
-            <input
-              id="companyIndustry"
-              type="text"
-              placeholder="e.g. Software Development"
-              class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
-          <div>
-            <label for="companyPhone" class="text-sm font-medium text-gray-700"
-              >Phone Number</label
-            >
-            <input
-              id="companyPhone"
-              type="text"
-              placeholder="+234 800 000 0000"
-              class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
-          <div>
-            <label for="companyEmail" class="text-sm font-medium text-gray-700"
-              >Email</label
-            >
-            <input
-              id="companyEmail"
-              type="email"
-              placeholder="info@company.com"
-              class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
-          <div>
-            <label
-              for="companyWebsite"
-              class="text-sm font-medium text-gray-700"
-              >Website</label
-            >
-            <input
-              id="companyWebsite"
-              type="url"
-              placeholder="https://company.com"
-              class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
-          <div>
-            <label for="companyState" class="text-sm font-medium text-gray-700"
-              >State</label
-            >
-            <input
-              id="companyState"
-              type="text"
-              placeholder="e.g. Lagos"
-              class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
-          <div>
-            <label
-              for="companyLocalGovernment"
-              class="text-sm font-medium text-gray-700"
-              >Local Government</label
-            >
-            <input
-              id="companyLocalGovernment"
-              type="text"
-              placeholder="e.g. Ikeja"
-              class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
-          <div>
-            <label
-              for="companyAddress"
-              class="text-sm font-medium text-gray-700"
-              >Address</label
-            >
-            <input
-              id="companyAddress"
-              type="text"
-              placeholder="123 Industrial Ave"
-              class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-        </div>
-
-        <!-- Description -->
-        <div>
-          <label
-            for="companyDescription"
-            class="text-sm font-medium text-gray-700"
-            >Company Description</label
-          >
-          <textarea
-            id="companyDescription"
-            rows="4"
-            placeholder="Briefly describe your company..."
-            class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          ></textarea>
-        </div>
-
-        <!-- Gallery Upload - Improved Layout -->
-        <div>
-          <label class="text-sm font-medium text-gray-700 mb-4 block"
-            >Gallery Images</label
-          >
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Gallery Item 1 -->
-            <div class="gallery-item">
-              <div class="file-input-wrapper">
+            <div class="space-y-6">
+              <!-- Logo Upload -->
+              <div class="space-y-3">
+                <label
+                  class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >Company Logo</label
+                >
                 <div
-                  class="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors"
+                  class="flex flex-col sm:flex-row items-start sm:items-center gap-6"
+                >
+                  <div class="flex-shrink-0">
+                    <div
+                      id="companyLogoPreview"
+                      class="w-32 h-32 rounded-2xl border-4 border-white dark:border-darkcard shadow-lg overflow-hidden shimmer bg-gray-100 dark:bg-gray-800"
+                    >
+                      <img
+                        id="companyLogoImage"
+                        src=""
+                        alt="Company Logo"
+                        class="w-full h-full object-cover opacity-0 transition-opacity duration-300"
+                      />
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <div class="file-input-wrapper w-full">
+                      <div
+                        class="w-full px-4 py-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-center cursor-pointer"
+                      >
+                        <svg
+                          class="w-10 h-10 mx-auto mb-3 text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                          />
+                        </svg>
+                        <p
+                          class="text-sm text-gray-600 dark:text-gray-400 mb-1"
+                        >
+                          <span class="font-medium text-primary-500"
+                            >Click to upload</span
+                          >
+                          or drag and drop
+                        </p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                          SVG, PNG, JPG or GIF (MAX. 5MB)
+                        </p>
+                        <input
+                          type="file"
+                          id="companyLogo"
+                          accept="image/*"
+                          class="absolute inset-0 w-full h-full"
+                        />
+                      </div>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-3">
+                      Recommended: Square image, at least 400×400px
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Banner Upload -->
+              <div class="space-y-3">
+                <label
+                  class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >Company Banner</label
+                >
+                <div class="space-y-3">
+                  <div
+                    id="companyBannerPreview"
+                    class="w-full h-48 rounded-xl overflow-hidden shimmer bg-gray-100 dark:bg-gray-800 relative"
+                  >
+                    <img
+                      id="companyBannerImage"
+                      src=""
+                      alt="Company Banner"
+                      class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300"
+                    />
+                    <div
+                      class="absolute inset-0 flex items-center justify-center bg-black/20"
+                    >
+                      <span class="text-white/80 text-sm">Banner preview</span>
+                    </div>
+                  </div>
+                  <div class="file-input-wrapper w-full">
+                    <div
+                      class="w-full px-4 py-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-center cursor-pointer"
+                    >
+                      <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                        <span class="font-medium text-primary-500"
+                          >Upload banner image</span
+                        >
+                      </p>
+                      <p class="text-xs text-gray-500 dark:text-gray-400">
+                        Recommended: 1200×400px, JPG or PNG (MAX. 10MB)
+                      </p>
+                      <input
+                        type="file"
+                        id="companyBanner"
+                        accept="image/*"
+                        class="absolute inset-0 w-full h-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Basic Information -->
+          <div class="bg-white dark:bg-darkcard rounded-xl shadow-card p-6">
+            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+              <svg
+                class="w-5 h-5 text-gray-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
+              </svg>
+              Basic Information
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Company Name -->
+              <div class="space-y-2">
+                <label
+                  for="companyName"
+                  class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Company Name *
+                </label>
+                <input
+                  id="companyName"
+                  type="text"
+                  placeholder="Enter company name"
+                  class="form-input w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              <!-- Industry -->
+              <div class="space-y-2">
+                <label
+                  for="companyIndustry"
+                  class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Industry *
+                </label>
+                <select
+                  id="companyIndustry"
+                  class="form-input w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                >
+                  <option value="">Select industry</option>
+                  <option value="Software Development">
+                    Software Development
+                  </option>
+                  <option value="Web Development">Web Development</option>
+                  <option value="Mobile Development">Mobile Development</option>
+                  <option value="Data Science">Data Science</option>
+                  <option value="Artificial Intelligence">
+                    Artificial Intelligence
+                  </option>
+                  <option value="Cybersecurity">Cybersecurity</option>
+                  <option value="Cloud Computing">Cloud Computing</option>
+                  <option value="DevOps">DevOps</option>
+                  <option value="IT Consulting">IT Consulting</option>
+                  <option value="Digital Marketing">Digital Marketing</option>
+                  <option value="E-commerce">E-commerce</option>
+                  <option value="FinTech">FinTech</option>
+                  <option value="EdTech">EdTech</option>
+                  <option value="HealthTech">HealthTech</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <!-- Company Size -->
+              <div class="space-y-2">
+                <label
+                  for="companySize"
+                  class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Company Size
+                </label>
+                <select
+                  id="companySize"
+                  class="form-input w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                >
+                  <option value="">Select size</option>
+                  <option value="1-10">1-10 employees</option>
+                  <option value="11-50">11-50 employees</option>
+                  <option value="51-200">51-200 employees</option>
+                  <option value="201-500">201-500 employees</option>
+                  <option value="501-1000">501-1000 employees</option>
+                  <option value="1000+">1000+ employees</option>
+                </select>
+              </div>
+
+              <!-- Registration Number -->
+              <div class="space-y-2">
+                <label
+                  for="registrationNumber"
+                  class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Registration Number
+                </label>
+                <input
+                  id="registrationNumber"
+                  type="text"
+                  placeholder="Enter registration number"
+                  class="form-input w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              <!-- Contact Information -->
+              <div class="space-y-2">
+                <label
+                  for="companyEmail"
+                  class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Email Address *
+                </label>
+                <input
+                  id="companyEmail"
+                  type="email"
+                  placeholder="contact@company.com"
+                  class="form-input w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              <div class="space-y-2">
+                <label
+                  for="companyPhone"
+                  class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Phone Number *
+                </label>
+                <input
+                  id="companyPhone"
+                  type="tel"
+                  placeholder="+234 800 000 0000"
+                  class="form-input w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              <div class="space-y-2">
+                <label
+                  for="companyWebsite"
+                  class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Website
+                </label>
+                <input
+                  id="companyWebsite"
+                  type="url"
+                  placeholder="https://company.com"
+                  class="form-input w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Location Information -->
+          <div class="bg-white dark:bg-darkcard rounded-xl shadow-card p-6">
+            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+              <svg
+                class="w-5 h-5 text-gray-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+              Location Information
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label
+                  for="companyState"
+                  class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  State
+                </label>
+                <select
+                  id="companyState"
+                  class="form-input w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                >
+                  <option value="">Select state</option>
+                  <option value="Abia">Abia</option>
+                  <option value="Adamawa">Adamawa</option>
+                  <option value="Akwa Ibom">Akwa Ibom</option>
+                  <option value="Anambra">Anambra</option>
+                  <option value="Bauchi">Bauchi</option>
+                  <option value="Bayelsa">Bayelsa</option>
+                  <option value="Benue">Benue</option>
+                  <option value="Borno">Borno</option>
+                  <option value="Cross River">Cross River</option>
+                  <option value="Delta">Delta</option>
+                  <option value="Ebonyi">Ebonyi</option>
+                  <option value="Edo">Edo</option>
+                  <option value="Ekiti">Ekiti</option>
+                  <option value="Enugu">Enugu</option>
+                  <option value="Gombe">Gombe</option>
+                  <option value="Imo">Imo</option>
+                  <option value="Jigawa">Jigawa</option>
+                  <option value="Kaduna">Kaduna</option>
+                  <option value="Kano">Kano</option>
+                  <option value="Katsina">Katsina</option>
+                  <option value="Kebbi">Kebbi</option>
+                  <option value="Kogi">Kogi</option>
+                  <option value="Kwara">Kwara</option>
+                  <option value="Lagos">Lagos</option>
+                  <option value="Nasarawa">Nasarawa</option>
+                  <option value="Niger">Niger</option>
+                  <option value="Ogun">Ogun</option>
+                  <option value="Ondo">Ondo</option>
+                  <option value="Osun">Osun</option>
+                  <option value="Oyo">Oyo</option>
+                  <option value="Plateau">Plateau</option>
+                  <option value="Rivers">Rivers</option>
+                  <option value="Sokoto">Sokoto</option>
+                  <option value="Taraba">Taraba</option>
+                  <option value="Yobe">Yobe</option>
+                  <option value="Zamfara">Zamfara</option>
+                  <option value="FCT">FCT</option>
+                </select>
+              </div>
+
+              <div class="space-y-2">
+                <label
+                  for="companyLocalGovernment"
+                  class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Local Government
+                </label>
+                <input
+                  id="companyLocalGovernment"
+                  type="text"
+                  placeholder="Enter local government area"
+                  class="form-input w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              <div class="space-y-2 md:col-span-2">
+                <label
+                  for="companyAddress"
+                  class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Full Address
+                </label>
+                <textarea
+                  id="companyAddress"
+                  rows="3"
+                  placeholder="Enter complete company address"
+                  class="form-input w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Company Description -->
+          <div class="bg-white dark:bg-darkcard rounded-xl shadow-card p-6">
+            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+              <svg
+                class="w-5 h-5 text-gray-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Company Description
+            </h3>
+
+            <div class="space-y-3">
+              <div class="flex justify-between items-center">
+                <label
+                  for="companyDescription"
+                  class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  About Your Company *
+                </label>
+                <span
+                  id="descriptionCounter"
+                  class="text-xs text-gray-500 dark:text-gray-400"
+                  >0/2000</span
+                >
+              </div>
+              <textarea
+                id="companyDescription"
+                rows="6"
+                placeholder="Describe your company's mission, values, and what makes you unique..."
+                class="form-input w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                maxlength="2000"
+              ></textarea>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                Tell potential trainees about your company culture,
+                achievements, and opportunities.
+              </p>
+            </div>
+          </div>
+
+          <!-- Gallery Images -->
+          <div class="bg-white dark:bg-darkcard rounded-xl shadow-card p-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-lg font-semibold flex items-center gap-2">
+                <svg
+                  class="w-5 h-5 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                Gallery Images
+              </h3>
+              <span
+                id="galleryCount"
+                class="text-sm text-gray-500 dark:text-gray-400"
+                >0/10 images</span
+              >
+            </div>
+
+            <div class="space-y-4">
+              <div
+                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
+                id="galleryContainer"
+              >
+                <!-- Gallery items will be added dynamically -->
+              </div>
+
+              <!-- Add Image Button -->
+              <div id="galleryAddButton" class="file-input-wrapper">
+                <div
+                  class="w-full p-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-center cursor-pointer"
                 >
                   <svg
-                    class="w-8 h-8 text-gray-400 mb-2"
+                    class="w-12 h-12 mx-auto mb-3 text-gray-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -251,111 +764,230 @@
                       stroke-linejoin="round"
                       stroke-width="2"
                       d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    ></path>
+                    />
                   </svg>
-                  <span class="text-xs text-gray-500 text-center px-2"
-                    >Click to upload</span
-                  >
+                  <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                    <span class="font-medium text-primary-500"
+                      >Add more images</span
+                    >
+                  </p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                    Upload up to 10 images of your workplace
+                  </p>
+                  <input
+                    type="file"
+                    id="galleryUpload"
+                    accept="image/*"
+                    multiple
+                    class="absolute inset-0 w-full h-full"
+                  />
                 </div>
-                <input
-                  type="file"
-                  id="galleryImage1"
-                  accept="image/*"
-                  class="file-input"
-                />
               </div>
-              <div id="galleryPreview1" class="preview-container"></div>
-            </div>
 
-            <!-- Gallery Item 2 -->
-            <div class="gallery-item">
-              <div class="file-input-wrapper">
-                <div
-                  class="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors"
-                >
-                  <svg
-                    class="w-8 h-8 text-gray-400 mb-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    ></path>
-                  </svg>
-                  <span class="text-xs text-gray-500 text-center px-2"
-                    >Click to upload</span
-                  >
-                </div>
-                <input
-                  type="file"
-                  id="galleryImage2"
-                  accept="image/*"
-                  class="file-input"
-                />
-              </div>
-              <div id="galleryPreview2" class="preview-container"></div>
-            </div>
-
-            <!-- Gallery Item 3 -->
-            <div class="gallery-item">
-              <div class="file-input-wrapper">
-                <div
-                  class="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors"
-                >
-                  <svg
-                    class="w-8 h-8 text-gray-400 mb-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    ></path>
-                  </svg>
-                  <span class="text-xs text-gray-500 text-center px-2"
-                    >Click to upload</span
-                  >
-                </div>
-                <input
-                  type="file"
-                  id="galleryImage3"
-                  accept="image/*"
-                  class="file-input"
-                />
-              </div>
-              <div id="galleryPreview3" class="preview-container"></div>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                Supported formats: JPG, PNG, WebP. Maximum 10 images, 5MB each.
+              </p>
             </div>
           </div>
-          <p class="text-xs text-gray-500 mt-3">
-            Upload up to 3 images for your company gallery
-          </p>
         </div>
 
-        <!-- Buttons -->
-        <div class="flex justify-end gap-4 pt-6 border-t">
-          <button
-            onclick="window.location.href='company_profile.html'"
-            class="px-6 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition-colors"
+        <!-- Right Column: Settings & Actions -->
+        <div class="space-y-6">
+          <!-- Company Status -->
+          <div class="bg-white dark:bg-darkcard rounded-xl shadow-card p-6">
+            <h3 class="text-lg font-semibold mb-4">Company Status</h3>
+            <div class="space-y-3">
+              <div
+                class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+              >
+                <span class="text-sm text-gray-600 dark:text-gray-400"
+                  >Account Status</span
+                >
+                <span
+                  id="accountStatus"
+                  class="px-3 py-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 text-xs font-medium rounded-full"
+                >
+                  Active
+                </span>
+              </div>
+              <div
+                class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+              >
+                <span class="text-sm text-gray-600 dark:text-gray-400"
+                  >Verification</span
+                >
+                <span
+                  id="verificationStatus"
+                  class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-full"
+                >
+                  Pending
+                </span>
+              </div>
+              <div
+                class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+              >
+                <span class="text-sm text-gray-600 dark:text-gray-400"
+                  >Approval</span
+                >
+                <span
+                  id="approvalStatus"
+                  class="px-3 py-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 text-xs font-medium rounded-full"
+                >
+                  Pending
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Publishing Settings -->
+          <div class="bg-white dark:bg-darkcard rounded-xl shadow-card p-6">
+            <h3 class="text-lg font-semibold mb-4">Visibility Settings</h3>
+            <div class="space-y-4">
+              <label class="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  id="companyVisibility"
+                  class="w-4 h-4 text-primary-500 rounded border-gray-300 focus:ring-primary-500"
+                  checked
+                />
+                <span class="text-sm text-gray-700 dark:text-gray-300"
+                  >Visible to trainees</span
+                >
+              </label>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                When enabled, your company profile will be visible to trainees
+                searching for opportunities.
+              </p>
+            </div>
+          </div>
+
+          <!-- Save Actions -->
+          <div class="bg-white dark:bg-darkcard rounded-xl shadow-card p-6">
+            <h3 class="text-lg font-semibold mb-4">Save Changes</h3>
+            <div class="space-y-3">
+              <button
+                id="saveProfileBtn2"
+                class="w-full py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                Save All Changes
+              </button>
+              <button
+                onclick="window.location.href='maincompany_profile.html'"
+                class="w-full py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                Discard Changes
+              </button>
+              <button
+                id="previewProfileBtn"
+                class="w-full py-3 border border-primary-500 text-primary-500 rounded-lg font-medium hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors flex items-center justify-center gap-2"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                  />
+                </svg>
+                Preview Profile
+              </button>
+            </div>
+          </div>
+
+          <!-- Help & Support -->
+          <div
+            class="bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl shadow-card p-6 text-white"
           >
-            Cancel
-          </button>
-          <button
-            id="saveProfileBtn"
-            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Save Changes
-          </button>
+            <h3 class="text-lg font-semibold mb-2">Need Help?</h3>
+            <p class="text-sm opacity-90 mb-4">
+              Contact our support team for assistance with your profile.
+            </p>
+            <a
+              href="mailto:itconnect10@gmail.com"
+              class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg text-sm font-medium transition-colors"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
+              </svg>
+              Contact Support
+            </a>
+          </div>
         </div>
       </div>
     </main>
 
+    <!-- Toast Container -->
+    <div
+      id="toastContainer"
+      class="fixed bottom-6 right-6 z-50 space-y-3"
+    ></div>
+
     <script type="module" src="js/general/company_edit_profile.js"></script>
+    <script>
+      // Description character counter
+      document.addEventListener("DOMContentLoaded", function () {
+        const descriptionInput = document.getElementById("companyDescription");
+        const counter = document.getElementById("descriptionCounter");
+
+        if (descriptionInput && counter) {
+          descriptionInput.addEventListener("input", function () {
+            const length = this.value.length;
+            counter.textContent = `${length}/2000`;
+
+            // Change color when approaching limit
+            if (length > 1800) {
+              counter.classList.add("text-red-500");
+            } else {
+              counter.classList.remove("text-red-500");
+            }
+          });
+
+          // Initial count
+          counter.textContent = `${descriptionInput.value.length}/2000`;
+        }
+
+        // Preview profile button
+        document
+          .getElementById("previewProfileBtn")
+          ?.addEventListener("click", function () {
+            // In a real application, this would open a preview modal or new tab
+            alert("Profile preview coming soon!");
+          });
+      });
+    </script>
   </body>
 </html>
