@@ -97,17 +97,17 @@ class StudentApplicationView {
 
     // Format date
     let appDate;
-    ////console.log("Application date raw:", application.appliedAt);
+    console.log("Application date raw:", application.application.applicationDate);
 
-    if (application.appliedAt?.toDate) {
+    if (application.application.applicationDate?.toDate) {
       // It's a Firebase Timestamp - convert to Date
-      appDate = application.appliedAt.toDate();
-    } else if (application.appliedAt instanceof Date) {
+      appDate = application.application.applicationDate.toDate();
+    } else if (application.application.applicationDate instanceof Date) {
       // It's already a Date object
-      appDate = application.appliedAt;
+      appDate = application.application.applicationDate;
     } else {
       // Try to parse as string or use current date as fallback
-      appDate = new Date(application.appliedAt);
+      appDate = new Date(application.application.applicationDate);
     }
 
     const formattedDate = appDate.toLocaleDateString("en-CA"); // YYYY-MM-DD format
@@ -153,12 +153,12 @@ class StudentApplicationView {
 
     // Format date
     let appDate;
-    if (application.appliedAt?.toDate) {
-      appDate = application.appliedAt.toDate();
-    } else if (application.appliedAt instanceof Date) {
-      appDate = application.appliedAt;
+    if (application.application.applicationDate?.toDate) {
+      appDate = application.application.applicationDate.toDate();
+    } else if (application.application.applicationDate instanceof Date) {
+      appDate = application.application.applicationDate;
     } else {
-      appDate = new Date(application.appliedAt);
+      appDate = new Date(application.application.applicationDate);
     }
 
     const formattedDate = appDate.toLocaleDateString("en-CA");

@@ -40,13 +40,20 @@ class CompanyProfile {
         await this.loadCompanyProfile(user.uid);
       }
     });
+    this.messageCompany = document.getElementById("message-company");
+
+    this.messageCompany.addEventListener('click',(e)=>{
+      alert("message company clicked");
+    });
   }
 
   async loadCompanyProfile(userId) {
     try {
       showLoadingOverlay("Loading company profile...");
+       
       const company = await itc_firebase_logic.getCompany(this.companyId);
       this.company = company;
+
 
       if (company) {
         const companyData = company;

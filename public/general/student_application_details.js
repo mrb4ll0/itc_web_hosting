@@ -503,6 +503,7 @@ class StudentApplicationDetails {
     const closePreviewBtn = document.getElementById('close-preview');
     const closePreviewBtn2 = document.getElementById('close-preview-btn');
     const previewModal = document.getElementById('document-preview-modal');
+    const appHeader = document.getElementById('app-header');
 
     if (closePreviewBtn) {
       closePreviewBtn.addEventListener('click', () => this.closeDocumentPreview());
@@ -516,6 +517,28 @@ class StudentApplicationDetails {
           this.closeDocumentPreview();
         }
       });
+    }
+
+    if(appHeader)
+    {
+        appHeader.addEventListener('click',
+            (e)=>
+            {
+                this.navigateToCompanyProfile(e);
+            }
+        );
+    }
+  }
+  
+  // navigate to Company profile
+  navigateToCompanyProfile(e)
+  {
+    try{
+        window.location.href = "../company_profile.html?id="+this.companyId;
+    }
+    catch(error)
+    {
+        console.error("error while navigate to company profile "+error);
     }
   }
 

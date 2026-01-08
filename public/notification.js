@@ -12,6 +12,7 @@ async function requestWebPushPermission() {
   console.log("Requesting notification permission...");
 
   const permission = await Notification.requestPermission();
+  console.log("after requesting notification");
   if (permission !== "granted") {
     alert("Notifications permission denied.");
     return;

@@ -8,7 +8,7 @@ export class Admin {
     this.role = role;
   }
 
-  // ✅ Create instance from Firestore document
+
   static fromFirestore(doc) {
     const data = doc.data();
     return new Admin({
