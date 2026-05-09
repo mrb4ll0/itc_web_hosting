@@ -1,17 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>IT Connect — Industrial Training Platform</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <link rel="icon" href="./images/appstore.png" sizes="32x32">
+  <link rel="icon" href="./images/appstore.png" sizes="192x192">
+
+  <link rel="shortcut icon" href="./images/appstore.png">
+
+  <link rel="apple-touch-icon" href="./images/appstore.png">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+    rel="stylesheet" />
   <script type="module" src="./js/index.js"></script>
 
   <style>
     /* reset & base */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
       --blue: #3563E9;
@@ -27,11 +42,13 @@
       --white: #FFFFFF;
       --radius: 14px;
       --radius-lg: 20px;
-      --shadow: 0 1px 3px rgba(0,0,0,.07), 0 4px 16px rgba(0,0,0,.06);
-      --shadow-md: 0 4px 24px rgba(53,99,233,.15);
+      --shadow: 0 1px 3px rgba(0, 0, 0, .07), 0 4px 16px rgba(0, 0, 0, .06);
+      --shadow-md: 0 4px 24px rgba(53, 99, 233, .15);
     }
 
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
       font-family: 'DM Sans', sans-serif;
@@ -41,10 +58,23 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    h1, h2, h3, h4, .logo-name { font-family: 'Sora', sans-serif; }
+    h1,
+    h2,
+    h3,
+    h4,
+    .logo-name {
+      font-family: 'Sora', sans-serif;
+    }
 
-    a { color: inherit; text-decoration: none; }
-    img { display: block; max-width: 100%; }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
 
     .container {
       max-width: 1120px;
@@ -57,7 +87,7 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(255,255,255,.92);
+      background: rgba(255, 255, 255, .92);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
@@ -85,7 +115,11 @@
       justify-content: center;
     }
 
-    .logo-icon svg { width: 20px; height: 20px; color: #fff; }
+    .logo-icon svg {
+      width: 20px;
+      height: 20px;
+      color: #fff;
+    }
 
     .logo-name {
       font-size: 17px;
@@ -114,7 +148,9 @@
       transition: color .2s;
     }
 
-    .nav-links a:hover { color: var(--blue); }
+    .nav-links a:hover {
+      color: var(--blue);
+    }
 
     .btn {
       display: inline-flex;
@@ -198,8 +234,17 @@
     }
 
     @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: .6; transform: scale(.85); }
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: .6;
+        transform: scale(.85);
+      }
     }
 
     .hero h1 {
@@ -247,7 +292,9 @@
       border-right: 1px solid var(--border);
     }
 
-    .stat:last-child { border-right: none; }
+    .stat:last-child {
+      border-right: none;
+    }
 
     .stat-value {
       font-family: 'Sora', sans-serif;
@@ -315,7 +362,7 @@
 
     .app-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 32px rgba(0,0,0,.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .1);
     }
 
     .app-card.featured {
@@ -334,11 +381,25 @@
       margin: 0 auto 20px;
     }
 
-    .app-icon svg { width: 28px; height: 28px; }
+    .app-icon svg {
+      width: 28px;
+      height: 28px;
+    }
 
-    .app-icon.student { background: var(--green-light); color: var(--green); }
-    .app-icon.company { background: var(--blue-light); color: var(--blue); }
-    .app-icon.ios { background: var(--surface); color: var(--text-soft); }
+    .app-icon.student {
+      background: var(--green-light);
+      color: var(--green);
+    }
+
+    .app-icon.company {
+      background: var(--blue-light);
+      color: var(--blue);
+    }
+
+    .app-icon.ios {
+      background: var(--surface);
+      color: var(--text-soft);
+    }
 
     .app-card h3 {
       font-size: 17px;
@@ -401,9 +462,20 @@
       margin-bottom: 12px;
     }
 
-    .tag-green { background: var(--green-light); color: var(--green); }
-    .tag-blue { background: var(--blue-light); color: var(--blue); }
-    .tag-gray { background: var(--surface); color: var(--text-soft); }
+    .tag-green {
+      background: var(--green-light);
+      color: var(--green);
+    }
+
+    .tag-blue {
+      background: var(--blue-light);
+      color: var(--blue);
+    }
+
+    .tag-gray {
+      background: var(--surface);
+      color: var(--text-soft);
+    }
 
     /* ---- FEATURES ---- */
     .features-section {
@@ -431,7 +503,8 @@
       transition: all .2s;
     }
 
-    .tab-btn.active, .tab-btn:hover {
+    .tab-btn.active,
+    .tab-btn:hover {
       background: var(--blue);
       color: #fff;
       border-color: var(--blue);
@@ -453,7 +526,7 @@
 
     .feature-card:hover {
       border-color: var(--blue-mid);
-      box-shadow: 0 4px 20px rgba(53,99,233,.08);
+      box-shadow: 0 4px 20px rgba(53, 99, 233, .08);
     }
 
     .feature-icon {
@@ -468,7 +541,10 @@
       color: var(--blue);
     }
 
-    .feature-icon svg { width: 22px; height: 22px; }
+    .feature-icon svg {
+      width: 22px;
+      height: 22px;
+    }
 
     .feature-card h3 {
       font-size: 15px;
@@ -515,7 +591,9 @@
       transition: color .2s;
     }
 
-    .logo-item:hover { color: var(--text-soft); }
+    .logo-item:hover {
+      color: var(--text-soft);
+    }
 
     /* ---- FEEDBACK ---- */
     .feedback-section {
@@ -533,7 +611,9 @@
       box-shadow: var(--shadow);
     }
 
-    .form-group { margin-bottom: 20px; }
+    .form-group {
+      margin-bottom: 20px;
+    }
 
     label {
       display: block;
@@ -543,7 +623,8 @@
       margin-bottom: 7px;
     }
 
-    input, textarea {
+    input,
+    textarea {
       width: 100%;
       font-family: 'DM Sans', sans-serif;
       font-size: 15px;
@@ -557,9 +638,10 @@
       resize: none;
     }
 
-    input:focus, textarea:focus {
+    input:focus,
+    textarea:focus {
       border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(53,99,233,.12);
+      box-shadow: 0 0 0 3px rgba(53, 99, 233, .12);
       background: var(--white);
     }
 
@@ -590,8 +672,13 @@
       border-bottom: 1px solid #21262D;
     }
 
-    .footer-logo .logo-name { color: #E6EDF3; }
-    .footer-logo .logo-sub { color: #8B949E; }
+    .footer-logo .logo-name {
+      color: #E6EDF3;
+    }
+
+    .footer-logo .logo-sub {
+      color: #8B949E;
+    }
 
     .footer-desc {
       font-size: 14px;
@@ -609,11 +696,16 @@
       letter-spacing: .02em;
     }
 
-    .footer-col ul { list-style: none; }
+    .footer-col ul {
+      list-style: none;
+    }
 
-    .footer-col li { margin-bottom: 10px; }
+    .footer-col li {
+      margin-bottom: 10px;
+    }
 
-    .footer-col a, .footer-col button {
+    .footer-col a,
+    .footer-col button {
       font-size: 14px;
       color: #8B949E;
       background: none;
@@ -624,7 +716,10 @@
       transition: color .2s;
     }
 
-    .footer-col a:hover, .footer-col button:hover { color: #E6EDF3; }
+    .footer-col a:hover,
+    .footer-col button:hover {
+      color: #E6EDF3;
+    }
 
     .footer-bottom {
       display: flex;
@@ -639,7 +734,7 @@
       position: fixed;
       inset: 0;
       z-index: 200;
-      background: rgba(0,0,0,.45);
+      background: rgba(0, 0, 0, .45);
       backdrop-filter: blur(4px);
       display: none;
       align-items: center;
@@ -647,7 +742,9 @@
       padding: 24px;
     }
 
-    .modal-overlay.open { display: flex; }
+    .modal-overlay.open {
+      display: flex;
+    }
 
     .modal {
       background: var(--white);
@@ -655,13 +752,20 @@
       padding: 36px;
       width: 100%;
       max-width: 440px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.2);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
       animation: slideUp .25s ease;
     }
 
     @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .modal-header {
@@ -691,8 +795,14 @@
       transition: background .2s;
     }
 
-    .modal-close:hover { background: var(--border); }
-    .modal-close svg { width: 16px; height: 16px; }
+    .modal-close:hover {
+      background: var(--border);
+    }
+
+    .modal-close svg {
+      width: 16px;
+      height: 16px;
+    }
 
     .modal p {
       font-size: 14px;
@@ -705,32 +815,79 @@
       display: inline-block;
       width: 16px;
       height: 16px;
-      border: 2px solid rgba(255,255,255,.35);
+      border: 2px solid rgba(255, 255, 255, .35);
       border-top-color: #fff;
       border-radius: 50%;
       animation: spin .7s linear infinite;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
     /* ---- RESPONSIVE ---- */
     @media (max-width: 900px) {
-      .download-grid { grid-template-columns: 1fr 1fr; }
-      .features-grid { grid-template-columns: 1fr 1fr; }
-      .footer-top { grid-template-columns: 1fr 1fr; }
+      .download-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .footer-top {
+        grid-template-columns: 1fr 1fr;
+      }
     }
 
     @media (max-width: 640px) {
-      .nav-links { display: none; }
-      .hamburger { display: flex; }
-      .download-grid { grid-template-columns: 1fr; }
-      .features-grid { grid-template-columns: 1fr; }
-      .footer-top { grid-template-columns: 1fr; gap: 32px; }
-      .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
-      .stats { flex-direction: column; }
-      .stat { border-right: none; border-bottom: 1px solid var(--border); }
-      .stat:last-child { border-bottom: none; }
-      .form-footer { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .nav-links {
+        display: none;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .download-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-top {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+      }
+
+      .stats {
+        flex-direction: column;
+      }
+
+      .stat {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .stat:last-child {
+        border-bottom: none;
+      }
+
+      .form-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
     }
 
     /* mobile nav */
@@ -742,7 +899,10 @@
       background: var(--white);
     }
 
-    .mobile-nav.open { display: flex; }
+    .mobile-nav.open {
+      display: flex;
+    }
+
     .mobile-nav a {
       padding: 10px 0;
       font-size: 15px;
@@ -750,9 +910,13 @@
       color: var(--text-soft);
       border-bottom: 1px solid var(--surface);
     }
-    .mobile-nav a:last-of-type { border-bottom: none; }
+
+    .mobile-nav a:last-of-type {
+      border-bottom: none;
+    }
   </style>
 </head>
+
 <body>
 
   <!-- HEADER -->
@@ -761,9 +925,7 @@
       <nav>
         <a href="/" class="logo">
           <div class="logo-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.63 8.41m5.96 5.96a14.926 14.926 0 01-5.84 2.58m-.12-8.54a6 6 0 00-7.38 5.84h4.8m2.58-5.84a14.927 14.927 0 00-2.58 5.84m2.7 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
-            </svg>
+            <img src="./images/appstore.png" alt="IT Connect">
           </div>
           <div>
             <div class="logo-name">IT Connect</div>
@@ -800,11 +962,14 @@
       </div>
 
       <h1>Launch Your Career with <span>Perfect IT Placements</span></h1>
-      <p>Connect directly with top companies for industrial training. Real-time tracking and career-defining opportunities, right in your pocket.</p>
+      <p>Connect directly with top companies for industrial training. Real-time tracking and career-defining
+        opportunities, right in your pocket.</p>
 
       <a href="#download" class="btn btn-primary" style="font-size:15px; padding: 13px 28px; border-radius:12px;">
         Download the App
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
       </a>
 
       <div class="stats">
@@ -842,12 +1007,21 @@
         <div class="app-card featured">
           <span class="tag tag-green">For Students</span>
           <div class="app-icon student">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+            </svg>
           </div>
           <h3>Student App</h3>
           <p>Find training opportunities, track applications, and chat directly with companies.</p>
-          <a href="https://play.google.com/store/apps/details?id=com.mrb4ll0.it_connect" target="_blank" rel="noopener noreferrer" class="btn btn-green" onclick="trackPlayStoreClick('IT Connect Student App', 'com.mrb4ll0.it_connect')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.76c.3.17.64.24.99.2l12.6-7.27-2.72-2.72-10.87 9.79zm-1.9-20.7A1.99 1.99 0 001 4.5v15c0 .45.13.87.37 1.22l.07.08 8.4-8.4v-.2L1.28 3.06zm17.52 8.26-2.72-1.57-3.02 3.02 3.02 3.02 2.74-1.58c.78-.45.78-1.44-.02-1.89zM4.17.24L16.77 7.5l-2.72 2.72L3.18.44A1.5 1.5 0 014.17.24z"/></svg>
+          <a href="https://play.google.com/store/apps/details?id=com.mrb4ll0.it_connect" target="_blank"
+            rel="noopener noreferrer" class="btn btn-green"
+            onclick="trackPlayStoreClick('IT Connect Student App', 'com.mrb4ll0.it_connect')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M3.18 23.76c.3.17.64.24.99.2l12.6-7.27-2.72-2.72-10.87 9.79zm-1.9-20.7A1.99 1.99 0 001 4.5v15c0 .45.13.87.37 1.22l.07.08 8.4-8.4v-.2L1.28 3.06zm17.52 8.26-2.72-1.57-3.02 3.02 3.02 3.02 2.74-1.58c.78-.45.78-1.44-.02-1.89zM4.17.24L16.77 7.5l-2.72 2.72L3.18.44A1.5 1.5 0 014.17.24z" />
+            </svg>
             Get it on Google Play
           </a>
         </div>
@@ -856,12 +1030,20 @@
         <div class="app-card">
           <span class="tag tag-blue">For Companies</span>
           <div class="app-icon company">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
           </div>
           <h3>Company App</h3>
           <p>Manage intern applications, review candidates, and track training programs.</p>
-          <a href="https://play.google.com/store/apps/details?id=com.itc_institute_admin.itc_institute_admin" target="_blank" rel="noopener noreferrer" class="btn btn-blue-full" onclick="trackPlayStoreClick('ITC Company App', 'com.itc_institute_admin.itc_institute_admin')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.76c.3.17.64.24.99.2l12.6-7.27-2.72-2.72-10.87 9.79zm-1.9-20.7A1.99 1.99 0 001 4.5v15c0 .45.13.87.37 1.22l.07.08 8.4-8.4v-.2L1.28 3.06zm17.52 8.26-2.72-1.57-3.02 3.02 3.02 3.02 2.74-1.58c.78-.45.78-1.44-.02-1.89zM4.17.24L16.77 7.5l-2.72 2.72L3.18.44A1.5 1.5 0 014.17.24z"/></svg>
+          <a href="https://play.google.com/store/apps/details?id=com.itc_institute_admin.itc_institute_admin"
+            target="_blank" rel="noopener noreferrer" class="btn btn-blue-full"
+            onclick="trackPlayStoreClick('ITC Company App', 'com.itc_institute_admin.itc_institute_admin')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M3.18 23.76c.3.17.64.24.99.2l12.6-7.27-2.72-2.72-10.87 9.79zm-1.9-20.7A1.99 1.99 0 001 4.5v15c0 .45.13.87.37 1.22l.07.08 8.4-8.4v-.2L1.28 3.06zm17.52 8.26-2.72-1.57-3.02 3.02 3.02 3.02 2.74-1.58c.78-.45.78-1.44-.02-1.89zM4.17.24L16.77 7.5l-2.72 2.72L3.18.44A1.5 1.5 0 014.17.24z" />
+            </svg>
             Get it on Google Play
           </a>
         </div>
@@ -870,7 +1052,10 @@
         <div class="app-card">
           <span class="tag tag-gray">Coming Soon</span>
           <div class="app-icon ios">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" />
+            </svg>
           </div>
           <h3>iOS Version</h3>
           <p>We're working on bringing IT Connect to iPhone and iPad. Join the waitlist.</p>
@@ -900,42 +1085,60 @@
       <div id="tab-students" class="features-grid">
         <div class="feature-card">
           <div class="feature-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
           </div>
           <h3>Browse Opportunities</h3>
           <p>Explore hundreds of industrial training positions across various industries.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
           </div>
           <h3>Featured Companies</h3>
           <p>View company profiles, their requirements, and available training positions.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
           </div>
           <h3>Direct Chat</h3>
           <p>Message company representatives directly without leaving the app.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
           </div>
           <h3>Application Tracking</h3>
           <p>See your application status — Accepted, Rejected, or Pending — in real time.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+            </svg>
           </div>
           <h3>Community Access</h3>
           <p>Connect with other students and get tips from companies and admins.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
           </div>
           <h3>Completion Status</h3>
           <p>Track and view your training completion records from one place.</p>
@@ -946,42 +1149,60 @@
       <div id="tab-companies" class="features-grid" style="display:none;">
         <div class="feature-card">
           <div class="feature-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
           </div>
           <h3>Student Management</h3>
           <p>Manage all student categories — Accepted, Rejected, Pending, Current, and Completed.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
           </div>
           <h3>Direct Student Chat</h3>
           <p>Communicate with students directly for interviews and follow-up questions.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
           </div>
           <h3>Application Review</h3>
           <p>Review incoming student applications and make decisions quickly.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
           </div>
           <h3>Training Programs</h3>
           <p>Create and manage training programs and track student progress throughout.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
           </div>
           <h3>Feedback & Reports</h3>
           <p>Give structured feedback to students and generate training outcome reports.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/></svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+            </svg>
           </div>
           <h3>Community Engagement</h3>
           <p>Share advice and participate in discussions with students and admins.</p>
@@ -1022,7 +1243,8 @@
           </div>
           <div class="form-group">
             <label for="message">Your Message</label>
-            <textarea id="message" name="message" rows="5" placeholder="Share your thoughts or questions..." required></textarea>
+            <textarea id="message" name="message" rows="5" placeholder="Share your thoughts or questions..."
+              required></textarea>
           </div>
           <div class="form-footer">
             <span class="form-note">We'll respond within 24–48 hours</span>
@@ -1041,17 +1263,13 @@
       <div class="footer-top">
         <div>
           <div class="logo footer-logo" style="margin-bottom:0">
-            <div class="logo-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.63 8.41m5.96 5.96a14.926 14.926 0 01-5.84 2.58m-.12-8.54a6 6 0 00-7.38 5.84h4.8m2.58-5.84a14.927 14.927 0 00-2.58 5.84m2.7 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
-              </svg>
-            </div>
             <div>
               <div class="logo-name">IT Connect</div>
               <div class="logo-sub">Industrial Training Platform</div>
             </div>
           </div>
-          <p class="footer-desc">Connecting students with industry leaders for meaningful industrial training experiences that launch careers.</p>
+          <p class="footer-desc">Connecting students with industry leaders for meaningful industrial training
+            experiences that launch careers.</p>
         </div>
 
         <div class="footer-col">
@@ -1071,6 +1289,14 @@
             <li><a href="#feedback">Feedback</a></li>
           </ul>
         </div>
+
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><button onclick="window.location.href='privacy.html'">Privacy Policy</button></li>
+            <li><button onclick="window.location.href='terms.html'">Terms of Service</button></li>
+          </ul>
+        </div>
       </div>
 
       <div class="footer-bottom">
@@ -1085,7 +1311,9 @@
       <div class="modal-header">
         <h3>Join iOS Waitlist</h3>
         <button class="modal-close" onclick="closeWaitlistModal()">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </button>
       </div>
       <p>Be the first to know when our iOS app launches. We'll send you a notification as soon as it's ready.</p>
@@ -1139,4 +1367,5 @@
     window.closeWaitlistModal = closeWaitlistModal;
   </script>
 </body>
+
 </html>
