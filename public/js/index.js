@@ -1,228 +1,325 @@
-// Import Firebase functions from your firebaseInit.js file
-import { 
-  db, 
-  collection, 
-  addDoc, 
-  serverTimestamp 
+import {
+  db,
+  auth,
+  collection,
+  addDoc,
+  serverTimestamp,
+  signInAnonymously,
+  onAuthStateChanged,
 } from "./config/firebaseInit.js";
 
-// Waitlist Modal Functions
-function showWaitlistModal() {
-  document.getElementById('waitlist-modal')?.classList.remove('hidden');
-  document.body.style.overflow = 'hidden';
+
+
+let currentUser = null;
+
+const authReady = new Promise((resolve) => {
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      
+      currentUser = user;
+      resolve(user);
+    } else {
+      
+      try {
+        const credential = await signInAnonymously(auth);
+        currentUser = credential.user;
+        resolve(credential.user);
+      } catch (error) {
+        
+        console.error("Anonymous sign-in failed:", error);
+        resolve(null);
+      }
+    }
+  });
+});
+
+
+
+function getSessionId() {
+  let id = sessionStorage.getItem("itc_session_id");
+  if (!id) {
+    id = "sess_" + Date.now() + "_" + Math.random().toString(36).slice(2, 9);
+    sessionStorage.setItem("itc_session_id", id);
+  }
+  return id;
 }
 
-function closeWaitlistModal() {
-  document.getElementById('waitlist-modal')?.classList.add('hidden');
-  document.body.style.overflow = 'auto';
+
+function getVisitorContext() {
+  return {
+    sessionId: getSessionId(),
+    uid: currentUser?.uid || null,
+    userAgent: navigator.userAgent,
+    language: navigator.language,
+    screenResolution: `${screen.width}x${screen.height}`,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    referrer: document.referrer || "direct",
+    pageUrl: window.location.href,
+    platform: /Android/i.test(navigator.userAgent)
+      ? "Android"
+      : /iPhone|iPad/i.test(navigator.userAgent)
+      ? "iOS"
+      : "Desktop"
+  };
 }
 
-// Function to store data in Firebase
+
+
 async function storeInFirebase(collectionName, data) {
+  const user = await authReady;
+
+  if (!user) {
+    console.warn(`Skipping write to "${collectionName}" — user not authenticated.`);
+    return { success: false, error: "not_authenticated" };
+  }
+
   try {
     const docRef = await addDoc(collection(db, collectionName), {
       ...data,
       timestamp: serverTimestamp()
     });
-    console.log(`Document written to ${collectionName} with ID:`, docRef.id);
+    console.log(`Saved to "${collectionName}" — document ID: ${docRef.id}`);
     return { success: true, id: docRef.id };
   } catch (error) {
-    console.error(`Error adding to ${collectionName}:`, error);
+    console.error(`Failed to save to "${collectionName}":`, error);
     return { success: false, error: error.message };
   }
 }
 
-// Waitlist Form Submission with Firebase storage
-document.getElementById('waitlist-form')?.addEventListener('submit', async function(e) {
+
+
+// records something the user did — button click, form submit, link tap, etc.
+async function logActivity(action, details = {}) {
+  return storeInFirebase("activity_logs", {
+    action,
+    ...details,
+    ...getVisitorContext()
+  });
+}
+
+
+async function logError(action, error, details = {}) {
+  return storeInFirebase("error_logs", {
+    action,
+    errorMessage: error?.message || String(error),
+    errorStack: error?.stack || null,
+    ...details,
+    ...getVisitorContext()
+  });
+}
+
+
+async function logPageVisit() {
+  return storeInFirebase("visitor_logs", {
+    event: "page_visit",
+    ...getVisitorContext()
+  });
+}
+
+
+
+function setButtonLoading(btn, loadingLabel) {
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `
+    <svg style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite" fill="none" viewBox="0 0 24 24"></svg>
+    ${loadingLabel}
+  `;
+  return () => {
+    btn.innerHTML = original;
+    btn.disabled = false;
+  };
+}
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+
+
+document.getElementById("waitlist-form")?.addEventListener("submit", async function (e) {
   e.preventDefault();
-  const email = document.getElementById('waitlist-email').value;
-  
+
+  const email = document.getElementById("waitlist-email").value.trim();
+
   if (!email) {
-    alert('Please enter your email address.');
+    alert("Please enter your email address.");
     return;
   }
 
-  // Validate email
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    alert('Please enter a valid email address.');
+  if (!isValidEmail(email)) {
+    await logActivity("waitlist_invalid_email", { email });
+    alert("That doesn't look like a valid email address. Double-check and try again.");
     return;
   }
+
+  const submitBtn = this.querySelector('button[type="submit"]');
+  const restore = setButtonLoading(submitBtn, "Joining...");
+
+  await logActivity("waitlist_submit_attempt", { email });
 
   try {
-    // Show loading state
-    const submitBtn = this.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = `
-      <svg class="animate-spin w-4 h-4 mr-2 inline" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-      Joining...
-    `;
-    submitBtn.disabled = true;
-
-    // Store in Firebase
-    const result = await storeInFirebase('waitlist', {
-      email: email,
-      platform: 'iOS',
-      source: 'landing_page',
-      status: 'pending'
+    const result = await storeInFirebase("waitlist", {
+      email,
+      platform: "iOS",
+      source: "landing_page",
+      status: "pending",
+      sessionId: getSessionId()
     });
 
     if (result.success) {
-      alert(`Thank you! You've been added to the iOS waitlist. We'll notify you at ${email} when the app launches.`);
+      await logActivity("waitlist_joined", { email, docId: result.id });
+      alert(`You're on the list! We'll notify you at ${email} when the iOS app is ready.`);
       this.reset();
       closeWaitlistModal();
     } else {
       throw new Error(result.error);
     }
-    
   } catch (error) {
-    console.error('Error:', error);
-    alert(`Error: ${error.message}. Please try again.`);
+    await logError("waitlist_submit", error, { email });
+    console.error("Waitlist submission error:", error);
+    alert("Something went wrong. Please try again in a moment.");
   } finally {
-    const submitBtn = this.querySelector('button[type="submit"]');
-    if (submitBtn) {
-      submitBtn.innerHTML = 'Join Waitlist';
-      submitBtn.disabled = false;
-    }
+    restore();
   }
 });
 
-// Feedback Form Submission with Firebase storage
-document.getElementById('feedback-form')?.addEventListener('submit', async function(e) {
+
+// ------------------------------------------------------------------
+// Feedback form
+// ------------------------------------------------------------------
+
+document.getElementById("feedback-form")?.addEventListener("submit", async function (e) {
   e.preventDefault();
-  const email = document.getElementById('email').value;
-  const message = document.getElementById('message').value;
-  
+
+  const email = document.getElementById("email").value.trim();
+  const message = document.getElementById("message").value.trim();
+
   if (!email || !message) {
-    alert('Please fill in both email and message fields.');
+    alert("Please fill in both fields before submitting.");
     return;
   }
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    alert('Please enter a valid email address.');
+  if (!isValidEmail(email)) {
+    await logActivity("feedback_invalid_email", { email });
+    alert("That doesn't look like a valid email address. Double-check and try again.");
     return;
   }
 
-  if (message.trim().length < 10) {
-    alert('Please provide more detailed feedback (minimum 10 characters).');
+  if (message.length < 10) {
+    await logActivity("feedback_message_too_short", { email, messageLength: message.length });
+    alert("Your message is a bit short — please add a bit more detail.");
     return;
   }
+
+  const submitBtn = this.querySelector('button[type="submit"]');
+  const restore = setButtonLoading(submitBtn, "Sending...");
+
+  await logActivity("feedback_submit_attempt", { email });
 
   try {
-    const submitBtn = this.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = `
-      <svg class="animate-spin w-4 h-4 mr-2 inline" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-      Submitting...
-    `;
-    submitBtn.disabled = true;
-
-    const result = await storeInFirebase('reports', {
-      email: email,
-      message: message.trim(),
-      type: 'feedback',
-      status: 'new',
-      source: 'landing_page'
+    const result = await storeInFirebase("reports", {
+      email,
+      message,
+      type: "feedback",
+      status: "new",
+      source: "landing_page",
+      sessionId: getSessionId()
     });
 
     if (result.success) {
-      alert(`Thank you for your feedback! We've received your message and will respond to ${email} within 24-48 hours.`);
+      await logActivity("feedback_submitted", { email, docId: result.id });
+      alert(`Got it, thanks! We'll get back to you at ${email} within 24-48 hours.`);
       this.reset();
     } else {
       throw new Error(result.error);
     }
-    
   } catch (error) {
-    console.error('Error:', error);
-    alert(`Error: ${error.message}. Please try again.`);
+    await logError("feedback_submit", error, { email });
+    console.error("Feedback submission error:", error);
+    alert("Something went wrong. Please try again in a moment.");
   } finally {
-    const submitBtn = this.querySelector('button[type="submit"]');
-    if (submitBtn) {
-      submitBtn.innerHTML = 'Submit Feedback';
-      submitBtn.disabled = false;
-    }
+    restore();
   }
 });
 
-// File download function
-function downloadFile(filename, title) {
-  const button = event.target.closest("button");
-  const originalText = button.innerHTML;
-  button.innerHTML = `
-    <svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
-      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-    </svg>
-    Downloading...
-  `;
-  button.disabled = true;
 
-  setTimeout(() => {
-    const link = document.createElement("a");
-    link.href = `/files/${filename}`;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
 
-    alert(`${title} download started!`);
 
-    setTimeout(() => {
-      button.innerHTML = originalText;
-      button.disabled = false;
-    }, 500);
-  }, 1000);
+function trackPlayStoreClick(appName, appId) {
+  logActivity("playstore_click", { appName, appId });
 }
 
-// Slideshow functionality
+window.trackPlayStoreClick = trackPlayStoreClick;
+
+
+function showWaitlistModal() {
+  document.getElementById("waitlist-modal")?.classList.add("open");
+  document.body.style.overflow = "hidden";
+  logActivity("waitlist_modal_opened");
+}
+
+function closeWaitlistModal() {
+  document.getElementById("waitlist-modal")?.classList.remove("open");
+  document.body.style.overflow = "";
+  logActivity("waitlist_modal_closed");
+}
+
+window.showWaitlistModal = showWaitlistModal;
+window.closeWaitlistModal = closeWaitlistModal;
+
+
+
 function initSlideshow() {
   const img = document.getElementById("slideshow-image");
-  if (img) {
-    const images = [
-      "images/its1.jpg",
-      "images/its2.jpg",
-      "images/its3.jpg",
-      "images/its4.jpg",
-      "images/its5.jpg",
-      "images/its6.jpg",
-      "images/its7.jpg",
-      "images/its8.jpg",
-      "images/its9.jpg",
-      "images/its10.jpg",
-    ];
-    let current = 0;
-    
-    setInterval(() => {
-      current = (current + 1) % images.length;
-      img.style.opacity = 0;
-      setTimeout(() => {
-        img.src = images[current];
-        img.style.opacity = 1;
-      }, 500);
-    }, 4000);
-  }
+  if (!img) return;
+
+  const images = Array.from({ length: 10 }, (_, i) => `images/its${i + 1}.jpg`);
+  let current = 0;
+
+  setInterval(() => {
+    current = (current + 1) % images.length;
+    img.style.opacity = 0;
+    setTimeout(() => {
+      img.src = images[current];
+      img.style.opacity = 1;
+    }, 500);
+  }, 4000);
 }
 
-// Initialize everything when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  initSlideshow();
-  
-  // Close modal when clicking outside
-  document.getElementById('waitlist-modal')?.addEventListener('click', function(e) {
-    if (e.target === this) {
-      closeWaitlistModal();
-    }
-  });
 
-  // Make functions globally available
-  window.showWaitlistModal = showWaitlistModal;
-  window.closeWaitlistModal = closeWaitlistModal;
-  window.downloadFile = downloadFile;
+
+window.addEventListener("error", (event) => {
+  logError("unhandled_js_error", {
+    message: event.message,
+    stack: event.error?.stack || null
+  }, {
+    filename: event.filename,
+    lineNumber: event.lineno,
+    columnNumber: event.colno
+  });
+});
+
+window.addEventListener("unhandledrejection", (event) => {
+  logError("unhandled_promise_rejection", {
+    message: event.reason?.message || String(event.reason),
+    stack: event.reason?.stack || null
+  });
+});
+
+
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+  await authReady;
+
+  logPageVisit();
+  initSlideshow();
+
+
+  const arrivedAt = Date.now();
+  window.addEventListener("beforeunload", () => {
+    const secondsOnPage = Math.round((Date.now() - arrivedAt) / 1000);
+    logActivity("page_exit", { secondsOnPage });
+  });
 });

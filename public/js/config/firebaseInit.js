@@ -1,4 +1,3 @@
-// In your firebaseInit.js file
 import {
   initializeApp,
   getApp,
@@ -12,6 +11,7 @@ import {
   signInWithPopup,
   signOut,
   createUserWithEmailAndPassword,
+  signInAnonymously,   // added so the landing page can sign visitors in silently
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
 import {
   collection,
@@ -65,8 +65,8 @@ const firebaseConfig = {
 };
 
 
-
-// Initialize only if no app exists
+// initialise once — if another module already called initializeApp,
+// just reuse that instance rather than creating a second one
 let app;
 if (!getApps().length) {
   app = initializeApp(firebaseConfig);
@@ -80,7 +80,6 @@ export const storage = getStorage(app);
 export const firebaseApp = app;
 const messaging = getMessaging(app);
 
-// Export all auth functions
 export {
   collection,
   orderBy,
@@ -105,6 +104,7 @@ export {
   collectionGroup,
   getAuth,
   createUserWithEmailAndPassword,
+  signInAnonymously,   // exported so index.js can import it from here
   addDoc,
   arrayUnion,
   getStorage,
@@ -120,7 +120,7 @@ export {
   getMetadata,
   Timestamp,
   arrayRemove,
-  getToken, 
+  getToken,
   onMessage,
   messaging
 };

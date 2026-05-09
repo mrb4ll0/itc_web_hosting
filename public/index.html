@@ -1,1131 +1,1142 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>IT Connect - Industrial Training Platform</title>
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-    />
-    <script>
-      // Immediate theme application to prevent flash
-      (function () {
-        const savedTheme = localStorage.getItem("app-theme");
-        const systemDark = window.matchMedia(
-          "(prefers-color-scheme: dark)"
-        ).matches;
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IT Connect — Industrial Training Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+  <script type="module" src="./js/index.js"></script>
 
-        if (savedTheme === "dark" || (!savedTheme && systemDark)) {
-          document.documentElement.classList.add("dark");
-        } else {
-          document.documentElement.classList.remove("dark");
-        }
-      })();
-    </script>
-    <script type="module" src="./js/index.js"></script>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
-    <script>
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              primary: {
-                50: "#f0f4ff",
-                100: "#e0e8ff",
-                500: "#607AFB",
-                600: "#4c63f9",
-                700: "#3a4ef8",
-              },
-              background: {
-                light: "#ffffff",
-                dark: "#0f1323",
-                card: {
-                  light: "#f8fafc",
-                  dark: "#1e293b",
-                },
-              },
-            },
-            fontFamily: {
-              sans: "Inter, system-ui, sans-serif",
-            },
-            borderRadius: {
-              "4xl": "2rem",
-            },
-            animation: {
-              float: "float 6s ease-in-out infinite",
-              gradient: "gradient 15s ease infinite",
-            },
-            keyframes: {
-              float: {
-                "0%, 100%": { transform: "translateY(0px)" },
-                "50%": { transform: "translateY(-20px)" },
-              },
-              gradient: {
-                "0%, 100%": { backgroundPosition: "0% 50%" },
-                "50%": { backgroundPosition: "100% 50%" },
-              },
-            },
-          },
-        },
-      };
-    </script>
-    <style>
-      .glass {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-      }
-      .dark .glass {
-        background: rgba(15, 19, 35, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      .gradient-bg {
-        background: linear-gradient(-45deg, #607afb, #667eea, #764ba2, #667eea);
-        background-size: 400% 400%;
-        animation: gradient 15s ease infinite;
-      }
-    </style>
-  </head>
-  <body
-    class="font-sans text-gray-800 dark:text-gray-200 bg-white dark:bg-background-dark transition-colors duration-300"
-  >
-    <!-- Navigation -->
-    <header class="fixed top-0 w-full z-50 glass border-b border-white/10">
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16 lg:h-20">
-          <!-- Logo -->
-          <div class="flex items-center gap-3">
-            <div class="w-15 h-8 text-blue-500 text-primary animate-bounce">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-                class="size-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
-                />
-              </svg>
-            </div>
-            <div>
-              <h1
-                class="text-xl text-blue-500 font-bold text-gray-900 dark:text-white"
-              >
-                IT Connect
-              </h1>
-              <p class="text-xs text-primary-500 font-medium">
-                Industrial Training Platform
-              </p>
-            </div>
-          </div>
+  <style>
+    /* reset & base */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-          <!-- Desktop Navigation -->
-          <nav class="hidden lg:flex items-center gap-8">
-            <a
-              href="#company-features"
-              class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-500 transition-colors duration-200"
-              >Features</a
-            >
-            <a
-              href="#companies"
-              class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-500 transition-colors duration-200"
-              >Companies</a
-            >
-            <a
-              href="#student-features"
-              class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-500 transition-colors duration-200"
-              >For Students</a
-            >
-            <a
-              href="#company-features"
-              class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-500 transition-colors duration-200"
-              >For Companies</a
-            >
-            <a
-              href="#feedback"
-              class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-500 transition-colors duration-200"
-              >Feedback</a
-            >
-          </nav>
+    :root {
+      --blue: #3563E9;
+      --blue-light: #EEF2FF;
+      --blue-mid: #BFCBFF;
+      --green: #16A34A;
+      --green-light: #DCFCE7;
+      --text: #111827;
+      --text-soft: #6B7280;
+      --text-xsoft: #9CA3AF;
+      --border: #E5E7EB;
+      --surface: #F9FAFB;
+      --white: #FFFFFF;
+      --radius: 14px;
+      --radius-lg: 20px;
+      --shadow: 0 1px 3px rgba(0,0,0,.07), 0 4px 16px rgba(0,0,0,.06);
+      --shadow-md: 0 4px 24px rgba(53,99,233,.15);
+    }
 
-          <!-- CTA Buttons -->
-          <div class="flex items-center gap-1 md:gap-3">
-            <!-- Get Started -->
-            <a
-              href="#download"
-              class="flex items-center justify-center w-8 h-8 md:w-auto md:h-auto px-3 md:px-6 py-2 md:py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-full md:rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg shadow-primary-500/25"
-              title="Get Started"
-            >
-              <span class="material-symbols-outlined text-sm md:hidden"
-                >rocket_launch</span
-              >
-              <span class="hidden md:inline">Download App</span>
+    html { scroll-behavior: smooth; }
 
-              <!-- Arrow icon for desktop -->
-              <svg
-                class="w-4 h-4 ml-1 md:ml-2 hidden md:block"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                />
-              </svg>
-            </a>
-          </div>
-        </div>
-      </div>
-    </header>
+    body {
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
 
-    <!-- Hero Section -->
-    <section
-      class="pt-32 pb-20 lg:pt-40 lg:pb-28 gradient-bg relative overflow-hidden"
-    >
-      <div class="absolute inset-0 bg-black/20"></div>
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="max-w-4xl mx-auto text-center">
-          <div
-            class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-8"
-          >
-            <span
-              class="w-2 h-2 bg-green-400 rounded-full animate-pulse"
-            ></span>
-            <span class="text-sm text-white/90 font-medium"
-              >Trusted by 500+ Companies & 10,000+ Students</span
-            >
-          </div>
+    h1, h2, h3, h4, .logo-name { font-family: 'Sora', sans-serif; }
 
-          <h1
-            class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight"
-          >
-            Launch Your Career with
-            <span
-              class="text-transparent bg-clip-text bg-gradient-to-r from-white to-primary-100"
-              >Perfect IT Placements</span
-            >
-          </h1>
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
 
-          <p
-            class="mt-6 text-xl text-white/80 max-w-2xl mx-auto leading-relaxed"
-          >
-            Connect directly with top companies for industrial training.
-            Streamlined applications, real-time tracking, and career-defining
-            opportunities.
-          </p>
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
 
-          <!-- Updated Download Section -->
-          <div
-            id="download"
-            class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <!-- Download Section with Icons and Descriptions -->
-            <div id="download" class="mt-10">
-              <div class="text-center mb-8">
-                <h3 class="text-xl font-semibold text-white mb-2">
-                  Download Our Apps
-                </h3>
-                <p class="text-white/80">Choose the right app for your needs</p>
-              </div>
+    /* ---- NAV ---- */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
 
-              <div
-                class="flex flex-col md:flex-row items-center justify-center gap-6"
-              >
-                <!-- Student App Card -->
-                <div
-                  class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 max-w-sm w-full"
-                >
-                  <div class="flex flex-col items-center text-center">
-                    <div
-                      class="w-16 h-16 bg-green-500/20 rounded-2xl flex items-center justify-center mb-4"
-                    >
-                      <svg
-                        class="w-8 h-8 text-green-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M12 14l9-5-9-5-9 5 9 5z"
-                        />
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
-                        />
-                      </svg>
-                    </div>
-                    <h4 class="text-lg font-bold text-white mb-2">
-                      Student App
-                    </h4>
-                    <p class="text-white/80 text-sm mb-4">
-                      For students seeking industrial training opportunities
-                    </p>
-                    <button
-                      onclick="downloadFile('itconnect-2.0.6.apk', 'Student Application')"
-                      class="w-full px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-xl transition-all duration-300 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl"
-                    >
-                      Download Now
-                    </button>
-                  </div>
-                </div>
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
 
-                <!-- Company App Card -->
-                <div
-                  class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 max-w-sm w-full"
-                >
-                  <div class="flex flex-col items-center text-center">
-                    <div
-                      class="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-4"
-                    >
-                      <svg
-                        class="w-8 h-8 text-blue-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                        />
-                      </svg>
-                    </div>
-                    <h4 class="text-lg font-bold text-white mb-2">
-                      Company App
-                    </h4>
-                    <p class="text-white/80 text-sm mb-4">
-                      For companies looking to hire and manage interns
-                    </p>
-                    <button
-                      onclick="downloadFile('itccompany-2.0.1.apk', 'Company Application')"
-                      class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl transition-all duration-300 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl"
-                    >
-                      Download Now
-                    </button>
-                  </div>
-                </div>
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-                <!-- iOS Waitlist Card -->
-                <div
-                  class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 max-w-sm w-full"
-                >
-                  <div class="flex flex-col items-center text-center">
-                    <div
-                      class="w-16 h-16 bg-gray-500/20 rounded-2xl flex items-center justify-center mb-4"
-                    >
-                      <svg
-                        class="w-8 h-8 text-gray-300"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M12 14l9-5-9-5-9 5 9 5zm0 0v6"
-                        />
-                      </svg>
-                    </div>
-                    <h4 class="text-lg font-bold text-white mb-2">
-                      iOS Version
-                    </h4>
-                    <p class="text-white/80 text-sm mb-4">
-                      Coming soon for iPhone and iPad users
-                    </p>
-                    <button
-                      onclick="showWaitlistModal()"
-                      class="w-full px-6 py-3 bg-gradient-to-r from-gray-800 to-black dark:from-gray-700 dark:to-gray-900 text-white font-semibold rounded-xl transition-all duration-300 hover:from-gray-900 hover:to-black shadow-lg hover:shadow-xl"
-                    >
-                      Join Waitlist
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--blue);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-          <!-- Description -->
-          <div class="mt-12 max-w-3xl mx-auto">
-            <div
-              class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20"
-            >
-              <h3 class="text-xl font-bold text-white mb-3">
-                Platform Description
-              </h3>
-              <p class="text-white/90 leading-relaxed">
-                IT Connect is a comprehensive industrial training platform that
-                bridges the gap between students seeking practical experience
-                and companies looking for talented interns. Our mobile
-                applications provide direct connectivity, real-time updates, and
-                a seamless experience for both students and companies without
-                the need for web-based login systems.
-              </p>
-            </div>
-          </div>
+    .logo-icon svg { width: 20px; height: 20px; color: #fff; }
 
-          <!-- Stats -->
-          <div
-            class="mt-16 grid grid-cols-2 lg:grid-cols-4 gap-8 max-w-2xl mx-auto"
-          >
-            <div class="text-center">
-              <div class="text-3xl font-bold text-white">500+</div>
-              <div class="text-white/70 text-sm mt-1">Partner Companies</div>
-            </div>
-            <div class="text-center">
-              <div class="text-3xl font-bold text-white">10K+</div>
-              <div class="text-white/70 text-sm mt-1">Students Placed</div>
-            </div>
-            <div class="text-center">
-              <div class="text-3xl font-bold text-white">95%</div>
-              <div class="text-white/70 text-sm mt-1">Success Rate</div>
-            </div>
-            <div class="text-center">
-              <div class="text-3xl font-bold text-white">24/7</div>
-              <div class="text-white/70 text-sm mt-1">Support</div>
-            </div>
-          </div>
-        </div>
-      </div>
+    .logo-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+    }
 
-      <!-- Floating Elements -->
-      <div
-        class="absolute top-1/4 left-10 w-4 h-4 bg-white/30 rounded-full animate-float"
-      ></div>
-      <div
-        class="absolute top-1/3 right-20 w-6 h-6 bg-primary-300/40 rounded-full animate-float"
-        style="animation-delay: -2s"
-      ></div>
-      <div
-        class="absolute bottom-1/4 left-1/4 w-3 h-3 bg-white/20 rounded-full animate-float"
-        style="animation-delay: -4s"
-      ></div>
-    </section>
+    .logo-sub {
+      font-size: 11px;
+      color: var(--text-soft);
+      font-weight: 400;
+      letter-spacing: .3px;
+    }
 
-    <!-- Student Features Section -->
-    <section
-      id="student-features"
-      class="py-20 lg:py-28 bg-background-card-light dark:bg-background-card-dark"
-    >
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center max-w-3xl mx-auto mb-16">
-          <h2
-            class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6"
-          >
-            Features for <span class="text-primary-500">Students</span>
-          </h2>
-          <p class="text-lg text-gray-600 dark:text-gray-400">
-            Everything you need to find and secure the perfect industrial
-            training placement
-          </p>
-        </div>
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <!-- Feature 1 -->
-          <div
-            class="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-primary-500/20"
-          >
-            <div
-              class="w-14 h-14 bg-primary-50 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
-            >
-              <svg
-                class="w-7 h-7 text-primary-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
-              Browse Applications
-            </h3>
-            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-              Explore hundreds of industrial training opportunities from top
-              companies across various industries
-            </p>
-          </div>
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-soft);
+      transition: color .2s;
+    }
 
-          <!-- Feature 2 -->
-          <div
-            class="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-primary-500/20"
-          >
-            <div
-              class="w-14 h-14 bg-primary-50 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
-            >
-              <svg
-                class="w-7 h-7 text-primary-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
-              Featured Companies
-            </h3>
-            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-              View profiles of featured companies, their requirements, and
-              available training positions
-            </p>
-          </div>
+    .nav-links a:hover { color: var(--blue); }
 
-          <!-- Feature 3 -->
-          <div
-            class="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-primary-500/20"
-          >
-            <div
-              class="w-14 h-14 bg-primary-50 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
-            >
-              <svg
-                class="w-7 h-7 text-primary-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
-              Direct Chat with Companies
-            </h3>
-            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-              Communicate directly with company representatives through
-              integrated chat functionality
-            </p>
-          </div>
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      border: none;
+      transition: all .2s;
+    }
 
-          <!-- Feature 4 -->
-          <div
-            class="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-primary-500/20"
-          >
-            <div
-              class="w-14 h-14 bg-primary-50 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
-            >
-              <svg
-                class="w-7 h-7 text-primary-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
-                />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
-              Community Access
-            </h3>
-            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-              Access community forums for feedback, tips, and advice from
-              admins, students, and companies
-            </p>
-          </div>
+    .btn-primary {
+      background: var(--blue);
+      color: #fff;
+    }
 
-          <!-- Feature 5 -->
-          <div
-            class="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-primary-500/20"
-          >
-            <div
-              class="w-14 h-14 bg-primary-50 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
-            >
-              <svg
-                class="w-7 h-7 text-primary-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
-              Application Tracking
-            </h3>
-            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-              Track your application status (Accepted, Rejected, Pending) in
-              real-time
-            </p>
-          </div>
+    .btn-primary:hover {
+      background: #2852d8;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
 
-          <!-- Feature 6 -->
-          <div
-            class="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-primary-500/20"
-          >
-            <div
-              class="w-14 h-14 bg-primary-50 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
-            >
-              <svg
-                class="w-7 h-7 text-primary-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
-              Completion Status
-            </h3>
-            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-              View and manage students who have completed their IT training
-              successfully
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
+    .btn-outline {
+      background: transparent;
+      color: var(--blue);
+      border: 1.5px solid var(--blue-mid);
+    }
 
-    <!-- Company Features Section -->
-    <section id="company-features" class="py-20 lg:py-28">
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center max-w-3xl mx-auto mb-16">
-          <h2
-            class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6"
-          >
-            Features for <span class="text-primary-500">Companies</span>
-          </h2>
-          <p class="text-lg text-gray-600 dark:text-gray-400">
-            Powerful tools to manage your industrial training programs
-            efficiently
-          </p>
-        </div>
+    .btn-outline:hover {
+      background: var(--blue-light);
+    }
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <!-- Feature 1 -->
-          <div
-            class="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-primary-500/20"
-          >
-            <div
-              class="w-14 h-14 bg-primary-50 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
-            >
-              <svg
-                class="w-7 h-7 text-primary-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
-              Student Management
-            </h3>
-            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-              Manage all student categories: Accepted, Rejected, Pending,
-              Current, Upcoming, and Completed IT students
-            </p>
-          </div>
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
 
-          <!-- Feature 2 -->
-          <div
-            class="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-primary-500/20"
-          >
-            <div
-              class="w-14 h-14 bg-primary-50 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
-            >
-              <svg
-                class="w-7 h-7 text-primary-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
-              Direct Student Chat
-            </h3>
-            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-              Communicate directly with students through built-in chat for
-              interviews and follow-ups
-            </p>
-          </div>
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 4px;
+      transition: all .3s;
+    }
 
-          <!-- Feature 3 -->
-          <div
-            class="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-primary-500/20"
-          >
-            <div
-              class="w-14 h-14 bg-primary-50 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
-            >
-              <svg
-                class="w-7 h-7 text-primary-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
-                />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
-              Community Engagement
-            </h3>
-            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-              Participate in community discussions, share feedback, and provide
-              tips to students
-            </p>
-          </div>
+    /* ---- HERO ---- */
+    .hero {
+      padding: 80px 0 64px;
+      text-align: center;
+      background: linear-gradient(180deg, #F0F4FF 0%, #FFFFFF 100%);
+    }
 
-          <!-- Feature 4 -->
-          <div
-            class="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-primary-500/20"
-          >
-            <div
-              class="w-14 h-14 bg-primary-50 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
-            >
-              <svg
-                class="w-7 h-7 text-primary-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
-              Application Review
-            </h3>
-            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-              Review and manage incoming student applications efficiently
-            </p>
-          </div>
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 13px;
+      color: var(--text-soft);
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+    }
 
-          <!-- Feature 5 -->
-          <div
-            class="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-primary-500/20"
-          >
-            <div
-              class="w-14 h-14 bg-primary-50 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
-            >
-              <svg
-                class="w-7 h-7 text-primary-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
-              Training Program Management
-            </h3>
-            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-              Create and manage industrial training programs and track student
-              progress
-            </p>
-          </div>
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
 
-          <!-- Feature 6 -->
-          <div
-            class="group p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 hover:border-primary-500/20"
-          >
-            <div
-              class="w-14 h-14 bg-primary-50 dark:bg-primary-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
-            >
-              <svg
-                class="w-7 h-7 text-primary-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
-              Feedback & Reporting
-            </h3>
-            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-              Provide feedback to students and generate reports on training
-              outcomes
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .6; transform: scale(.85); }
+    }
 
-    <!-- Feedback Section -->
-    <section
-      id="feedback"
-      class="py-20 lg:py-28 bg-background-card-light dark:bg-background-card-dark"
-    >
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="max-w-2xl mx-auto">
-          <div class="text-center mb-12">
-            <h2
-              class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6"
-            >
-              Share Your <span class="text-primary-500">Feedback</span>
-            </h2>
-            <p class="text-lg text-gray-600 dark:text-gray-400">
-              We value your input. Share your questions, suggestions, or
-              feedback with us.
-            </p>
-          </div>
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 56px);
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.15;
+      letter-spacing: -.02em;
+      max-width: 760px;
+      margin: 0 auto 20px;
+    }
 
-          <div
-            class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700"
-          >
-            <form id="feedback-form" class="space-y-6">
-              <div>
-                <label
-                  for="email"
-                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  required
-                  class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                  placeholder="your@email.com"
-                />
-              </div>
+    .hero h1 span {
+      color: var(--blue);
+    }
 
-              <div>
-                <label
-                  for="message"
-                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
-                  Your Feedback or Question *
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  rows="6"
-                  required
-                  class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 resize-none"
-                  placeholder="Share your thoughts, questions, or suggestions..."
-                ></textarea>
-              </div>
+    .hero p {
+      font-size: 18px;
+      color: var(--text-soft);
+      max-width: 520px;
+      margin: 0 auto 40px;
+      font-weight: 300;
+    }
 
-              <div class="flex items-center justify-between">
-                <div class="text-sm text-gray-500 dark:text-gray-400">
-                  We'll respond within 24-48 hours
-                </div>
-                <button
-                  type="submit"
-                  class="px-8 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg shadow-primary-500/25"
-                >
-                  Submit Feedback
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </section>
+    /* ---- STATS ---- */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      margin-top: 56px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--white);
+      box-shadow: var(--shadow);
+      max-width: 580px;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
-    <!-- Companies Section -->
-    <section id="companies" class="py-20 lg:py-28">
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center max-w-3xl mx-auto mb-16">
-          <h2
-            class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6"
-          >
-            Trusted by Leading
-            <span class="text-primary-500">Companies</span>
-          </h2>
-          <p class="text-lg text-gray-600 dark:text-gray-400">
-            Join hundreds of companies that trust IT Connect for their
-            industrial training programs
-          </p>
-        </div>
+    .stat {
+      flex: 1;
+      padding: 20px 16px;
+      text-align: center;
+      border-right: 1px solid var(--border);
+    }
 
-        <!-- Company Logos Grid -->
-        <div
-          class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center opacity-60"
-        >
-          <!-- Add company logos here -->
-          <div class="flex items-center justify-center h-16">
-            <div class="text-2xl font-bold text-gray-400">Google</div>
-          </div>
-          <div class="flex items-center justify-center h-16">
-            <div class="text-2xl font-bold text-gray-400">Microsoft</div>
-          </div>
-          <div class="flex items-center justify-center h-16">
-            <div class="text-2xl font-bold text-gray-400">Amazon</div>
-          </div>
-          <div class="flex items-center justify-center h-16">
-            <div class="text-2xl font-bold text-gray-400">Apple</div>
-          </div>
-          <div class="flex items-center justify-center h-16">
-            <div class="text-2xl font-bold text-gray-400">Meta</div>
-          </div>
-          <div class="flex items-center justify-center h-16">
-            <div class="text-2xl font-bold text-gray-400">Netflix</div>
-          </div>
-        </div>
-      </div>
-    </section>
+    .stat:last-child { border-right: none; }
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-16">
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div class="md:col-span-2">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="w-15 h-8 text-blue-500 text-primary animate-bounce">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  class="size-6"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h1 class="text-xl font-bold">IT Connect</h1>
-                <p class="text-primary-400 text-sm font-medium">
-                  Industrial Training Platform
-                </p>
-              </div>
-            </div>
-            <p class="text-gray-400 max-w-md leading-relaxed">
-              Connecting students with industry leaders for meaningful
-              industrial training experiences that launch careers.
-            </p>
-          </div>
+    .stat-value {
+      font-family: 'Sora', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--blue);
+    }
 
-          <div>
-            <h3 class="font-semibold text-white mb-4">Download</h3>
-            <ul class="space-y-2 text-gray-400">
-              <li>
-                <a href="#download" class="hover:text-white transition-colors"
-                  >Student App</a
-                >
-              </li>
-              <li>
-                <a href="#download" class="hover:text-white transition-colors"
-                  >Company App</a
-                >
-              </li>
-              <li>
-                <button
-                  onclick="showWaitlistModal()"
-                  class="hover:text-white transition-colors text-left"
-                >
-                  iOS Waitlist
-                </button>
-              </li>
-            </ul>
-          </div>
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-soft);
+      margin-top: 3px;
+      font-weight: 400;
+    }
 
-          <div>
-            <h3 class="font-semibold text-white mb-4">Support</h3>
-            <ul class="space-y-2 text-gray-400">
-              <li>
-                <a href="#feedback" class="hover:text-white transition-colors"
-                  >Feedback</a
-                >
-              </li>
-              <li>
-                <a href="#company-features" class="hover:text-white transition-colors"
-                  >Features</a
-                >
-              </li>
-              <li>
-                <a
-                  href="#student-features"
-                  class="hover:text-white transition-colors"
-                  >For Students</a
-                >
-              </li>
-              <li>
-                <a
-                  href="#company-features"
-                  class="hover:text-white transition-colors"
-                  >For Companies</a
-                >
-              </li>
-            </ul>
-          </div>
-        </div>
+    /* ---- DOWNLOAD ---- */
+    #download {
+      padding: 80px 0;
+    }
 
-        <div
-          class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center"
-        >
-          <p class="text-gray-400 text-sm">
-            © 2025 IT Connect. All rights reserved.
-          </p>
-          <div class="flex gap-6 mt-4 md:mt-0">
-            <a
-              href="#"
-              class="text-gray-400 hover:text-white transition-colors"
-            >
-              <span class="sr-only">Twitter</span>
-              <!-- Twitter icon -->
-            </a>
-            <a
-              href="#"
-              class="text-gray-400 hover:text-white transition-colors"
-            >
-              <span class="sr-only">LinkedIn</span>
-              <!-- LinkedIn icon -->
-            </a>
-            <a
-              href="#"
-              class="text-gray-400 hover:text-white transition-colors"
-            >
-              <span class="sr-only">Facebook</span>
-              <!-- Facebook icon -->
-            </a>
-          </div>
-        </div>
-      </div>
-    </footer>
+    .section-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
 
-    <!-- iOS Waitlist Modal -->
-    <div
-      id="waitlist-modal"
-      class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/50"
-    >
-      <div
-        class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all"
-      >
-        <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-gray-900 dark:text-white">
-            Join iOS Waitlist
-          </h3>
-          <button
-            onclick="closeWaitlistModal()"
-            class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-          >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 10px;
+    }
+
+    .section-header h2 {
+      font-size: clamp(26px, 3.5vw, 38px);
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -.02em;
+      margin-bottom: 12px;
+    }
+
+    .section-header p {
+      font-size: 16px;
+      color: var(--text-soft);
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    .download-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .app-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      transition: transform .25s, box-shadow .25s;
+    }
+
+    .app-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(0,0,0,.1);
+    }
+
+    .app-card.featured {
+      border-color: var(--blue);
+      border-width: 1.5px;
+      background: linear-gradient(160deg, #F0F4FF, var(--white));
+    }
+
+    .app-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+
+    .app-icon svg { width: 28px; height: 28px; }
+
+    .app-icon.student { background: var(--green-light); color: var(--green); }
+    .app-icon.company { background: var(--blue-light); color: var(--blue); }
+    .app-icon.ios { background: var(--surface); color: var(--text-soft); }
+
+    .app-card h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .app-card p {
+      font-size: 14px;
+      color: var(--text-soft);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .btn-green {
+      background: var(--green);
+      color: #fff;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .btn-green:hover {
+      background: #15803d;
+      transform: translateY(-1px);
+    }
+
+    .btn-blue-full {
+      background: var(--blue);
+      color: #fff;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .btn-blue-full:hover {
+      background: #2852d8;
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      background: var(--surface);
+      color: var(--text-soft);
+      border: 1px solid var(--border);
+      width: 100%;
+      justify-content: center;
+    }
+
+    .btn-ghost:hover {
+      background: var(--border);
+      color: var(--text);
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      padding: 3px 10px;
+      border-radius: 100px;
+      margin-bottom: 12px;
+    }
+
+    .tag-green { background: var(--green-light); color: var(--green); }
+    .tag-blue { background: var(--blue-light); color: var(--blue); }
+    .tag-gray { background: var(--surface); color: var(--text-soft); }
+
+    /* ---- FEATURES ---- */
+    .features-section {
+      padding: 80px 0;
+      background: var(--surface);
+    }
+
+    .features-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 48px;
+    }
+
+    .tab-btn {
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 9px 22px;
+      border-radius: 100px;
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--text-soft);
+      transition: all .2s;
+    }
+
+    .tab-btn.active, .tab-btn:hover {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .feature-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .feature-card:hover {
+      border-color: var(--blue-mid);
+      box-shadow: 0 4px 20px rgba(53,99,233,.08);
+    }
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--blue-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      color: var(--blue);
+    }
+
+    .feature-icon svg { width: 22px; height: 22px; }
+
+    .feature-card h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      color: var(--text-soft);
+      line-height: 1.55;
+    }
+
+    /* ---- COMPANIES ---- */
+    .companies-section {
+      padding: 64px 0;
+      text-align: center;
+    }
+
+    .companies-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-xsoft);
+      margin-bottom: 28px;
+    }
+
+    .logos-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+
+    .logo-item {
+      font-family: 'Sora', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-xsoft);
+      letter-spacing: -.01em;
+      transition: color .2s;
+    }
+
+    .logo-item:hover { color: var(--text-soft); }
+
+    /* ---- FEEDBACK ---- */
+    .feedback-section {
+      padding: 80px 0;
+      background: var(--surface);
+    }
+
+    .feedback-card {
+      max-width: 560px;
+      margin: 0 auto;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      box-shadow: var(--shadow);
+    }
+
+    .form-group { margin-bottom: 20px; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 7px;
+    }
+
+    input, textarea {
+      width: 100%;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      resize: none;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(53,99,233,.12);
+      background: var(--white);
+    }
+
+    .form-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+    }
+
+    .form-note {
+      font-size: 13px;
+      color: var(--text-xsoft);
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      background: #0D1117;
+      color: #8B949E;
+      padding: 56px 0 32px;
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 48px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid #21262D;
+    }
+
+    .footer-logo .logo-name { color: #E6EDF3; }
+    .footer-logo .logo-sub { color: #8B949E; }
+
+    .footer-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      margin-top: 12px;
+      max-width: 320px;
+    }
+
+    .footer-col h4 {
+      font-family: 'Sora', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #E6EDF3;
+      margin-bottom: 16px;
+      letter-spacing: .02em;
+    }
+
+    .footer-col ul { list-style: none; }
+
+    .footer-col li { margin-bottom: 10px; }
+
+    .footer-col a, .footer-col button {
+      font-size: 14px;
+      color: #8B949E;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      padding: 0;
+      transition: color .2s;
+    }
+
+    .footer-col a:hover, .footer-col button:hover { color: #E6EDF3; }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 24px;
+      font-size: 13px;
+    }
+
+    /* ---- MODAL ---- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,.45);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.2);
+      animation: slideUp .25s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .modal-header h3 {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--surface);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-soft);
+      transition: background .2s;
+    }
+
+    .modal-close:hover { background: var(--border); }
+    .modal-close svg { width: 16px; height: 16px; }
+
+    .modal p {
+      font-size: 14px;
+      color: var(--text-soft);
+      margin-bottom: 24px;
+    }
+
+    /* ---- SPINNER ---- */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 900px) {
+      .download-grid { grid-template-columns: 1fr 1fr; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .download-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; gap: 32px; }
+      .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+      .stats { flex-direction: column; }
+      .stat { border-right: none; border-bottom: 1px solid var(--border); }
+      .stat:last-child { border-bottom: none; }
+      .form-footer { flex-direction: column; align-items: flex-start; gap: 12px; }
+    }
+
+    /* mobile nav */
+    .mobile-nav {
+      display: none;
+      flex-direction: column;
+      border-top: 1px solid var(--border);
+      padding: 16px 24px;
+      background: var(--white);
+    }
+
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a {
+      padding: 10px 0;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-soft);
+      border-bottom: 1px solid var(--surface);
+    }
+    .mobile-nav a:last-of-type { border-bottom: none; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="container">
+      <nav>
+        <a href="/" class="logo">
+          <div class="logo-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.63 8.41m5.96 5.96a14.926 14.926 0 01-5.84 2.58m-.12-8.54a6 6 0 00-7.38 5.84h4.8m2.58-5.84a14.927 14.927 0 00-2.58 5.84m2.7 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
             </svg>
-          </button>
+          </div>
+          <div>
+            <div class="logo-name">IT Connect</div>
+            <div class="logo-sub">Industrial Training Platform</div>
+          </div>
+        </a>
+
+        <ul class="nav-links">
+          <li><a href="#download">Download</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#companies">Companies</a></li>
+          <li><a href="#feedback">Feedback</a></li>
+        </ul>
+
+        <div class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </div>
+      </nav>
+    </div>
+    <div class="mobile-nav" id="mobile-nav">
+      <a href="#download" onclick="closeMobileNav()">Download</a>
+      <a href="#features" onclick="closeMobileNav()">Features</a>
+      <a href="#companies" onclick="closeMobileNav()">Companies</a>
+      <a href="#feedback" onclick="closeMobileNav()">Feedback</a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Trusted by 500+ companies and 10,000+ students
+      </div>
+
+      <h1>Launch Your Career with <span>Perfect IT Placements</span></h1>
+      <p>Connect directly with top companies for industrial training. Real-time tracking and career-defining opportunities, right in your pocket.</p>
+
+      <a href="#download" class="btn btn-primary" style="font-size:15px; padding: 13px 28px; border-radius:12px;">
+        Download the App
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+      </a>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value">500+</div>
+          <div class="stat-label">Partner Companies</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">10K+</div>
+          <div class="stat-label">Students Placed</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">95%</div>
+          <div class="stat-label">Success Rate</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">24/7</div>
+          <div class="stat-label">Support</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD -->
+  <section id="download">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">Get the App</div>
+        <h2>Download IT Connect</h2>
+        <p>Choose the right app for your role and get started today.</p>
+      </div>
+
+      <div class="download-grid">
+        <!-- Student App -->
+        <div class="app-card featured">
+          <span class="tag tag-green">For Students</span>
+          <div class="app-icon student">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+          </div>
+          <h3>Student App</h3>
+          <p>Find training opportunities, track applications, and chat directly with companies.</p>
+          <a href="https://play.google.com/store/apps/details?id=com.mrb4ll0.it_connect" target="_blank" rel="noopener noreferrer" class="btn btn-green" onclick="trackPlayStoreClick('IT Connect Student App', 'com.mrb4ll0.it_connect')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.76c.3.17.64.24.99.2l12.6-7.27-2.72-2.72-10.87 9.79zm-1.9-20.7A1.99 1.99 0 001 4.5v15c0 .45.13.87.37 1.22l.07.08 8.4-8.4v-.2L1.28 3.06zm17.52 8.26-2.72-1.57-3.02 3.02 3.02 3.02 2.74-1.58c.78-.45.78-1.44-.02-1.89zM4.17.24L16.77 7.5l-2.72 2.72L3.18.44A1.5 1.5 0 014.17.24z"/></svg>
+            Get it on Google Play
+          </a>
         </div>
 
-        <p class="text-gray-600 dark:text-gray-400 mb-6">
-          Be the first to know when our iOS app launches. Enter your email to
-          join the waitlist.
-        </p>
-
-        <form id="waitlist-form" class="space-y-4">
-          <div>
-            <label
-              for="waitlist-email"
-              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-            >
-              Email Address *
-            </label>
-            <input
-              type="email"
-              id="waitlist-email"
-              name="email"
-              required
-              class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-              placeholder="your@email.com"
-            />
+        <!-- Company App -->
+        <div class="app-card">
+          <span class="tag tag-blue">For Companies</span>
+          <div class="app-icon company">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
           </div>
+          <h3>Company App</h3>
+          <p>Manage intern applications, review candidates, and track training programs.</p>
+          <a href="https://play.google.com/store/apps/details?id=com.itc_institute_admin.itc_institute_admin" target="_blank" rel="noopener noreferrer" class="btn btn-blue-full" onclick="trackPlayStoreClick('ITC Company App', 'com.itc_institute_admin.itc_institute_admin')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.76c.3.17.64.24.99.2l12.6-7.27-2.72-2.72-10.87 9.79zm-1.9-20.7A1.99 1.99 0 001 4.5v15c0 .45.13.87.37 1.22l.07.08 8.4-8.4v-.2L1.28 3.06zm17.52 8.26-2.72-1.57-3.02 3.02 3.02 3.02 2.74-1.58c.78-.45.78-1.44-.02-1.89zM4.17.24L16.77 7.5l-2.72 2.72L3.18.44A1.5 1.5 0 014.17.24z"/></svg>
+            Get it on Google Play
+          </a>
+        </div>
 
-          <button
-            type="submit"
-            class="w-full px-8 py-3 bg-gradient-to-r from-gray-800 to-black dark:from-gray-700 dark:to-gray-900 text-white font-semibold rounded-xl transition-all duration-300 hover:from-gray-900 hover:to-black shadow-lg"
-          >
+        <!-- iOS -->
+        <div class="app-card">
+          <span class="tag tag-gray">Coming Soon</span>
+          <div class="app-icon ios">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+          </div>
+          <h3>iOS Version</h3>
+          <p>We're working on bringing IT Connect to iPhone and iPad. Join the waitlist.</p>
+          <button onclick="showWaitlistModal()" class="btn btn-ghost">
             Join Waitlist
           </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features" class="features-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">Features</div>
+        <h2>Everything You Need</h2>
+        <p>Built for students and companies to make industrial training simple.</p>
+      </div>
+
+      <div class="features-tabs">
+        <button class="tab-btn active" onclick="switchTab('students', this)">For Students</button>
+        <button class="tab-btn" onclick="switchTab('companies', this)">For Companies</button>
+      </div>
+
+      <!-- Student Features -->
+      <div id="tab-students" class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+          <h3>Browse Opportunities</h3>
+          <p>Explore hundreds of industrial training positions across various industries.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          </div>
+          <h3>Featured Companies</h3>
+          <p>View company profiles, their requirements, and available training positions.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+          </div>
+          <h3>Direct Chat</h3>
+          <p>Message company representatives directly without leaving the app.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          </div>
+          <h3>Application Tracking</h3>
+          <p>See your application status — Accepted, Rejected, or Pending — in real time.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/></svg>
+          </div>
+          <h3>Community Access</h3>
+          <p>Connect with other students and get tips from companies and admins.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3>Completion Status</h3>
+          <p>Track and view your training completion records from one place.</p>
+        </div>
+      </div>
+
+      <!-- Company Features -->
+      <div id="tab-companies" class="features-grid" style="display:none;">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <h3>Student Management</h3>
+          <p>Manage all student categories — Accepted, Rejected, Pending, Current, and Completed.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+          </div>
+          <h3>Direct Student Chat</h3>
+          <p>Communicate with students directly for interviews and follow-up questions.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          </div>
+          <h3>Application Review</h3>
+          <p>Review incoming student applications and make decisions quickly.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          </div>
+          <h3>Training Programs</h3>
+          <p>Create and manage training programs and track student progress throughout.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          </div>
+          <h3>Feedback & Reports</h3>
+          <p>Give structured feedback to students and generate training outcome reports.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/></svg>
+          </div>
+          <h3>Community Engagement</h3>
+          <p>Share advice and participate in discussions with students and admins.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPANIES -->
+  <section id="companies" class="companies-section">
+    <div class="container">
+      <p class="companies-label">Trusted by leading companies</p>
+      <div class="logos-row">
+        <span class="logo-item">Google</span>
+        <span class="logo-item">Microsoft</span>
+        <span class="logo-item">Amazon</span>
+        <span class="logo-item">Apple</span>
+        <span class="logo-item">Meta</span>
+        <span class="logo-item">Netflix</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEEDBACK -->
+  <section id="feedback" class="feedback-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">Get in Touch</div>
+        <h2>Share Your Feedback</h2>
+        <p>Questions, suggestions, or ideas — we read everything and respond within 48 hours.</p>
+      </div>
+
+      <div class="feedback-card">
+        <form id="feedback-form">
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" required />
+          </div>
+          <div class="form-group">
+            <label for="message">Your Message</label>
+            <textarea id="message" name="message" rows="5" placeholder="Share your thoughts or questions..." required></textarea>
+          </div>
+          <div class="form-footer">
+            <span class="form-note">We'll respond within 24–48 hours</span>
+            <button type="submit" class="btn btn-primary">
+              Send Message
+            </button>
+          </div>
         </form>
       </div>
     </div>
-  </body>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-top">
+        <div>
+          <div class="logo footer-logo" style="margin-bottom:0">
+            <div class="logo-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.63 8.41m5.96 5.96a14.926 14.926 0 01-5.84 2.58m-.12-8.54a6 6 0 00-7.38 5.84h4.8m2.58-5.84a14.927 14.927 0 00-2.58 5.84m2.7 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+              </svg>
+            </div>
+            <div>
+              <div class="logo-name">IT Connect</div>
+              <div class="logo-sub">Industrial Training Platform</div>
+            </div>
+          </div>
+          <p class="footer-desc">Connecting students with industry leaders for meaningful industrial training experiences that launch careers.</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Download</h4>
+          <ul>
+            <li><a href="#download">Student App</a></li>
+            <li><a href="#download">Company App</a></li>
+            <li><button onclick="showWaitlistModal()">iOS Waitlist</button></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#companies">Companies</a></li>
+            <li><a href="#feedback">Feedback</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2025 IT Connect. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- WAITLIST MODAL -->
+  <div class="modal-overlay" id="waitlist-modal" onclick="handleOverlayClick(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Join iOS Waitlist</h3>
+        <button class="modal-close" onclick="closeWaitlistModal()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p>Be the first to know when our iOS app launches. We'll send you a notification as soon as it's ready.</p>
+      <form id="waitlist-form">
+        <div class="form-group">
+          <label for="waitlist-email">Email Address</label>
+          <input type="email" id="waitlist-email" name="email" placeholder="you@example.com" required />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:8px;">
+          Join Waitlist
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // mobile nav toggle
+    document.getElementById('hamburger').addEventListener('click', function () {
+      document.getElementById('mobile-nav').classList.toggle('open');
+    });
+
+    function closeMobileNav() {
+      document.getElementById('mobile-nav').classList.remove('open');
+    }
+
+    // feature tabs
+    function switchTab(tab, btn) {
+      document.getElementById('tab-students').style.display = tab === 'students' ? 'grid' : 'none';
+      document.getElementById('tab-companies').style.display = tab === 'companies' ? 'grid' : 'none';
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    // waitlist modal
+    function showWaitlistModal() {
+      document.getElementById('waitlist-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeWaitlistModal() {
+      document.getElementById('waitlist-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function handleOverlayClick(e) {
+      if (e.target === e.currentTarget) closeWaitlistModal();
+    }
+
+    // expose globals so the JS module can reference them
+    window.showWaitlistModal = showWaitlistModal;
+    window.closeWaitlistModal = closeWaitlistModal;
+  </script>
+</body>
 </html>
