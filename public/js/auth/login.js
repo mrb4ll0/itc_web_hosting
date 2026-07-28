@@ -1,13 +1,18 @@
-import { requestWebPushPermission } from "../../notification.js";
 import {
   auth,
   GoogleAuthProvider,
   signInWithEmailAndPassword,
   signInWithPopup,
-  onAuthStateChanged,
+  sendPasswordResetEmail,
+  signOut,
 } from "../config/firebaseInit.js";
 import { StudentCloudDB } from "../fireabase/StudentCloud.js";
 import { Student } from "../model/Student.js";
+import {
+  persistAccountRole,
+  redirectForRole,
+  resolveAccountRole,
+} from "./authRoleService.js";
 const studentCloudDB = new StudentCloudDB();
 
 class Login {
@@ -153,12 +158,7 @@ class Login {
     }
 
     try {
-      // You'll need to import sendPasswordResetEmail from Firebase Auth
-      const { sendPasswordResetEmail } = await import(
-        "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js"
-      );
-
-      await sendPasswordResetEmail(auth, email);
+      await sendPasswordResetEmail(this.auth, email);
       this.showNotification(
         "Password reset email sent! Check your inbox.",
         "success"
@@ -257,24 +257,21 @@ class Login {
       }
 
       const student = Student.fromUserCredential(userCredential);
-      const studentC = await studentCloudDB.getStudentById(student.uid);
-
-      if (!studentC) {
-        this.showNotification("Student account not found in system.", "error");
-        this.resetLoginButton();
+      const account = await resolveAccountRole(userCredential.user);
+      if (account.role !== "student") {
+        persistAccountRole(account, userCredential.user);
+        this.showNotification(
+          `This is a ${account.role} account. Redirecting to the correct dashboard...`,
+          "success"
+        );
+        setTimeout(() => redirectForRole(account), 600);
         return;
       }
-
-      if (!student) {
-        this.showNotification("No user found.", "error");
-        this.resetLoginButton();
-        return;
-      }
-         await requestWebPushPermission();
          
       this.showNotification("Welcome " + email, "success");
       this.rememberUser(email);
       localStorage.setItem("student", JSON.stringify(student));
+      persistAccountRole(account, userCredential.user);
 
       // Use small delay to ensure notification is seen
       setTimeout(() => {
@@ -282,6 +279,7 @@ class Login {
       }, 1000);
     } catch (error) {
       console.error("Login error:", error);
+      if (error.code?.startsWith("account/")) await signOut(this.auth);
 
       let errorMessage = "Login failed. ";
 
@@ -345,25 +343,22 @@ class Login {
 
       this.showNotification(`Signed in as ${user.displayName}`, "success");
 
-      const student = {
-        email: user.email,
-        name: user.displayName,
-        uid: user.uid,
-      };
-      localStorage.setItem("student", JSON.stringify(student));
-
-      // Check if student exists in database
-      const studentC = await studentCloudDB.getStudentById(user.uid);
-      if (!studentC) {
-        this.showNotification("Student account "+user.email+" not found in system.", "error");
+      const account = await resolveAccountRole(user);
+      persistAccountRole(account, user);
+      if (account.role !== "student") {
+        this.showNotification(
+          `This is a ${account.role} account. Redirecting to the correct dashboard...`,
+          "success"
+        );
+        setTimeout(() => redirectForRole(account), 600);
         return;
       }
-       await requestWebPushPermission();
       setTimeout(() => {
         window.location.replace("../dashboard/itc_dashboard.html");
       }, 1000);
     } catch (error) {
       console.error("Google login error:", error);
+      if (error.code?.startsWith("account/")) await signOut(this.auth);
       this.showNotification(`Google login failed: ${error.message}`, "error");
     }
   }

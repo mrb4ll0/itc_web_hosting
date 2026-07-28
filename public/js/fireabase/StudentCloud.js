@@ -31,9 +31,8 @@ import { Student } from "../model/Student.js";
 
 export class StudentCloudDB {
   constructor() {
-    this._firebaseApp = initializeApp(firebaseConfig);
-    this._firebaseFirestore = getFirestore(this._firebaseApp);
-    this._firebaseAuth = getAuth(this._firebaseApp);
+    this._firebaseFirestore = db;
+    this._firebaseAuth = auth;
   }
 
   getAllCompanies(callback) {

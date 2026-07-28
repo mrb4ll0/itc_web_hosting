@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "itconnectweb-eea87",
     "public": "public",
     "ignore": [
       "firebase.json",

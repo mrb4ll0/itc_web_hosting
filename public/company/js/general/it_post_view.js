@@ -740,6 +740,7 @@ class ITPostView {
       accepted: "status-accepted",
       rejected: "status-rejected",
       hired: "status-hired",
+      deleted: "status-rejected opacity-60",
     };
 
     return statusClasses[status] || "status-pending";
@@ -1177,6 +1178,7 @@ class ITPostView {
       accepted: "Accepted",
       rejected: "Rejected",
       hired: "Accepted",
+      deleted: "Dead application",
     };
 
     return statusTexts[status] || "Unknown";

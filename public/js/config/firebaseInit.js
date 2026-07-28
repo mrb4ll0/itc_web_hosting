@@ -11,6 +11,7 @@ import {
   signInWithPopup,
   signOut,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   signInAnonymously,   // added so the landing page can sign visitors in silently
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
 import {
@@ -104,6 +105,7 @@ export {
   collectionGroup,
   getAuth,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   signInAnonymously,   // exported so index.js can import it from here
   addDoc,
   arrayUnion,

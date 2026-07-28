@@ -426,9 +426,13 @@ class ApplicationsManager {
         text: "Pending",
       },
       accepted: { class: "bg-success text-white", text: "Accepted" },
+      deleted: {
+        class: "bg-gray-300 text-gray-700 line-through dark:bg-gray-700 dark:text-gray-300",
+        text: "Dead application",
+      },
     };
 
-    const config = statusConfig[status] || statusConfig.pending;
+    const config = statusConfig[String(status || "").toLowerCase()] || statusConfig.pending;
     return `<span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${config.class}">${config.text}</span>`;
   }
 

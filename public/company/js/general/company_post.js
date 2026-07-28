@@ -588,7 +588,9 @@ class CompanyPostings {
                         </button>
 
                         ${
-                          posting.status === "open"
+                          posting.status === "deleted"
+                            ? `<span class="px-2 py-1 text-xs font-medium text-red-600 dark:text-red-300">Removed by administrator</span>`
+                            : posting.status === "open"
                             ? `
                                 <button class="p-2 rounded-full hover:bg-orange-100 dark:hover:bg-orange-900/50 group close-btn" 
                                         data-id="${posting.id}" 
@@ -859,6 +861,11 @@ class CompanyPostings {
         class: "bg-draft-orange/10 text-draft-orange",
         dot: "bg-draft-orange",
         text: "Draft",
+      },
+      deleted: {
+        class: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-300 line-through",
+        dot: "bg-red-500",
+        text: "Deleted",
       },
     };
 

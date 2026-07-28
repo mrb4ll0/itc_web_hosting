@@ -193,6 +193,8 @@
       gap: 5px;
       cursor: pointer;
       padding: 4px;
+      border: 0;
+      background: transparent;
     }
 
     .hamburger span {
@@ -937,19 +939,20 @@
           <li><a href="#download">Download</a></li>
           <li><a href="#features">Features</a></li>
           <li><a href="#companies">Companies</a></li>
-          <li><a href="#feedback">Feedback</a></li>
+          <li><a href="about.html">About</a></li>
         </ul>
 
-        <div class="hamburger" id="hamburger" aria-label="Menu">
+        <button class="hamburger" id="hamburger" type="button" aria-label="Open navigation"
+          aria-controls="mobile-nav" aria-expanded="false">
           <span></span><span></span><span></span>
-        </div>
+        </button>
       </nav>
     </div>
     <div class="mobile-nav" id="mobile-nav">
       <a href="#download" onclick="closeMobileNav()">Download</a>
       <a href="#features" onclick="closeMobileNav()">Features</a>
       <a href="#companies" onclick="closeMobileNav()">Companies</a>
-      <a href="#feedback" onclick="closeMobileNav()">Feedback</a>
+      <a href="about.html" onclick="closeMobileNav()">About</a>
     </div>
   </header>
 
@@ -1286,15 +1289,16 @@
           <ul>
             <li><a href="#features">Features</a></li>
             <li><a href="#companies">Companies</a></li>
-            <li><a href="#feedback">Feedback</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="helpCenter.html">Help Center</a></li>
           </ul>
         </div>
 
         <div class="footer-col">
           <h4>Legal</h4>
           <ul>
-            <li><button onclick="window.location.href='privacy.html'">Privacy Policy</button></li>
-            <li><button onclick="window.location.href='terms.html'">Terms of Service</button></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="terms.html">Terms of Service</a></li>
           </ul>
         </div>
       </div>
@@ -1332,11 +1336,17 @@
   <script>
     // mobile nav toggle
     document.getElementById('hamburger').addEventListener('click', function () {
-      document.getElementById('mobile-nav').classList.toggle('open');
+      const mobileNav = document.getElementById('mobile-nav');
+      const isOpen = mobileNav.classList.toggle('open');
+      this.setAttribute('aria-expanded', String(isOpen));
+      this.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
     });
 
     function closeMobileNav() {
       document.getElementById('mobile-nav').classList.remove('open');
+      const menuButton = document.getElementById('hamburger');
+      menuButton.setAttribute('aria-expanded', 'false');
+      menuButton.setAttribute('aria-label', 'Open navigation');
     }
 
     // feature tabs

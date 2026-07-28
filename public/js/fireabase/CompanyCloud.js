@@ -130,21 +130,50 @@ export class CompanyCloud {
     }
   }
 
-  getAllCompanyInternships(callback) {
-    const q = query(
-      collectionGroup(this._firebaseFirestore, "IT"),
-      orderBy("postedAt", "desc")
-    );
+  getAllCompanyInternships(callback, onError = null) {
+    const q = collectionGroup(this._firebaseFirestore, "IT");
 
-    return onSnapshot(q, async (snapshot) => {
-      const promises = snapshot.docs.map(async (docSnap) => {
-        var it = IndustrialTraining.fromMap(docSnap.data(), docSnap.id);
-        it.company = await this.getCompany(it.company.id);
-        return it;
-      });
-      const internships = await Promise.all(promises);
-      callback(internships);
-    });
+    return onSnapshot(
+      q,
+      async (snapshot) => {
+        try {
+          // This collection-group stream powers public internship discovery.
+          // Soft-deleted posts stay in Firestore for the owning company and
+          // administrators, but must never be returned to public listings.
+          const publicDocs = snapshot.docs.filter((item) => {
+            const data = item.data();
+            return data.isDeleted !== true &&
+              String(data.status || "").toLowerCase() !== "deleted";
+          });
+          const sortedDocs = publicDocs.sort((a, b) => {
+            const toMillis = (value) => {
+              if (!value) return 0;
+              if (typeof value.toMillis === "function") return value.toMillis();
+              if (value.seconds !== undefined) return value.seconds * 1000;
+              const parsed = new Date(value).getTime();
+              return Number.isNaN(parsed) ? 0 : parsed;
+            };
+            return toMillis(b.data().postedAt) - toMillis(a.data().postedAt);
+          });
+          const promises = sortedDocs.map(async (docSnap) => {
+            const it = IndustrialTraining.fromMap(docSnap.data(), docSnap.id);
+            const companyId = it.company?.id || docSnap.ref.parent.parent?.id;
+            if (companyId) {
+              it.company = (await this.getCompany(companyId)) || it.company;
+            }
+            return it;
+          });
+          callback(await Promise.all(promises));
+        } catch (error) {
+          console.error("Error preparing internship data:", error);
+          if (onError) onError(error);
+        }
+      },
+      (error) => {
+        console.error("Internship listener failed:", error);
+        if (onError) onError(error);
+      }
+    );
   }
 
   /**
@@ -686,6 +715,11 @@ export class CompanyCloud {
             applications.push({
               internship: internship,
               applicationStatus: applicationData.applicationStatus,
+              isDeleted:
+                applicationData.isDeleted === true ||
+                String(applicationData.applicationStatus || "").toLowerCase() === "deleted",
+              deletionReason: applicationData.deletionReason || "",
+              deletedAt: applicationData.deletedAt || null,
               appliedAt:
                 applicationData.appliedAt || applicationData.updatedAt || null,
               applicationId: appId,

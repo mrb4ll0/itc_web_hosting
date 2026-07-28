@@ -1,20 +1,10 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import {
-  getAuth,
+  auth,
   onAuthStateChanged,
-  signOut,
-} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+} from "../config/firebaseInit.js";
 import { ITCFirebaseLogic } from "../fireabase/ITCFirebaseLogic.js";
-import { Student } from "../model/Student.js";
 import { CompanyCloud } from "../fireabase/CompanyCloud.js";
-import { db, auth } from "../config/firebaseInit.js";
 import { StudentCloudDB } from "../fireabase/StudentCloud.js";
-import { getNigerianIndustryDescription } from "./generalmethods.js";
 const itc_firebase_logic = new ITCFirebaseLogic();
 /** @type {import('../fireabase/CompanyCloud.js').CompanyCloud} */
 const companyCloud = new CompanyCloud();
@@ -98,6 +88,7 @@ class Opportunities {
       {
         alert("Account not found, kinldy login again");
         window.location.href = '../auth/login.html';
+        return;
       }
     await this.loadOpportunities();
   }
@@ -124,7 +115,7 @@ class Opportunities {
     });
 
     // Populate locations (states)
-    const locations = [...new Set(internships.map(it => it.company.state).filter(Boolean))];
+    const locations = [...new Set(internships.map(it => it.company?.state).filter(Boolean))];
     locations.forEach(location => {
       const option = document.createElement('option');
       option.value = location;
@@ -152,8 +143,8 @@ class Opportunities {
     this.filteredInternships = this.allInternships.filter(internship => {
       // Search term matching
       const matchesSearch = !searchTerm || 
-        internship.title.toLowerCase().includes(searchTerm) ||
-        internship.company.name.toLowerCase().includes(searchTerm) ||
+        (internship.title || "").toLowerCase().includes(searchTerm) ||
+        (internship.company?.name || "").toLowerCase().includes(searchTerm) ||
         (internship.description && internship.description.toLowerCase().includes(searchTerm)) ||
         (internship.industry && internship.industry.toLowerCase().includes(searchTerm));
 
@@ -161,7 +152,7 @@ class Opportunities {
       const matchesIndustry = !industry || internship.industry === industry;
 
       // Location filter
-      const matchesLocation = !location || internship.company.state === location;
+      const matchesLocation = !location || internship.company?.state === location;
 
       // Duration filter
       const matchesDuration = !duration || internship.duration === duration;
@@ -192,7 +183,7 @@ class Opportunities {
   if (!internships || internships.length === 0) {
     container.innerHTML = `
       <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem; text-align: center;">
-        <img src="../../images/no-data.jpg" alt="No internships found" style="width: 8rem; height: 8rem; opacity: 0.7; margin-bottom: 1rem;">
+        <img src="../images/no-data.jpg" alt="No internships found" style="width: 8rem; height: 8rem; opacity: 0.7; margin-bottom: 1rem;">
         <h3 style="font-size: 1.125rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
           No Internship Opportunities Found
         </h3>
@@ -216,19 +207,19 @@ class Opportunities {
           <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition-shadow cursor-pointer p-6 opportunity-card"
                data-id="${internship.id}">
             <div class="flex items-start space-x-4 mb-4">
-              <img src="${internship.company.logoURL || '../images/default-company-logo.jpg'}" 
-                   alt="${internship.company.name}" 
+              <img src="${internship.company?.logoURL || '../images/default-company-logo.jpg'}"
+                   alt="${internship.company?.name || 'Company'}"
                    class="w-12 h-12 rounded-lg object-cover border border-gray-200">
               <div class="flex-1">
                 <h3 class="font-semibold text-gray-800 dark:text-gray-100 text-lg mb-1">${internship.title}</h3>
-                <p class="text-blue-600 dark:text-blue-400 font-medium">${internship.company.name}</p>
+                <p class="text-blue-600 dark:text-blue-400 font-medium">${internship.company?.name || 'Company profile unavailable'}</p>
               </div>
             </div>
             
             <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
               <div class="flex items-center">
                 <span class="mr-2">📍</span>
-                <span>${internship.company.address}, ${internship.company.state}</span>
+                <span>${[internship.company?.address, internship.company?.state].filter(Boolean).join(', ') || internship.address || 'Location not specified'}</span>
               </div>
               <div class="flex items-center">
                 <span class="mr-2">⏱️</span>
@@ -309,7 +300,7 @@ class Opportunities {
       
       this.companyCloud.getAllCompanyInternships((internships) => {
        
-       this.top_right_image.style.display = 'block';
+       if (this.top_right_image) this.top_right_image.style.display = 'block';
         
         if (!internships) {
           console.error("❌ Internships is null or undefined");
@@ -327,6 +318,13 @@ class Opportunities {
         this.filteredInternships = [...internships];
         this.renderOpportunities(this.filteredInternships);
         this.populateFilterOptions(internships);
+      }, (error) => {
+        console.error("Error loading opportunities:", error);
+        this.showError(
+          error.code === "permission-denied"
+            ? "You do not have permission to view opportunities. Please sign in again."
+            : "Unable to load opportunities. Please try again."
+        );
       });
       
     } catch (error) {

@@ -3,11 +3,18 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
+  sendPasswordResetEmail,
+  signOut,
 } from "../../../js/config/firebaseInit.js";
 import { CompanyCloud } from "../../../js/fireabase/CompanyCloud.js";
 import { ITCFirebaseLogic } from "../../../js/fireabase/ITCFirebaseLogic.js";
 import { generateShareableUrl } from "../../../js/general/generalmethods.js";
 import { Company } from "../../../js/model/Company.js";
+import {
+  persistAccountRole,
+  redirectForRole,
+  resolveAccountRole,
+} from "../../../js/auth/authRoleService.js";
 
 class CompanyLogin {
   constructor() {
@@ -125,18 +132,22 @@ class CompanyLogin {
 
       ////console.log("User signed in:", user.uid);
 
-      // Verify this is actually a company account
-      const company = await this.itc_firebaselogic.getCompany(user.uid);
-
-      if (!company) {
-        throw new Error(
-          "No company account found with this email. Please register as a company first."
+      const account = await resolveAccountRole(user);
+      if (account.role !== "company") {
+        persistAccountRole(account, user);
+        this.showNotification(
+          `This is a ${account.role} account. Redirecting to the correct dashboard...`,
+          "success"
         );
+        setTimeout(() => redirectForRole(account), 600);
+        return;
       }
+      const company = await this.itc_firebaselogic.getCompany(user.uid);
 
       // Store company data in localStorage
       localStorage.setItem("currentCompany", JSON.stringify(company.toMap()));
       localStorage.setItem("userRole", "company");
+      persistAccountRole(account, user);
 
       //localStorage.setItem("itId",this.itId);
       //localStorage.setItem("companyId", this.companyId);
@@ -173,6 +184,7 @@ class CompanyLogin {
       }, 1000);
     } catch (error) {
       console.error("Login error:", error);
+      if (error.code?.startsWith("account/")) await signOut(auth);
       this.handleLoginError(error);
       this.setButtonState(loginButton, "error", "Login Failed");
 
@@ -204,17 +216,22 @@ class CompanyLogin {
 
       ////console.log("Google sign-in successful:", user.uid);
 
-      // Check if company exists, if not create one
-      let company = await this.itc_firebaselogic.getCompany(user.uid);
-
-      if (!company) {
-        // Create a new company profile from Google data
-        company = await this.createCompanyFromGoogle(user);
+      const account = await resolveAccountRole(user);
+      if (account.role !== "company") {
+        persistAccountRole(account, user);
+        this.showNotification(
+          `This is a ${account.role} account. Redirecting to the correct dashboard...`,
+          "success"
+        );
+        setTimeout(() => redirectForRole(account), 600);
+        return;
       }
+      const company = await this.itc_firebaselogic.getCompany(user.uid);
 
       // Store company data
       localStorage.setItem("currentCompany", JSON.stringify(company.toMap()));
       localStorage.setItem("userRole", "company");
+      persistAccountRole(account, user);
 
        if (localStorage.getItem("stprofile")) {
         const itId = localStorage.getItem("itId");
@@ -246,6 +263,7 @@ class CompanyLogin {
       }, 1500);
     } catch (error) {
       console.error("Google login error:", error);
+      if (error.code?.startsWith("account/")) await signOut(auth);
       this.handleLoginError(error);
       this.setButtonState(googleButton, "error", "Google Login Failed");
 
@@ -418,11 +436,6 @@ class CompanyLogin {
     }
 
     try {
-      // You'll need to import sendPasswordResetEmail from Firebase Auth
-      const { sendPasswordResetEmail } = await import(
-        "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js"
-      );
-
       await sendPasswordResetEmail(auth, email);
       this.showNotification(
         "Password reset email sent! Check your inbox.",

@@ -94,6 +94,12 @@ class StudentApplicationView {
 
   createTableRow(application) {
     const row = document.createElement("tr");
+    const isDeleted =
+      application.isDeleted === true ||
+      String(application.applicationStatus || "").toLowerCase() === "deleted";
+    if (isDeleted) {
+      row.className = "opacity-70 bg-red-50/60 dark:bg-red-950/20";
+    }
 
     // Format date
     let appDate;
@@ -113,7 +119,7 @@ class StudentApplicationView {
     const formattedDate = appDate.toLocaleDateString("en-CA"); // YYYY-MM-DD format
 
     // Get status badge HTML
-    const statusBadge = this.getStatusBadge(application.applicationStatus);
+    const statusBadge = this.getStatusBadge(isDeleted ? "deleted" : application.applicationStatus);
 
     row.innerHTML = `
       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
@@ -127,6 +133,7 @@ class StudentApplicationView {
       </td>
       <td class="px-6 py-4 whitespace-nowrap text-sm">
         ${statusBadge}
+        ${isDeleted && application.deletionReason ? `<p class="mt-1 max-w-xs whitespace-normal text-xs text-red-600 dark:text-red-300">${this.escapeHtml(application.deletionReason)}</p>` : ""}
       </td>
       <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
         <button class="text-primary hover:text-primary/80 view-details-btn" 
@@ -149,7 +156,10 @@ class StudentApplicationView {
 
   createMobileCard(application) {
     const card = document.createElement("div");
-    card.className = "application-card";
+    const isDeleted =
+      application.isDeleted === true ||
+      String(application.applicationStatus || "").toLowerCase() === "deleted";
+    card.className = `application-card${isDeleted ? " opacity-70 border-red-200 dark:border-red-900" : ""}`;
 
     // Format date
     let appDate;
@@ -162,7 +172,7 @@ class StudentApplicationView {
     }
 
     const formattedDate = appDate.toLocaleDateString("en-CA");
-    const statusBadge = this.getStatusBadge(application.applicationStatus);
+    const statusBadge = this.getStatusBadge(isDeleted ? "deleted" : application.applicationStatus);
 
     card.innerHTML = `
       <div class="flex justify-between items-start mb-3">
@@ -176,6 +186,7 @@ class StudentApplicationView {
           <p class="text-xs text-gray-500 dark:text-gray-400">
             Applied: ${formattedDate}
           </p>
+          ${isDeleted ? `<p class="mt-2 text-xs font-medium text-red-600 dark:text-red-300">This application is no longer active.${application.deletionReason ? ` ${this.escapeHtml(application.deletionReason)}` : ""}</p>` : ""}
         </div>
         <div class="ml-4 flex-shrink-0">
           ${statusBadge}
@@ -224,6 +235,11 @@ class StudentApplicationView {
       case "under review":
         badgeClass =
           "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
+        break;
+      case "deleted":
+        badgeClass =
+          "bg-gray-200 text-gray-700 line-through dark:bg-gray-700 dark:text-gray-300";
+        badgeText = "Dead application";
         break;
       default:
         badgeClass =
