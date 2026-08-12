@@ -83,7 +83,7 @@ export class PaymentUI {
                     </div>
                     <div>
                         <h3 class="text-lg font-semibold text-gray-800">Insufficient Balance</h3>
-                        <p class="text-sm text-gray-600">You need ₦200 to submit an application</p>
+                        <p class="text-sm text-gray-600">You need ₦500 to submit an application</p>
                     </div>
                 </div>
                 
@@ -91,15 +91,15 @@ export class PaymentUI {
                     <h4 class="font-medium text-blue-800 mb-2">Purchase Application Slots</h4>
                     <div class="grid grid-cols-3 gap-2">
                         <button class="slot-option px-4 py-3 border border-blue-300 rounded-lg hover:bg-blue-50 text-center" data-amount="1000">
-                            <div class="font-bold text-blue-600">5 Slots</div>
+                            <div class="font-bold text-blue-600">2 Slots</div>
                             <div class="text-sm text-gray-600">₦1,000</div>
                         </button>
                         <button class="slot-option px-4 py-3 border border-blue-300 rounded-lg hover:bg-blue-50 text-center" data-amount="2000">
-                            <div class="font-bold text-blue-600">10 Slots</div>
+                            <div class="font-bold text-blue-600">4 Slots</div>
                             <div class="text-sm text-gray-600">₦2,000</div>
                         </button>
                         <button class="slot-option px-4 py-3 border border-blue-300 rounded-lg hover:bg-blue-50 text-center" data-amount="3000">
-                            <div class="font-bold text-blue-600">15 Slots</div>
+                            <div class="font-bold text-blue-600">6 Slots</div>
                             <div class="text-sm text-gray-600">₦3,000</div>
                         </button>
                     </div>
@@ -119,7 +119,7 @@ export class PaymentUI {
         modal.querySelectorAll('.slot-option').forEach(button => {
             button.addEventListener('click', async () => {
                 const amount = parseFloat(button.dataset.amount);
-                const slots = amount / 200;
+                const slots = amount / 500;
                 
                 // Close modal
                 document.body.removeChild(modal);
@@ -217,7 +217,7 @@ export class PaymentUI {
                             <div class="text-sm text-gray-600">Available Slots</div>
                         </div>
                         <div class="bg-white rounded p-3 text-center border">
-                            <div class="text-2xl font-bold text-gray-600">₦200</div>
+                            <div class="text-2xl font-bold text-gray-600">₦500</div>
                             <div class="text-sm text-gray-600">Per Application</div>
                         </div>
                     </div>

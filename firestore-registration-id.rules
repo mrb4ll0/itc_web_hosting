@@ -1,0 +1,10 @@
+// Merge this match block into the authoritative Firestore rules file.
+// This repository does not currently own/deploy the project's complete ruleset.
+match /platform_registration_ids/{platformRegistrationId} {
+  allow read: if request.auth != null;
+  allow create: if request.auth != null
+    && request.resource.data.uid == request.auth.uid
+    && request.resource.data.role in ['company', 'authority']
+    && !exists(/databases/$(database)/documents/platform_registration_ids/$(platformRegistrationId));
+  allow update, delete: if false;
+}

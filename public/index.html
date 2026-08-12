@@ -152,6 +152,10 @@
       color: var(--blue);
     }
 
+    .nav-links .nav-login { color: var(--blue); font-weight: 700; }
+    .nav-links .nav-signup { padding: 9px 15px; border-radius: 9px; background: var(--blue); color: #fff; font-weight: 700; }
+    .nav-links .nav-signup:hover { color: #fff; background: #2852d8; }
+
     .btn {
       display: inline-flex;
       align-items: center;
@@ -940,6 +944,8 @@
           <li><a href="#features">Features</a></li>
           <li><a href="#companies">Companies</a></li>
           <li><a href="about.html">About</a></li>
+          <li><a class="nav-login" href="/app/#login">Sign in</a></li>
+          <li><a class="nav-signup" href="/app/?mode=signup#signup">Create account</a></li>
         </ul>
 
         <button class="hamburger" id="hamburger" type="button" aria-label="Open navigation"
@@ -953,6 +959,8 @@
       <a href="#features" onclick="closeMobileNav()">Features</a>
       <a href="#companies" onclick="closeMobileNav()">Companies</a>
       <a href="about.html" onclick="closeMobileNav()">About</a>
+      <a href="/app/#login" onclick="closeMobileNav()">Sign in</a>
+      <a href="/app/?mode=signup#signup" onclick="closeMobileNav()">Create account</a>
     </div>
   </header>
 
@@ -968,8 +976,8 @@
       <p>Connect directly with top companies for industrial training. Real-time tracking and career-defining
         opportunities, right in your pocket.</p>
 
-      <a href="#download" class="btn btn-primary" style="font-size:15px; padding: 13px 28px; border-radius:12px;">
-        Download the App
+      <a href="/app/?mode=signup#signup" class="btn btn-primary" style="font-size:15px; padding: 13px 28px; border-radius:12px;">
+        Create your web account
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
         </svg>

@@ -869,7 +869,7 @@ export class StudentCloudDB {
     /**
      * Check if student can afford to apply
      */
-    async canStudentApply(studentId, applicationCost = 200) {
+    async canStudentApply(studentId, applicationCost = 500) {
         try {
             const balance = await this.getSlotBalance(studentId);
             return balance >= applicationCost;
@@ -882,7 +882,7 @@ export class StudentCloudDB {
     /**
      * Deduct application fee from student's balance
      */
-    async deductApplicationFee(studentId, applicationCost = 200, applicationId) {
+    async deductApplicationFee(studentId, applicationCost = 500, applicationId) {
         try {
             const currentBalance = await this.getSlotBalance(studentId);
             

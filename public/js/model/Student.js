@@ -778,20 +778,20 @@ export class Student {
   }
 
   deductSlotForApplication() {
-    if (this.slotBalance >= 200.0) {
+    if (this.slotBalance >= 500.0) {
       return this.copyWith({
-        slotBalance: this.slotBalance - 200.0
+        slotBalance: this.slotBalance - 500.0
       });
     }
     return this;
   }
 
   get hasEnoughSlotsForApplication() {
-    return this.slotBalance >= 200.0;
+    return this.slotBalance >= 500.0;
   }
 
   get availableApplicationSlots() {
-    return Math.floor(this.slotBalance / 200.0);
+    return Math.floor(this.slotBalance / 500.0);
   }
 
   addTransactionId(transactionId) {
@@ -818,14 +818,14 @@ export class Student {
     }
 
     return this.copyWith({
-      slotBalance: this.slotBalance - 200.0,
+      slotBalance: this.slotBalance - 500.0,
       applications: { ...this.applications, [companyId]: applicationId }
     });
   }
 
   get slotSummary() {
     const usedSlots = this.applicationCount;
-    const totalPurchasedSlots = (this.slotBalance / 200.0) + usedSlots;
+    const totalPurchasedSlots = (this.slotBalance / 500.0) + usedSlots;
     const availableSlots = this.availableApplicationSlots;
 
     return {
@@ -833,7 +833,7 @@ export class Student {
       usedSlots: usedSlots,
       availableSlots: availableSlots,
       totalPurchasedSlots: totalPurchasedSlots,
-      slotValue: 200.0,
+      slotValue: 500.0,
       canApply: availableSlots > 0
     };
   }

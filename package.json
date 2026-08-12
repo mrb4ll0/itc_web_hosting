@@ -1,10 +1,13 @@
 {
   "name": "itc_web_hosting",
   "version": "1.0.0",
-  "description": "",
+  "description": "IT Connect public site and TypeScript web application",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "web:dev": "vite --config web/vite.config.mts",
+    "web:build": "vite build --config web/vite.config.mts",
+    "web:check": "tsc --noEmit -p web/tsconfig.json",
+    "test": "npm run web:check && npm run web:build"
   },
   "repository": {
     "type": "git",
@@ -19,7 +22,9 @@
   },
   "homepage": "https://github.com/mrb4ll0/itc_web_hosting#readme",
   "devDependencies": {
-    "tailwindcss": "^4.1.14"
+    "tailwindcss": "^4.1.14",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.0"
   },
   "dependencies": {
     "emailjs-com": "^3.2.0",

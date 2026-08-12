@@ -240,7 +240,7 @@ class InternshipDetails {
                 </button>
                 <button onclick="" 
                         class="px-8 py-3 border border-gray-300 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition font-medium">
-                  Slot Balance: ${this.student.slotBalance/200|| 0}
+                  Slot Balance: ${this.student.slotBalance/500|| 0}
                 </button>
               </div>
             </div>
