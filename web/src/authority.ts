@@ -1,9 +1,11 @@
 import { arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, query, serverTimestamp, where, writeBatch } from "firebase/firestore";
 import { db } from "./firebase";
 import { listCompanyApplications, type CompanyApplication } from "./company";
+import { httpsCallable } from "firebase/functions";
+import { cloudFunctions } from "./firebase";
 
 export interface AuthorityProfileData { name: string; email: string; logoUrl: string; state: string; platformRegistrationId: string; verified: boolean; approved: boolean; maxCompanies: number; }
-export interface AuthorityCompany { id: string; name: string; industry: string; email: string; phone: string; state: string; address: string; logoUrl: string; linkStatus: string; linked: boolean; approved: boolean; verified: boolean; opportunityCount: number; applicationCount: number; traineeCount: number; }
+export interface AuthorityCompany { id: string; name: string; industry: string; email: string; phone: string; state: string; address: string; logoUrl: string; linkStatus: string; linked: boolean; approved: boolean; verified: boolean; opportunityCount: number; applicationCount: number; traineeCount: number; companyCanAccept: boolean; companyCanReject: boolean; authorityFinalApprovalRequired: boolean; policyReason: string; }
 export type AuthorityApplication = CompanyApplication & { companyId: string; companyName: string; };
 
 const text = (value: unknown, fallback = "") => typeof value === "string" ? value.trim() : fallback;
@@ -14,11 +16,14 @@ export async function getAuthorityProfile(uid: string): Promise<AuthorityProfile
 }
 
 export async function listAuthorityCompanies(uid: string): Promise<AuthorityCompany[]> {
+  let policyMap = new Map<string, {companyCanAccept: boolean; companyCanReject: boolean; authorityFinalApprovalRequired: boolean; reason: string}>();
+  try { const callable = httpsCallable<Record<string, never>, {policies: Array<{companyId: string; companyCanAccept: boolean; companyCanReject: boolean; authorityFinalApprovalRequired: boolean; reason: string}>}>(cloudFunctions, "getAuthorityCompanyPolicies"); const result = await callable({}); policyMap = new Map(result.data.policies.map(policy => [policy.companyId, policy])); } catch { /* Defaults remain secure because writes are still enforced server-side. */ }
   const snapshot = await getDocs(query(collection(db, "users", "companies", "companies"), where("authorityId", "==", uid)));
   return Promise.all(snapshot.docs.map(async entry => {
     const data = entry.data(); let opportunityCount = 0; let applicationCount = 0; let traineeCount = 0;
     if (data.isUnderAuthority === true) { try { const [opportunities, trainees] = await Promise.all([getDocs(collection(entry.ref, "IT")), getDocs(query(collection(db, "trainees"), where("companyId", "==", entry.id)))]); opportunityCount = opportunities.size; traineeCount = trainees.size; const applications = await Promise.all(opportunities.docs.map(item => getDocs(collection(item.ref, "applications")))); applicationCount = applications.reduce((sum, item) => sum + item.size, 0); } catch { /* Pending companies are intentionally not operationally visible. */ } }
-    return { id: entry.id, name: text(data.companyName) || text(data.name, "Company"), industry: text(data.industry), email: text(data.email), phone: text(data.phoneNumber), state: text(data.state), address: text(data.address), logoUrl: text(data.logoURL), linkStatus: text(data.authorityLinkStatus, "NONE").toUpperCase(), linked: data.isUnderAuthority === true, approved: data.isApproved === true, verified: data.isVerified === true, opportunityCount, applicationCount, traineeCount } satisfies AuthorityCompany;
+    const policy = policyMap.get(entry.id) || {companyCanAccept: true, companyCanReject: true, authorityFinalApprovalRequired: true, reason: ""};
+    return { id: entry.id, name: text(data.companyName) || text(data.name, "Company"), industry: text(data.industry), email: text(data.email), phone: text(data.phoneNumber), state: text(data.state), address: text(data.address), logoUrl: text(data.logoURL), linkStatus: text(data.authorityLinkStatus, "NONE").toUpperCase(), linked: data.isUnderAuthority === true, approved: data.isApproved === true, verified: data.isVerified === true, opportunityCount, applicationCount, traineeCount, companyCanAccept: policy.companyCanAccept !== false, companyCanReject: policy.companyCanReject !== false, authorityFinalApprovalRequired: policy.authorityFinalApprovalRequired !== false, policyReason: text(policy.reason) } satisfies AuthorityCompany;
   }));
 }
 
@@ -43,14 +48,12 @@ export async function listAuthorityApplications(uid: string): Promise<AuthorityA
 }
 
 export async function reviewAuthorityApplication(uid: string, authorityName: string, application: AuthorityApplication, status: "accepted" | "rejected", note: string): Promise<void> {
-  const company = await getDoc(doc(db, "users", "companies", "companies", application.companyId)); if (!company.exists() || company.data().authorityId !== uid || company.data().isUnderAuthority !== true) throw new Error("This company is no longer linked to your authority.");
-  const applicationRef = doc(db, "users", "companies", "companies", application.companyId, "IT", application.internshipId, "applications", application.id); const current = await getDoc(applicationRef); if (!current.exists() || current.data().isDeleted === true) throw new Error("This application is no longer available.");
-  const batch = writeBatch(db); batch.update(applicationRef, { applicationStatus: status, authorityStatus: status, authorityReviewNote: note, reviewedAt: serverTimestamp(), ...(status === "accepted" ? { approvedByAuthorityId: uid, approvedByAuthorityName: authorityName, authorityApprovedAt: serverTimestamp() } : {}) });
-  batch.set(doc(collection(db, "users", "authorities", "authorities", uid, "audit_logs")), { actorId: uid, type: "application_decision", applicationId: application.id, internshipId: application.internshipId, companyId: application.companyId, studentId: application.studentId, outcome: status, note, createdAt: serverTimestamp() });
-  if (status === "accepted") {
-    const trainees = await getDocs(query(collection(db, "trainees"), where("companyId", "==", application.companyId))); const existing = trainees.docs.find(item => item.data().applicationId === application.id && item.data().studentId === application.studentId);
-    if (existing) batch.update(existing.ref, { status: "accepted", updatedAt: serverTimestamp() });
-    else { const traineeRef = doc(collection(db, "trainees")); const start = application.startDate ? new Date(application.startDate) : null; const end = application.endDate ? new Date(application.endDate) : null; batch.set(traineeRef, { studentId: application.studentId, studentName: application.studentName, companyId: application.companyId, companyName: application.companyName, applicationId: application.id, internshipId: application.internshipId, status: "accepted", startDate: start && !Number.isNaN(start.getTime()) ? start : null, endDate: end && !Number.isNaN(end.getTime()) ? end : null, supervisorIds: [], department: application.course, role: application.internshipTitle, description: application.description, requirements: { selectedDuration: application.selectedDuration }, milestones: [], evaluations: [], studentLogbook: [], studentFeedback: [], completionReview: {}, progress: 0, metadata: { source: "authority_web", approvedByAuthorityId: uid }, createdAt: serverTimestamp(), updatedAt: serverTimestamp() }); }
-  }
-  await batch.commit();
+  void uid; void authorityName;
+  const review = httpsCallable<{companyId: string; internshipId: string; applicationId: string; status: "accepted" | "rejected"; note: string}, {status: string}>(cloudFunctions, "reviewAuthorityApplication");
+  await review({companyId: application.companyId, internshipId: application.internshipId, applicationId: application.id, status, note});
+}
+
+export async function setCompanyApplicationPolicy(company: AuthorityCompany, values: {companyCanAccept: boolean; companyCanReject: boolean; authorityFinalApprovalRequired: boolean; reason: string}): Promise<void> {
+  const setPolicy = httpsCallable<typeof values & {companyId: string}, {updated: boolean}>(cloudFunctions, "setCompanyApplicationPolicy");
+  await setPolicy({companyId: company.id, ...values});
 }

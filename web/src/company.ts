@@ -2,6 +2,8 @@ import { addDoc, arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, quer
 import { db } from "./firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "./firebase";
+import { httpsCallable } from "firebase/functions";
+import { cloudFunctions } from "./firebase";
 
 export interface CompanyProfileData { name: string; username: string; email: string; phone: string; industry: string; state: string; localGovernment: string; address: string; website: string; registrationNumber: string; platformRegistrationId: string; description: string; logoUrl: string; bannerUrl: string; approved: boolean; verified: boolean; authorityName: string; authorityLinkStatus: string; }
 export interface CompanyOpportunity { id: string; title: string; industry: string; description: string; duration: string; location: string; requiredSkills: string; intake: number; stipend: number; stipendAvailable: boolean; status: string; applications: number; postedAt: number; }
@@ -9,6 +11,7 @@ export interface OpportunityInput { title: string; industry: string; description
 export interface CompanyApplication { id: string; internshipId: string; internshipTitle: string; studentId: string; studentName: string; email: string; phone: string; institution: string; course: string; level: string; imageUrl: string; status: string; submittedAt: number; description: string; startDate: string; endDate: string; selectedDuration: string; documents: Array<{ name: string; url: string }>; removed: boolean; rejectionReason: string; authorityApproved: boolean; authorityStatus: string; }
 export interface CompanyTrainee { id: string; studentId: string; studentName: string; applicationId: string; role: string; department: string; status: string; progress: number; startDate: number; endDate: number; actualStartDate: number; supervisorIds: string[]; milestones: Array<{ title?: string; note?: string; date?: unknown }>; evaluations: Array<{ title?: string; note?: string; score?: number; date?: unknown }>; }
 export interface CompanySupervisor { uid: string; name: string; email: string; role: string; imageUrl: string; assignedTrainees: number; }
+export interface CompanyApplicationPolicy { companyCanAccept: boolean; companyCanReject: boolean; authorityFinalApprovalRequired: boolean; reason: string; linkedAuthority: boolean; }
 
 const text = (value: unknown, fallback = "") => typeof value === "string" ? value.trim() : fallback;
 const millis = (value: unknown) => value && typeof value === "object" && "toMillis" in value && typeof value.toMillis === "function" ? value.toMillis() : value && typeof value === "object" && "seconds" in value ? Number(value.seconds) * 1000 : 0;
@@ -48,7 +51,9 @@ export async function createCompanyOpportunity(uid: string, profile: CompanyProf
 }
 
 export async function setCompanyOpportunityStatus(uid: string, opportunityId: string, status: "open" | "closed"): Promise<void> {
-  await updateDoc(doc(db, "users", "companies", "companies", uid, "IT", opportunityId), { status, updatedAt: serverTimestamp() });
+  if (!uid) throw new Error("Sign in before updating an opportunity.");
+  const updateStatus = httpsCallable<{internshipId: string; status: "open" | "closed"}, {internshipId: string; status: string}>(cloudFunctions, "setCompanyOpportunityStatus");
+  await updateStatus({internshipId: opportunityId, status});
 }
 
 export async function listCompanyApplications(uid: string): Promise<CompanyApplication[]> {
@@ -66,21 +71,15 @@ export async function listCompanyApplications(uid: string): Promise<CompanyAppli
   return groups.flat().filter(item => !item.removed).sort((a, b) => b.submittedAt - a.submittedAt);
 }
 
-export async function reviewCompanyApplication(uid: string, application: CompanyApplication, status: "accepted" | "rejected", note: string): Promise<void> {
-  const applicationRef = doc(db, "users", "companies", "companies", uid, "IT", application.internshipId, "applications", application.id);
-  const snapshot = await getDoc(applicationRef);
-  if (!snapshot.exists() || snapshot.data().isDeleted === true || text(snapshot.data().applicationStatus).toLowerCase() === "deleted") throw new Error("This application was removed and cannot be reviewed.");
-  await updateDoc(applicationRef, { applicationStatus: status, reviewedAt: serverTimestamp(), reviewedBy: uid, reviewNote: note, ...(status === "rejected" ? { rejectionReason: note } : {}), statusHistory: arrayUnion({ status, note, timestamp: new Date().toISOString(), actor: "company" }) });
-  if (status === "accepted") {
-    const existing = await getDocs(query(collection(db, "trainees"), where("companyId", "==", uid)));
-    if (!existing.docs.some(entry => entry.data().applicationId === application.id && entry.data().studentId === application.studentId)) {
-      const profile = await getCompanyProfile(uid); const traineeId = `${application.studentId}_${uid}_${Date.now()}`; const startDate = application.startDate ? new Date(application.startDate) : null; const endDate = application.endDate ? new Date(application.endDate) : null;
-      await setDoc(doc(db, "trainees", traineeId), { studentId: application.studentId, studentName: application.studentName, companyId: uid, companyName: profile.name, applicationId: application.id, internshipId: application.internshipId, status: "accepted", startDate: startDate && !Number.isNaN(startDate.getTime()) ? startDate : null, endDate: endDate && !Number.isNaN(endDate.getTime()) ? endDate : null, actualStartDate: null, actualEndDate: null, supervisorIds: [], department: application.course, role: application.internshipTitle, description: application.description, requirements: { selectedDuration: application.selectedDuration }, milestones: [], evaluations: [], studentLogbook: [], studentFeedback: [], completionReview: {}, progress: 0, metadata: { source: "web", createdFromApplication: true }, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
-    }
-  }
-  if (application.studentId) {
-    try { await addDoc(collection(db, "users", "students", "students", application.studentId, "notifications"), { targetStudentId: application.studentId, status: `Application ${status}`, message: `${application.internshipTitle}: your application was ${status}.${note ? ` ${note}` : ""}`, actionId: "open_applications", applicationId: application.id, internshipId: application.internshipId, companyId: uid, timestamp: serverTimestamp(), read: false }); } catch { /* The decision remains authoritative even if notification delivery fails. */ }
-  }
+export async function reviewCompanyApplication(uid: string, application: CompanyApplication, status: "accepted" | "rejected", note: string): Promise<string> {
+  if (!uid) throw new Error("Sign in before reviewing an application.");
+  const review = httpsCallable<{internshipId: string; applicationId: string; status: "accepted" | "rejected"; note: string}, {applicationId: string; internshipId: string; status: string}>(cloudFunctions, "reviewCompanyApplication");
+  return (await review({internshipId: application.internshipId, applicationId: application.id, status, note})).data.status;
+}
+
+export async function getCompanyApplicationPolicy(): Promise<CompanyApplicationPolicy> {
+  const callable = httpsCallable<Record<string, never>, CompanyApplicationPolicy>(cloudFunctions, "getCompanyApplicationPolicy");
+  return (await callable({})).data;
 }
 
 export async function listCompanyTrainees(uid: string): Promise<CompanyTrainee[]> {

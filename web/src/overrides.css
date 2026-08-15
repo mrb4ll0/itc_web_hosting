@@ -30,3 +30,200 @@
   .chat-panel { height: 70dvh; min-height: 440px; }
   .message-stream { min-height: 0; }
 }
+
+.wallet-overview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.wallet-overview > article,
+.wallet-history {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--surface);
+  padding: 24px;
+}
+
+.wallet-overview > article:not(.wallet-fund) {
+  display: flex;
+  min-height: 160px;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.wallet-overview article > small,
+.wallet-overview article > span,
+.wallet-history article small {
+  color: var(--muted);
+}
+
+.wallet-overview article > strong {
+  margin: 8px 0;
+  color: var(--text);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1;
+}
+
+.wallet-fund { grid-column: 1 / -1; }
+.wallet-fund h2 { margin: 7px 0 18px; }
+.wallet-fund > div { display: flex; flex-wrap: wrap; gap: 12px; }
+.wallet-fund button,
+.wallet-history button,
+#wallet-status button {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--primary) 12%, var(--surface));
+  color: var(--text);
+  cursor: pointer;
+  padding: 12px 16px;
+  font: inherit;
+  font-weight: 700;
+}
+
+.wallet-fund button small { display: block; margin-top: 3px; color: var(--muted); font-weight: 500; }
+.wallet-fund button:hover { border-color: var(--primary); transform: translateY(-1px); }
+.wallet-fund button:disabled { cursor: wait; opacity: .6; transform: none; }
+#wallet-status { min-height: 24px; margin: 16px 0 0; color: var(--muted); }
+#wallet-status a { color: var(--primary); font-weight: 700; }
+
+.wallet-history { margin-top: 18px; }
+.wallet-history .section-title { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.wallet-history .section-title h2 { margin: 4px 0 16px; }
+.wallet-history > div:last-child > article {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  border-top: 1px solid var(--line);
+  padding: 16px 0;
+}
+.wallet-history article div { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
+.wallet-history article b { white-space: nowrap; }
+.wallet-transaction-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+.wallet-transaction-icon.credit { background: rgba(34, 197, 94, .14); }
+.wallet-transaction-icon.debit { background: rgba(239, 68, 68, .14); }
+.credit { color: #22c55e; }
+.debit { color: #ef4444; }
+
+@media (max-width: 680px) {
+  .wallet-overview { grid-template-columns: 1fr; }
+  .wallet-fund { grid-column: auto; }
+  .wallet-overview > article,
+  .wallet-history { padding: 18px; border-radius: 18px; }
+  .wallet-fund > div { display: grid; grid-template-columns: repeat(2, 1fr); }
+}
+
+.sidebar-backdrop { display: none; }
+.notification-bell { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.sidebar nav a .notification-bell { display: inline-block; width: 16px; height: 16px; margin-right: 7px; vertical-align: -3px; }
+.sidebar-foot button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.sidebar-foot button:disabled { cursor: wait; opacity: .7; }
+
+.chat-presence { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); }
+.chat-presence::before { width: 7px; height: 7px; border-radius: 50%; background: #94a3b8; content: ""; }
+.chat-presence.online { color: #16a34a; }
+.chat-presence.online::before { background: #22c55e; box-shadow: 0 0 0 3px #22c55e22; }
+
+.company-directory-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.directory-company-card { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 15px; padding: 20px; border: 1px solid var(--line); border-radius: 17px; background: var(--paper); }
+.directory-company-card .company-logo { width: 58px; height: 58px; }
+.directory-company-card h2 { margin: 5px 0; font: 700 16px "Sora"; }
+.directory-company-card h2 small { color: var(--blue); font-size: 11px; }
+.directory-company-card p { margin: 0 0 5px; color: var(--muted); font-size: 11px; }
+.directory-company-card > div > small { color: var(--muted); font-size: 10px; }
+.directory-company-card > button { padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--soft); color: var(--blue); font-weight: 800; cursor: pointer; }
+.directory-profile-actions { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line); }
+.directory-profile-actions .primary { width: auto; min-width: 170px; padding-inline: 20px; }
+
+@media (max-width: 760px) {
+  .company-directory-grid { grid-template-columns: 1fr; }
+  .directory-company-card { grid-template-columns: auto minmax(0, 1fr); }
+  .directory-company-card > button { grid-column: 1 / -1; width: 100%; }
+}
+
+@media (max-width: 680px) {
+  body.mobile-navigation-open { overflow: hidden; }
+
+  .mobile-menu {
+    display: grid;
+    place-items: center;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .workspace .sidebar {
+    position: fixed;
+    z-index: 102;
+    inset: 0 auto 0 0;
+    display: flex;
+    width: min(84vw, 310px);
+    height: 100dvh;
+    padding-top: max(28px, env(safe-area-inset-top));
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+    visibility: hidden;
+    transform: translate3d(-105%, 0, 0);
+    transition: transform .24s ease, visibility 0s linear .24s;
+    box-shadow: 18px 0 50px #07132455;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .workspace.navigation-open .sidebar {
+    visibility: visible;
+    transform: translate3d(0, 0, 0);
+    transition-delay: 0s;
+  }
+
+  .workspace.navigation-open .sidebar .brand {
+    width: auto;
+    align-items: center;
+  }
+  .workspace.navigation-open .sidebar .brand > span:last-child {
+    display: block;
+    min-width: 0;
+    font: 700 16px "Sora", sans-serif;
+    line-height: 1.25;
+    white-space: nowrap;
+  }
+  .workspace.navigation-open .sidebar .brand > span:last-child small {
+    display: block;
+    margin-top: 3px;
+    color: #8794a9;
+    font: 500 11px "DM Sans", sans-serif;
+    line-height: 1.3;
+  }
+  .workspace.navigation-open .sidebar nav a {
+    display: block;
+    font-size: 14px;
+    line-height: 1.35;
+    white-space: normal;
+  }
+  .workspace.navigation-open .sidebar nav a:first-letter { font-size: inherit; }
+
+  .workspace .sidebar-backdrop {
+    position: fixed;
+    z-index: 101;
+    inset: 0;
+    display: block;
+    border: 0;
+    background: #07132499;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .24s ease, visibility 0s linear .24s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .workspace.navigation-open .sidebar-backdrop {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+}

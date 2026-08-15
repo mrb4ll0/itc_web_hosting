@@ -3,6 +3,7 @@ import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth"
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getFunctions } from "firebase/functions";
+import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBO_RrqRNm-Oq72X4Sz24MonqzLokMxKK0",
@@ -19,6 +20,7 @@ export const auth = getAuth(firebaseApp);
 export const db = getFirestore(firebaseApp);
 export const storage = getStorage(firebaseApp);
 export const cloudFunctions = getFunctions(firebaseApp);
+export const realtimeDb = getDatabase(firebaseApp);
 
 export const configureDefaultPersistence = () =>
   setPersistence(auth, browserLocalPersistence);

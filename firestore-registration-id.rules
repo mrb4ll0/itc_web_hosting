@@ -8,3 +8,16 @@ match /platform_registration_ids/{platformRegistrationId} {
     && !exists(/databases/$(database)/documents/platform_registration_ids/$(platformRegistrationId));
   allow update, delete: if false;
 }
+
+// Payment records are written only by trusted Cloud Functions.
+match /payment_transactions/{transactionId} {
+  allow read: if request.auth != null
+    && resource.data.studentId == request.auth.uid;
+  allow create, update, delete: if false;
+}
+
+// Merge these field protections into the existing student-profile match in the
+// authoritative ruleset. They intentionally are not a second standalone match.
+// allow update: if request.auth.uid == studentUid
+//   && request.resource.data.slotBalance == resource.data.slotBalance
+//   && request.resource.data.transactionIds == resource.data.transactionIds;

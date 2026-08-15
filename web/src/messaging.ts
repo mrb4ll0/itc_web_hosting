@@ -50,7 +50,3 @@ export async function sendTextMessage(senderId: string, receiverId: string, cont
   await addDoc(collection(room, "messages"), message);
   await setDoc(room, { participants: [senderId, receiverId], latest_message: message, lastUpdated: serverTimestamp() }, { merge: true });
 }
-
-export async function setPresence(uid: string, online: boolean): Promise<void> {
-  await setDoc(doc(db, "user_presence", uid), { online, lastSeen: serverTimestamp() }, { merge: true });
-}

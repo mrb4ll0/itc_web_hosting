@@ -33,14 +33,14 @@ export async function submitApplication(uid: string, internship: Internship, dra
   const studentDoc = await getDoc(doc(db, "users", "students", "students", uid));
   if (!studentDoc.exists()) throw new Error("Your student profile could not be found.");
   const slotBalance = Number(studentDoc.data().slotBalance || 0);
-  if (!Number.isFinite(slotBalance) || slotBalance < 500) throw new Error(`You need a ₦500 application slot before submitting. Your current balance is ₦${Math.max(0, slotBalance).toLocaleString()}. Purchase a slot before continuing.`);
+  if (!Number.isInteger(slotBalance) || slotBalance < 1) throw new Error("You need at least one application slot before submitting. Purchase slots before continuing.");
   const documents = await uploadDocuments(uid, internship.id, draft.files);
   const durationInDays = draft.startDate && draft.endDate ? Math.max(0, Math.ceil((new Date(draft.endDate).getTime() - new Date(draft.startDate).getTime()) / 86400000)) : 0;
   const submitPaid = httpsCallable<{ companyId: string; internshipId: string; companyName: string; companyLogo: string; draft: Record<string, unknown>; documents: typeof documents }, { applicationId: string; paymentStatus: string; amount: number }>(cloudFunctions, "submitPaidApplication");
   const response = await submitPaid({ companyId: internship.companyId, internshipId: internship.id, companyName: internship.companyName, companyLogo: internship.companyLogo || "", draft: { description: draft.description, startDate: draft.startDate, endDate: draft.endDate, selectedDuration: draft.selectedDuration, durationInDays }, documents });
   const applicationId = response.data.applicationId;
   try {
-    await addDoc(collection(db, "users", "students", "students", uid, "notifications"), { status: "Application submitted", message: `Your paid application for ${internship.title} was submitted to ${internship.companyName}. ₦${response.data.amount.toLocaleString()} was deducted from your slot balance.`, actionId: "open_applications", applicationId, timestamp: serverTimestamp(), read: false });
+    await addDoc(collection(db, "users", "students", "students", uid, "notifications"), { status: "Application submitted", message: `Your application for ${internship.title} was submitted to ${internship.companyName}. One application slot was used.`, actionId: "open_applications", applicationId, timestamp: serverTimestamp(), read: false });
   } catch (error) {
     console.warn("Application submitted, but its confirmation notification could not be created.", error);
   }
